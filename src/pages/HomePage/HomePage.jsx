@@ -79,13 +79,13 @@ export default function HomePage() {
         <div className={styles.logoBarInner}>
           <span className={styles.featuredLabel}>Featured BERG Companies</span>
           <div className={styles.logos}>
-            <span className={styles.logo} style={{ fontFamily: "'Waltograph', 'Avenir Next', sans-serif", letterSpacing: '0.04em', fontStyle: 'normal' }}>Disney</span>
-            <span className={styles.logo} style={{ fontFamily: "'Noto Sans', 'Helvetica Neue', sans-serif", fontWeight: 400, letterSpacing: '0.12em', textTransform: 'lowercase', fontStyle: 'normal' }}>betterment</span>
-            <span className={styles.logo} style={{ fontFamily: "'Endzone Sans', 'Futura', 'Arial Black', sans-serif", fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', fontStyle: 'normal' }}>NFL</span>
-            <span className={styles.logo} style={{ fontFamily: "'Bebas Neue', 'Impact', sans-serif", fontWeight: 400, letterSpacing: '0.08em', textTransform: 'uppercase', fontStyle: 'normal', fontSize: '1.4rem' }}>Netflix</span>
-            <span className={styles.logo} style={{ fontFamily: "'Helvetica Neue', 'Arial', sans-serif", fontWeight: 700, letterSpacing: '0.02em', textTransform: 'uppercase', fontStyle: 'normal', fontSize: '0.95rem' }}>L'Oréal</span>
-            <span className={styles.logo} style={{ fontFamily: "'Escrow', 'Georgia', serif", fontWeight: 700, letterSpacing: '0.02em', fontStyle: 'italic', fontSize: '1.05rem' }}>Dow Jones</span>
-            <span className={styles.logo} style={{ fontFamily: "'Chomsky', 'Georgia', 'Times New Roman', serif", fontWeight: 400, letterSpacing: '0', fontStyle: 'normal', fontSize: '1.15rem' }}>Fortune</span>
+            <span className={`${styles.logo} ${styles.logoDisney}`}>Disney</span>
+            <span className={`${styles.logo} ${styles.logoBetterment}`}>betterment</span>
+            <span className={`${styles.logo} ${styles.logoNfl}`}>NFL</span>
+            <span className={`${styles.logo} ${styles.logoNetflix}`}>NETFLIX</span>
+            <span className={`${styles.logo} ${styles.logoLoreal}`}>L'ORÉAL</span>
+            <span className={`${styles.logo} ${styles.logoDowjones}`}>Dow Jones</span>
+            <span className={`${styles.logo} ${styles.logoFortune}`}>FORTUNE</span>
           </div>
         </div>
       </section>
