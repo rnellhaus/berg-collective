@@ -30,6 +30,9 @@ router.get('/', (req, res) => {
   if (status) {
     query += ' AND e.status = ?';
     params.push(status);
+  } else {
+    // By default, exclude drafts from public listings
+    query += " AND e.status != 'draft'";
   }
   if (chapter) {
     query += ' AND e.chapter = ?';

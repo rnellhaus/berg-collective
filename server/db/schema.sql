@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS events (
   rsvp_url TEXT DEFAULT '',
   rsvp_event_id TEXT DEFAULT '',
   is_featured INTEGER NOT NULL DEFAULT 0,
-  status TEXT NOT NULL DEFAULT 'upcoming' CHECK(status IN ('upcoming', 'past')),
+  status TEXT NOT NULL DEFAULT 'draft' CHECK(status IN ('draft', 'upcoming', 'past')),
   created_at TEXT NOT NULL DEFAULT (datetime('now')),
   updated_by INTEGER REFERENCES users(id)
 );

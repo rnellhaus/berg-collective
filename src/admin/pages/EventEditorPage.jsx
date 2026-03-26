@@ -166,7 +166,7 @@ const EMPTY_FORM = {
   location: '',
   category: '',
   chapter: '',
-  status: 'upcoming',
+  status: 'draft',
   is_featured: false,
   cover_image_id: null,
   rsvp_platform: 'luma',
@@ -414,7 +414,7 @@ export default function EventEditorPage() {
           <div className={styles.fieldGroup}>
             <label className={styles.label}>Status</label>
             <div className={styles.toggleGroup}>
-              {['upcoming', 'past'].map((s) => (
+              {['draft', 'upcoming', 'past'].map((s) => (
                 <button
                   key={s}
                   type="button"

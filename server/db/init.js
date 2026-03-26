@@ -34,5 +34,39 @@ export function initDatabase() {
     console.log('Created default admin user: rich@bergcollective.org');
   }
 
+  // Migration: add 'draft' to events status CHECK constraint
+  // SQLite can't ALTER CHECK constraints, so we recreate the table if needed
+  try {
+    db.prepare("INSERT INTO events (title, date, status) VALUES ('__test__', '2000-01-01', 'draft')").run();
+    db.prepare("DELETE FROM events WHERE title = '__test__'").run();
+  } catch {
+    // CHECK constraint failed — need to migrate
+    console.log('Migrating events table to support draft status...');
+    db.exec(`
+      CREATE TABLE events_new (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT NOT NULL,
+        description TEXT DEFAULT '',
+        date TEXT NOT NULL,
+        time TEXT DEFAULT '',
+        location TEXT DEFAULT '',
+        category TEXT DEFAULT '',
+        chapter TEXT DEFAULT '',
+        cover_image_id INTEGER REFERENCES media(id),
+        rsvp_platform TEXT DEFAULT 'custom',
+        rsvp_url TEXT DEFAULT '',
+        rsvp_event_id TEXT DEFAULT '',
+        is_featured INTEGER NOT NULL DEFAULT 0,
+        status TEXT NOT NULL DEFAULT 'draft' CHECK(status IN ('draft', 'upcoming', 'past')),
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        updated_by INTEGER REFERENCES users(id)
+      );
+      INSERT INTO events_new SELECT * FROM events;
+      DROP TABLE events;
+      ALTER TABLE events_new RENAME TO events;
+    `);
+    console.log('Events table migrated.');
+  }
+
   console.log('Database initialized');
 }

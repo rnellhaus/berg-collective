@@ -160,6 +160,7 @@ export default function EventsListPage() {
   const { apiFetch } = useApi();
   const navigate = useNavigate();
   const [tab, setTab] = useState('upcoming');
+  const [drafts, setDrafts] = useState([]);
   const [upcoming, setUpcoming] = useState([]);
   const [past, setPast] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -170,14 +171,18 @@ export default function EventsListPage() {
     setLoading(true);
     setError(null);
     try {
-      const [upRes, pastRes] = await Promise.all([
+      const [draftRes, upRes, pastRes] = await Promise.all([
+        apiFetch('/api/events?status=draft'),
         apiFetch('/api/events?status=upcoming'),
         apiFetch('/api/events?status=past'),
       ]);
+      if (!draftRes.ok) throw new Error(`HTTP ${draftRes.status}`);
       if (!upRes.ok) throw new Error(`HTTP ${upRes.status}`);
       if (!pastRes.ok) throw new Error(`HTTP ${pastRes.status}`);
+      const draftData = await draftRes.json();
       const upData = await upRes.json();
       const pastData = await pastRes.json();
+      setDrafts(Array.isArray(draftData) ? draftData : draftData.events ?? []);
       setUpcoming(Array.isArray(upData) ? upData : upData.events ?? []);
       setPast(Array.isArray(pastData) ? pastData : pastData.events ?? []);
     } catch (err) {
@@ -206,7 +211,7 @@ export default function EventsListPage() {
     }
   }
 
-  const events = tab === 'upcoming' ? upcoming : past;
+  const events = tab === 'draft' ? drafts : tab === 'upcoming' ? upcoming : past;
 
   return (
     <div style={containerStyle}>
@@ -218,6 +223,12 @@ export default function EventsListPage() {
       </div>
 
       <div style={tabBarStyle}>
+        <TabButton
+          label="Drafts"
+          count={drafts.length}
+          active={tab === 'draft'}
+          onClick={() => setTab('draft')}
+        />
         <TabButton
           label="Upcoming"
           count={upcoming.length}
