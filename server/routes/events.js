@@ -5,11 +5,36 @@ import { requireRole } from '../middleware/roles.js';
 
 const router = Router();
 
-function getRsvpStrategy(platform) {
+// Domains known to block iframe embedding via X-Frame-Options / CSP
+const IFRAME_BLOCKED_DOMAINS = [
+  'eventbrite.com',
+  'ticketapp.org',
+  'ticketmaster.com',
+  'axs.com',
+  'dice.fm',
+  'seetickets.com',
+  'stubhub.com',
+  'universe.com',
+  'splash.events',
+  'partiful.com',
+];
+
+function getRsvpStrategy(platform, rsvpUrl) {
   if (!platform) return 'external';
   const p = platform.toLowerCase();
   if (p === 'luma') return 'overlay';
   if (p === 'eventbrite') return 'external';
+
+  // Check if the URL domain is known to block iframes
+  if (rsvpUrl) {
+    try {
+      const hostname = new URL(rsvpUrl).hostname.toLowerCase();
+      if (IFRAME_BLOCKED_DOMAINS.some(d => hostname.includes(d))) {
+        return 'external';
+      }
+    } catch {}
+  }
+
   return 'iframe';
 }
 
@@ -45,7 +70,7 @@ router.get('/', (req, res) => {
 
   const enriched = events.map((event) => ({
     ...event,
-    rsvp_strategy: getRsvpStrategy(event.rsvp_platform),
+    rsvp_strategy: getRsvpStrategy(event.rsvp_platform, event.rsvp_url),
   }));
 
   res.json({ events: enriched });
@@ -74,7 +99,7 @@ router.get('/:id', (req, res) => {
     ORDER BY ep.sort_order
   `).all(req.params.id);
 
-  res.json({ event: { ...event, rsvp_strategy: getRsvpStrategy(event.rsvp_platform), photos } });
+  res.json({ event: { ...event, rsvp_strategy: getRsvpStrategy(event.rsvp_platform, event.rsvp_url), photos } });
 });
 
 // POST / — Create event (auth)
@@ -161,7 +186,7 @@ router.put('/:id', verifyToken, (req, res) => {
   );
 
   const updated = db.prepare('SELECT * FROM events WHERE id = ?').get(req.params.id);
-  res.json({ event: { ...updated, rsvp_strategy: getRsvpStrategy(updated.rsvp_platform) } });
+  res.json({ event: { ...updated, rsvp_strategy: getRsvpStrategy(updated.rsvp_platform, updated.rsvp_url) } });
 });
 
 // POST /:id/duplicate — Duplicate event (auth)
@@ -202,7 +227,7 @@ router.post('/:id/duplicate', verifyToken, (req, res) => {
   }
 
   const newEvent = db.prepare('SELECT * FROM events WHERE id = ?').get(newId);
-  res.status(201).json({ event: { ...newEvent, rsvp_strategy: getRsvpStrategy(newEvent.rsvp_platform) } });
+  res.status(201).json({ event: { ...newEvent, rsvp_strategy: getRsvpStrategy(newEvent.rsvp_platform, newEvent.rsvp_url) } });
 });
 
 // DELETE /:id — Delete event (admin only)

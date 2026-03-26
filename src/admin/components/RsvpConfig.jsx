@@ -7,10 +7,29 @@ const PLATFORMS = [
 
 const STRATEGY_INFO = {
   luma: 'Native checkout overlay — best UX',
-  eventbrite: 'Opens in new tab',
+  eventbrite: 'Opens in new tab (Eventbrite blocks iframes)',
   google_form: 'Iframe lightbox on your site',
   custom: 'Iframe lightbox on your site',
 };
+
+// Domains that block iframe embedding
+const BLOCKED_DOMAINS = [
+  'eventbrite.com', 'ticketapp.org', 'ticketmaster.com', 'axs.com',
+  'dice.fm', 'seetickets.com', 'stubhub.com', 'partiful.com',
+];
+
+function getStrategyHint(platform, url) {
+  const base = STRATEGY_INFO[platform] || 'Opens in new tab';
+  if (platform === 'custom' && url) {
+    try {
+      const hostname = new URL(url).hostname.toLowerCase();
+      if (BLOCKED_DOMAINS.some(d => hostname.includes(d))) {
+        return `Opens in new tab — ${hostname} blocks iframe embedding`;
+      }
+    } catch {}
+  }
+  return base;
+}
 
 const containerStyle = {
   border: '1px solid #e8e1da',
@@ -145,7 +164,7 @@ export default function RsvpConfig({ platform, url, eventId, onChange }) {
       {activePlatform && (
         <div style={infoBoxStyle}>
           <span style={{ fontSize: '1rem' }}>ℹ</span>
-          {STRATEGY_INFO[activePlatform]}
+          {getStrategyHint(activePlatform, url)}
         </div>
       )}
     </div>
