@@ -4,14 +4,6 @@ import styles from './ChaptersPage.module.css';
 import usePageMeta from '../../hooks/usePageMeta';
 
 const chapters = {
-  atlanta: {
-    name: 'Atlanta, GA',
-    focus: 'Entrepreneurship & Culture',
-    members: '2,500',
-    leaders: 'Marcus T. & Sarah J.',
-    event: 'Spring Networking Mixer',
-    eventDate: 'Mar 12',
-  },
   nyc: {
     name: 'New York City',
     focus: 'Finance & Media',
@@ -28,26 +20,16 @@ const chapters = {
     event: 'Tech & Entertainment Mixer',
     eventDate: 'Mar 25',
   },
-  dc: {
-    name: 'Washington, DC',
-    focus: 'Policy & Government',
-    members: '1,800',
-    leaders: 'Angela W. & David K.',
-    event: 'Policy Leadership Forum',
-    eventDate: 'Apr 05',
-  },
 };
 
 const cityList = [
-  { key: 'atlanta', label: 'Atlanta, GA' },
   { key: 'nyc', label: 'New York City' },
   { key: 'la', label: 'Los Angeles, CA' },
-  { key: 'dc', label: 'Washington, DC' },
 ];
 
 export default function ChaptersPage() {
   usePageMeta('Chapters', 'Find a BERG Collective chapter near you.');
-  const [selectedCity, setSelectedCity] = useState('atlanta');
+  const [selectedCity, setSelectedCity] = useState('nyc');
   const chapter = chapters[selectedCity];
 
   return (
@@ -72,8 +54,8 @@ export default function ChaptersPage() {
             </div>
             <div className={styles.statsRow}>
               <div className={styles.stat}>
-                <span className={styles.statNumber}>12</span>
-                <span className={styles.statLabel}>Active Hubs</span>
+                <span className={styles.statNumber}>2</span>
+                <span className={styles.statLabel}>Active Chapters</span>
               </div>
               <div className={styles.statDivider} />
               <div className={styles.stat}>
