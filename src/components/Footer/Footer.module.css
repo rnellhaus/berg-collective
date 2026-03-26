@@ -1,0 +1,102 @@
+.footer {
+  background: #000000;
+  color: #ffffff;
+  padding: 80px 24px 40px;
+}
+
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 35% 20% 20% 25%;
+  gap: 48px;
+}
+
+.brandText {
+  color: #999999;
+  font-size: 15px;
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+
+.social {
+  display: flex;
+  gap: 16px;
+}
+
+.social a {
+  color: #ffffff;
+  transition: color 0.2s ease;
+}
+
+.social a:hover {
+  color: #B59410;
+}
+
+.navColumn h4 {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 20px;
+}
+
+.navColumn a {
+  display: block;
+  color: #999999;
+  font-size: 15px;
+  line-height: 2.2;
+  transition: color 0.2s ease;
+}
+
+.navColumn a:hover {
+  color: #B59410;
+}
+
+.bottom {
+  border-top: 1px solid #333333;
+  margin-top: 48px;
+  padding-top: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.bottom p {
+  color: #666666;
+  font-size: 14px;
+}
+
+.bottomLinks {
+  display: flex;
+  gap: 24px;
+}
+
+.bottomLinks a {
+  color: #666666;
+  font-size: 14px;
+  transition: color 0.2s ease;
+}
+
+.bottomLinks a:hover {
+  color: #B59410;
+}
+
+@media (max-width: 1024px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+}
+
+@media (max-width: 640px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
