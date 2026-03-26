@@ -251,7 +251,7 @@ export default function EventsPage() {
                       <div className={styles.expandedPanel}>
                         {/* Description */}
                         {event.description && (
-                          <p className={styles.expandedDesc}>{event.description}</p>
+                          <p className={styles.expandedDesc} style={{ whiteSpace: 'pre-line' }}>{event.description}</p>
                         )}
 
                         {/* Cover image / flyer */}

@@ -164,30 +164,47 @@ export default function EventsListPage() {
   const [past, setPast] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [duplicating, setDuplicating] = useState(null);
+
+  async function loadEvents() {
+    setLoading(true);
+    setError(null);
+    try {
+      const [upRes, pastRes] = await Promise.all([
+        apiFetch('/api/events?status=upcoming'),
+        apiFetch('/api/events?status=past'),
+      ]);
+      if (!upRes.ok) throw new Error(`HTTP ${upRes.status}`);
+      if (!pastRes.ok) throw new Error(`HTTP ${pastRes.status}`);
+      const upData = await upRes.json();
+      const pastData = await pastRes.json();
+      setUpcoming(Array.isArray(upData) ? upData : upData.events ?? []);
+      setPast(Array.isArray(pastData) ? pastData : pastData.events ?? []);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
-    async function load() {
-      setLoading(true);
-      setError(null);
-      try {
-        const [upRes, pastRes] = await Promise.all([
-          apiFetch('/api/events?status=upcoming'),
-          apiFetch('/api/events?status=past'),
-        ]);
-        if (!upRes.ok) throw new Error(`HTTP ${upRes.status}`);
-        if (!pastRes.ok) throw new Error(`HTTP ${pastRes.status}`);
-        const upData = await upRes.json();
-        const pastData = await pastRes.json();
-        setUpcoming(Array.isArray(upData) ? upData : upData.events ?? []);
-        setPast(Array.isArray(pastData) ? pastData : pastData.events ?? []);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }
-    load();
+    loadEvents();
   }, [apiFetch]);
+
+  async function handleDuplicate(eventId) {
+    setDuplicating(eventId);
+    try {
+      const res = await apiFetch(`/api/events/${eventId}/duplicate`, { method: 'POST' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      await loadEvents();
+      navigate(`/admin/events/${data.event.id}`);
+    } catch (err) {
+      setError('Failed to duplicate: ' + err.message);
+    } finally {
+      setDuplicating(null);
+    }
+  }
 
   const events = tab === 'upcoming' ? upcoming : past;
 
@@ -275,9 +292,28 @@ export default function EventsListPage() {
                 )}
               </div>
 
-              <Link to={`/admin/events/${event.id}`} style={editLinkStyle}>
-                Edit →
-              </Link>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginLeft: 'auto', whiteSpace: 'nowrap' }}>
+                <button
+                  onClick={() => handleDuplicate(event.id)}
+                  disabled={duplicating === event.id}
+                  style={{
+                    padding: '4px 10px',
+                    border: '1px solid #e8e1da',
+                    borderRadius: '6px',
+                    background: '#fff',
+                    color: '#8e5f57',
+                    fontSize: '0.8rem',
+                    fontWeight: '600',
+                    cursor: 'pointer',
+                  }}
+                  title="Duplicate this event"
+                >
+                  {duplicating === event.id ? '...' : 'Duplicate'}
+                </button>
+                <Link to={`/admin/events/${event.id}`} style={editLinkStyle}>
+                  Edit →
+                </Link>
+              </div>
             </div>
           ))}
         </div>

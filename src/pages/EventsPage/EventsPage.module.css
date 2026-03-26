@@ -162,6 +162,7 @@
   color: #8e5f57;
   line-height: 1.7;
   margin: 0 0 24px;
+  white-space: pre-line;
 }
 
 .featuredMeta {
@@ -380,6 +381,7 @@
   color: #8e5f57;
   line-height: 1.7;
   margin: 0;
+  white-space: pre-line;
 }
 
 .expandedFlyer {

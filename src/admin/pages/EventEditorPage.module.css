@@ -311,6 +311,11 @@
   border-color: #8b3223;
 }
 
+.pickerThumbSelected {
+  border-color: #8b3223;
+  box-shadow: 0 0 0 2px #8b3223;
+}
+
 /* Actions */
 .actions {
   display: flex;

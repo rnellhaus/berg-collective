@@ -161,6 +161,47 @@ router.put('/:id', verifyToken, (req, res) => {
   res.json({ event: { ...updated, rsvp_strategy: getRsvpStrategy(updated.rsvp_platform) } });
 });
 
+// POST /:id/duplicate — Duplicate event (auth)
+router.post('/:id/duplicate', verifyToken, (req, res) => {
+  const db = getDb();
+  const event = db.prepare('SELECT * FROM events WHERE id = ?').get(req.params.id);
+  if (!event) return res.status(404).json({ error: 'Event not found' });
+
+  const result = db.prepare(`
+    INSERT INTO events (
+      title, date, time, location, description, category, chapter,
+      rsvp_url, rsvp_platform, rsvp_event_id, cover_image_id, is_featured, status, updated_by
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `).run(
+    `${event.title} (Copy)`,
+    event.date,
+    event.time,
+    event.location,
+    event.description,
+    event.category,
+    event.chapter,
+    event.rsvp_url,
+    event.rsvp_platform,
+    event.rsvp_event_id,
+    event.cover_image_id,
+    0, // not featured
+    event.status,
+    req.user.id
+  );
+
+  const newId = result.lastInsertRowid;
+
+  // Copy photo associations
+  const photos = db.prepare('SELECT media_id, caption, sort_order FROM event_photos WHERE event_id = ?').all(req.params.id);
+  const insertPhoto = db.prepare('INSERT INTO event_photos (event_id, media_id, caption, sort_order) VALUES (?, ?, ?, ?)');
+  for (const photo of photos) {
+    insertPhoto.run(newId, photo.media_id, photo.caption, photo.sort_order);
+  }
+
+  const newEvent = db.prepare('SELECT * FROM events WHERE id = ?').get(newId);
+  res.status(201).json({ event: { ...newEvent, rsvp_strategy: getRsvpStrategy(newEvent.rsvp_platform) } });
+});
+
 // DELETE /:id — Delete event (admin only)
 router.delete('/:id', verifyToken, requireRole('admin'), (req, res) => {
   const db = getDb();

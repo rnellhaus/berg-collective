@@ -14,22 +14,27 @@ const CHAPTERS = [
   { value: 'dc', label: 'Washington D.C.' },
 ];
 
+function getThumbUrl(item) {
+  if (item.webp_thumb) return `/api/media/file/thumb/${item.webp_thumb.split('/').pop()}`;
+  if (item.webp_medium) return `/api/media/file/medium/${item.webp_medium.split('/').pop()}`;
+  return null;
+}
+
 function CoverImagePicker({ value, onChange, apiFetch }) {
   const [showPicker, setShowPicker] = useState(false);
   const [mediaItems, setMediaItems] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
 
-  async function openPicker() {
-    setShowPicker(true);
-    if (mediaItems.length > 0) return;
+  async function loadMedia() {
     setLoading(true);
     setError(null);
     try {
       const res = await apiFetch('/api/media');
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      setMediaItems(Array.isArray(data) ? data : data.items ?? []);
+      setMediaItems(data.media || []);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -37,22 +42,62 @@ function CoverImagePicker({ value, onChange, apiFetch }) {
     }
   }
 
+  async function openPicker() {
+    setShowPicker(true);
+    loadMedia();
+  }
+
   function selectImage(item) {
     onChange(item);
     setShowPicker(false);
   }
 
+  async function handleUpload(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('category', 'event');
+      const res = await fetch('/api/media/upload', {
+        method: 'POST',
+        credentials: 'include',
+        body: formData,
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      // Select the newly uploaded image
+      selectImage(data.media);
+      // Refresh the grid
+      loadMedia();
+    } catch (err) {
+      setError('Upload failed: ' + err.message);
+    } finally {
+      setUploading(false);
+      e.target.value = '';
+    }
+  }
+
+  const thumbUrl = value ? getThumbUrl(value) : null;
+
   return (
     <div>
       <div className={styles.coverRow}>
-        {value ? (
-          <img src={value.url || value.thumbnail_url} alt="Cover" className={styles.coverThumb} />
+        {thumbUrl ? (
+          <img src={thumbUrl} alt="Cover" className={styles.coverThumb} />
+        ) : value ? (
+          <div className={styles.coverPlaceholder} style={{ background: '#f0ebe6', color: '#8e5f57', fontSize: '12px' }}>Image selected (ID: {value.id})</div>
         ) : (
           <div className={styles.coverPlaceholder}>No image selected</div>
         )}
         <button type="button" className={styles.chooseCoverBtn} onClick={openPicker}>
-          Choose Image
+          Choose from Library
         </button>
+        <label className={styles.chooseCoverBtn} style={{ cursor: 'pointer' }}>
+          {uploading ? 'Uploading…' : 'Upload New'}
+          <input type="file" accept="image/*" onChange={handleUpload} style={{ display: 'none' }} disabled={uploading} />
+        </label>
         {value && (
           <button type="button" className={styles.removeCoverBtn} onClick={() => onChange(null)}>
             Remove
@@ -64,28 +109,44 @@ function CoverImagePicker({ value, onChange, apiFetch }) {
         <div className={styles.modalOverlay} onClick={() => setShowPicker(false)}>
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
-              <h3 className={styles.modalTitle}>Choose Cover Image</h3>
+              <h3 className={styles.modalTitle}>Choose Image</h3>
               <button className={styles.modalClose} type="button" onClick={() => setShowPicker(false)}>
                 ✕
               </button>
             </div>
+            <div style={{ padding: '0 20px 12px', display: 'flex', gap: '8px' }}>
+              <label style={{
+                padding: '8px 16px', background: '#8b3223', color: '#fff', borderRadius: '8px',
+                fontSize: '13px', fontWeight: '600', cursor: 'pointer',
+              }}>
+                {uploading ? 'Uploading…' : 'Upload New Image'}
+                <input type="file" accept="image/*" onChange={handleUpload} style={{ display: 'none' }} disabled={uploading} />
+              </label>
+            </div>
             {loading && <p className={styles.stateMsg}>Loading media…</p>}
-            {error && <p className={styles.errorMsg}>Failed to load media: {error}</p>}
+            {error && <p className={styles.errorMsg}>{error}</p>}
             {!loading && !error && mediaItems.length === 0 && (
-              <p className={styles.stateMsg}>No media found.</p>
+              <p className={styles.stateMsg}>No media found. Upload an image to get started.</p>
             )}
             {!loading && !error && mediaItems.length > 0 && (
               <div className={styles.pickerGrid}>
-                {mediaItems.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    className={styles.pickerThumb}
-                    onClick={() => selectImage(item)}
-                  >
-                    <img src={item.url || item.thumbnail_url} alt={item.filename || ''} />
-                  </button>
-                ))}
+                {mediaItems.map((item) => {
+                  const src = getThumbUrl(item);
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      className={`${styles.pickerThumb} ${value && value.id === item.id ? styles.pickerThumbSelected : ''}`}
+                      onClick={() => selectImage(item)}
+                    >
+                      {src ? (
+                        <img src={src} alt={item.filename || ''} />
+                      ) : (
+                        <span style={{ fontSize: '10px', color: '#8e5f57' }}>{item.filename}</span>
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
