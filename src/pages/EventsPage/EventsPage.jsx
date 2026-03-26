@@ -20,6 +20,12 @@ function parseDateFull(isoDate) {
   return `${MONTH_FULL[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
 }
 
+function coverUrl(path) {
+  if (!path) return null;
+  if (path.startsWith('/') || path.startsWith('http')) return path;
+  return `/api/media/file/${path}`;
+}
+
 const FILTERS = [
   { label: 'All', value: 'all' },
   { label: 'NYC', value: 'nyc' },
@@ -144,8 +150,8 @@ export default function EventsPage() {
             <div
               className={styles.featuredImageArea}
               style={
-                featuredEvent.cover_image_url
-                  ? { backgroundImage: `url(${featuredEvent.cover_image_url})` }
+                coverUrl(featuredEvent.cover_image_url)
+                  ? { backgroundImage: `url(${coverUrl(featuredEvent.cover_image_url)})` }
                   : {}
               }
             >
@@ -255,9 +261,9 @@ export default function EventsPage() {
                         )}
 
                         {/* Cover image / flyer */}
-                        {event.cover_image_url && (
+                        {coverUrl(event.cover_image_url) && (
                           <div className={styles.expandedFlyer}>
-                            <img src={event.cover_image_url} alt={`${event.title} flyer`} />
+                            <img src={coverUrl(event.cover_image_url)} alt={`${event.title} flyer`} />
                           </div>
                         )}
 
@@ -339,14 +345,14 @@ export default function EventsPage() {
                 return (
                   <div key={event.id} className={`${styles.pastCard} ${isExpanded ? styles.pastCardExpanded : ''}`}>
                     {/* Cover image / flyer at top if available */}
-                    {event.cover_image_url && (
+                    {coverUrl(event.cover_image_url) && (
                       <div className={styles.pastCardCover}>
-                        <img src={event.cover_image_url} alt={event.title} />
+                        <img src={coverUrl(event.cover_image_url)} alt={event.title} />
                       </div>
                     )}
 
                     {/* Photo strip preview (if no cover but has photos) */}
-                    {!event.cover_image_url && event.photo_count > 0 && (
+                    {!coverUrl(event.cover_image_url) && event.photo_count > 0 && (
                       <div className={styles.photoStrip}>
                         <div className={styles.photoThumbWide}>
                           <div className={styles.photoThumbPlaceholder} />
