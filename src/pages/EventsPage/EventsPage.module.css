@@ -1,26 +1,21 @@
 /* ===== EventsPage ===== */
 
-/* Hero */
+/* Section 1: Compact Hero */
 .hero {
   background: #fbfaf9;
-  padding: 80px 24px;
+  padding: 48px 24px 32px;
+  text-align: center;
 }
 
 .heroInner {
-  max-width: 1100px;
+  max-width: 680px;
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 64px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
 }
 
-.heroLeft {
-  display: flex;
-  flex-direction: column;
-}
-
-.badge {
+.heroBadge {
   display: inline-block;
   background: #F5EFDB;
   color: #B59410;
@@ -28,10 +23,9 @@
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  padding: 6px 16px;
+  padding: 6px 18px;
   border-radius: 20px;
   margin-bottom: 20px;
-  align-self: flex-start;
 }
 
 .heroTitle {
@@ -39,92 +33,30 @@
   font-weight: 800;
   color: #191110;
   line-height: 1.15;
-  margin: 0 0 20px;
+  margin: 0 0 16px;
 }
 
 .heroSubtitle {
   font-size: 17px;
   color: #8e5f57;
   line-height: 1.7;
-  margin: 0 0 32px;
+  margin: 0;
+  max-width: 560px;
 }
 
-.heroActions {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-}
-
-.heroRight {
+/* Section 2: Featured Event */
+.featured {
+  padding: 48px 24px 64px;
+  background: #fff;
   display: flex;
   justify-content: center;
 }
 
-.heroImageWrap {
-  position: relative;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 12px 40px rgba(25, 17, 16, 0.14);
-  width: 100%;
-  max-width: 480px;
-}
-
-.heroImage {
-  width: 100%;
-  height: 460px;
-  object-fit: cover;
-  display: block;
-}
-
-.floatingBadge {
-  position: absolute;
-  bottom: 24px;
-  right: 24px;
-  background: #fff;
-  border-radius: 12px;
-  padding: 12px 20px;
-  box-shadow: 0 4px 16px rgba(25, 17, 16, 0.12);
-}
-
-.floatingBadgeText {
-  font-size: 14px;
-  font-weight: 700;
-  color: #191110;
-}
-
-/* Featured Event */
-.featured {
-  padding: 80px 24px;
-  background: #fff;
-}
-
-.featuredHeader {
-  text-align: center;
-  margin-bottom: 48px;
-}
-
-.sectionEyebrow {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #8b3223;
-  margin: 0 0 10px;
-}
-
-.sectionTitle {
-  font-size: 32px;
-  font-weight: 800;
-  color: #191110;
-  margin: 0;
-}
-
 .featuredCard {
-  max-width: 1100px;
-  margin: 0 auto;
+  max-width: 900px;
+  width: 100%;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0;
+  grid-template-columns: 45% 55%;
   border-radius: 20px;
   overflow: hidden;
   border: 1px solid #e8e1da;
@@ -134,26 +66,68 @@
 .featuredImageArea {
   position: relative;
   background: linear-gradient(135deg, #2f2828 0%, #191110 100%);
-  min-height: 420px;
+  background-size: cover;
+  background-position: center;
+  min-height: 400px;
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
+  justify-content: space-between;
   padding: 24px;
 }
 
+.featuredImageOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(25, 17, 16, 0.3) 0%,
+    rgba(25, 17, 16, 0.0) 40%,
+    rgba(25, 17, 16, 0.7) 100%
+  );
+  border-radius: 0;
+  pointer-events: none;
+}
+
 .featuredBadge {
+  position: relative;
+  z-index: 1;
+  display: inline-block;
   background: #B59410;
   color: #fff;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  padding: 6px 14px;
+  padding: 5px 14px;
   border-radius: 20px;
+  align-self: flex-start;
+}
+
+.featuredImageBottom {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.featuredImageDate {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 500;
+}
+
+.featuredImageTitle {
+  font-size: 20px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+  line-height: 1.25;
 }
 
 .featuredContent {
   background: #fbfaf9;
-  padding: 48px 44px;
+  padding: 44px 40px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -164,21 +138,22 @@
   display: inline-block;
   background: #F5EFDB;
   color: #B59410;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 5px 14px;
+  padding: 5px 13px;
   border-radius: 20px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   align-self: flex-start;
+  white-space: nowrap;
 }
 
 .featuredTitle {
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 800;
   color: #191110;
-  margin: 0 0 16px;
+  margin: 0 0 14px;
   line-height: 1.2;
 }
 
@@ -186,71 +161,303 @@
   font-size: 15px;
   color: #8e5f57;
   line-height: 1.7;
-  margin: 0 0 28px;
+  margin: 0 0 24px;
 }
 
 .featuredMeta {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-bottom: 32px;
+  margin-bottom: 28px;
 }
 
 .metaItem {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   font-size: 14px;
   color: #191110;
   font-weight: 500;
 }
 
 .metaIcon {
-  font-size: 16px;
+  color: #8b3223;
+  flex-shrink: 0;
 }
 
-/* Lu.ma Calendar */
-.calendar {
-  padding: 80px 24px;
+/* Section 3: Upcoming Events */
+.upcoming {
+  background: #fff;
+  padding: 64px 24px;
+}
+
+.upcomingInner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.upcomingHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.sectionTitle {
+  font-size: 28px;
+  font-weight: 800;
+  color: #191110;
+  margin: 0;
+}
+
+.filterTabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filterTab {
+  background: none;
+  border: 1px solid #e8e1da;
+  border-radius: 20px;
+  padding: 6px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #8e5f57;
+  cursor: pointer;
+  transition: background 0.18s, color 0.18s, border-color 0.18s;
+}
+
+.filterTab:hover {
+  background: #F5EFDB;
+  color: #B59410;
+  border-color: #B59410;
+}
+
+.filterTabActive {
+  background: #8b3223;
+  border-color: #8b3223;
+  color: #fff;
+}
+
+.filterTabActive:hover {
+  background: #6b2419;
+  border-color: #6b2419;
+  color: #fff;
+}
+
+.loadingState,
+.emptyState {
+  text-align: center;
+  padding: 48px 24px;
+  font-size: 15px;
+  color: #8e5f57;
+}
+
+.eventsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border: 1px solid #e8e1da;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.eventRow {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e8e1da;
+  background: #fff;
+  transition: background 0.15s;
+}
+
+.eventRow:last-child {
+  border-bottom: none;
+}
+
+.eventRow:hover {
   background: #fbfaf9;
 }
 
-.calendarInner {
+.dateBadge {
+  flex-shrink: 0;
+  width: 54px;
+  height: 58px;
+  background: #8b3223;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+}
+
+.dateBadgeDay {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+}
+
+.dateBadgeMonth {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.82);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.eventRowInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.eventRowTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #191110;
+  margin: 0 0 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.eventRowMeta {
+  font-size: 13px;
+  color: #8e5f57;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.metaDot {
+  color: #e8e1da;
+}
+
+/* Section 4: Past Events */
+.past {
+  background: #fbfaf9;
+  padding: 64px 24px;
+}
+
+.pastInner {
   max-width: 1100px;
   margin: 0 auto;
 }
 
-.calendarHeader {
-  text-align: center;
+.pastHeader {
   margin-bottom: 40px;
 }
 
-.iframeWrap {
-  border-radius: 12px;
+.pastSubtitle {
+  font-size: 16px;
+  color: #8e5f57;
+  margin: 8px 0 0;
+}
+
+.pastGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+.pastCard {
+  background: #fff;
+  border: 1px solid #e8e1da;
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s;
+}
+
+.pastCard:hover {
+  box-shadow: 0 8px 24px rgba(25, 17, 16, 0.1);
+}
+
+.photoStrip {
+  display: flex;
+  gap: 3px;
+  height: 130px;
+  background: #2f2828;
+}
+
+.photoThumbWide {
+  flex: 2;
   overflow: hidden;
 }
 
-.calendarLink {
-  text-align: center;
-  margin-top: 24px;
+.photoThumb {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
 }
 
-.lumaLink {
-  font-size: 15px;
-  font-weight: 700;
-  color: #8b3223;
-  text-decoration: none;
-  display: inline-flex;
+.photoThumbPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #3d3030 0%, #2f2828 100%);
+}
+
+.photoThumbMore {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.photoThumbOverlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(25, 17, 16, 0.65);
+  display: flex;
   align-items: center;
-  gap: 6px;
-  transition: gap 0.2s ease;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 800;
+  color: #fff;
 }
 
-.lumaLink:hover {
-  gap: 10px;
+.pastCardBody {
+  padding: 20px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
 }
 
-/* CTA */
+.pastCardTitle {
+  font-size: 17px;
+  font-weight: 800;
+  color: #191110;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.pastCardMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 4px;
+}
+
+.pastCardDate,
+.pastCardLocation {
+  font-size: 13px;
+  color: #8e5f57;
+}
+
+.pastCardPhotoCount {
+  font-size: 12px;
+  font-weight: 600;
+  color: #B59410;
+}
+
+/* Section 5: CTA */
 .cta {
   background: linear-gradient(135deg, #8b3223 0%, #6b2419 100%);
   padding: 80px 24px;
@@ -278,16 +485,66 @@
 
 /* Responsive */
 @media (max-width: 768px) {
-  .heroInner,
+  .heroTitle {
+    font-size: 32px;
+  }
+
   .featuredCard {
     grid-template-columns: 1fr;
   }
 
-  .heroImage {
-    height: 300px;
+  .featuredImageArea {
+    min-height: 220px;
   }
 
-  .featuredImageArea {
-    min-height: 200px;
+  .featuredContent {
+    padding: 28px 24px;
+  }
+
+  .upcomingHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .eventRow {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px 16px;
+  }
+
+  .eventRowTitle {
+    white-space: normal;
+  }
+
+  .pastGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .ctaTitle {
+    font-size: 26px;
+  }
+}
+
+@media (max-width: 480px) {
+  .filterTabs {
+    gap: 6px;
+  }
+
+  .filterTab {
+    padding: 5px 14px;
+    font-size: 12px;
+  }
+
+  .eventRow {
+    gap: 10px;
+  }
+
+  .dateBadge {
+    width: 48px;
+    height: 52px;
+  }
+
+  .dateBadgeDay {
+    font-size: 19px;
   }
 }
