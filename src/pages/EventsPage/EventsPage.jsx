@@ -40,6 +40,8 @@ export default function EventsPage() {
   const [galleryTitle, setGalleryTitle] = useState('');
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [expandedId, setExpandedId] = useState(null);
+  const [expandedData, setExpandedData] = useState({});
 
   useEffect(() => {
     async function fetchEvents() {
@@ -71,6 +73,24 @@ export default function EventsPage() {
       if (s) s.remove();
     };
   }, []);
+
+  async function toggleExpand(event) {
+    if (expandedId === event.id) {
+      setExpandedId(null);
+      return;
+    }
+    setExpandedId(event.id);
+    // Fetch full event details if not cached
+    if (!expandedData[event.id]) {
+      try {
+        const res = await fetch(`/api/events/${event.id}`);
+        const data = await res.json();
+        setExpandedData(prev => ({ ...prev, [event.id]: data }));
+      } catch (err) {
+        console.error('Failed to fetch event details:', err);
+      }
+    }
+  }
 
   function openRsvp(event) {
     setRsvpEvent(event);
@@ -202,26 +222,95 @@ export default function EventsPage() {
             <div className={styles.eventsList}>
               {filteredUpcoming.map((event) => {
                 const { day, month } = parseDateBadge(event.date);
+                const isExpanded = expandedId === event.id;
+                const details = expandedData[event.id];
                 return (
-                  <div key={event.id} className={styles.eventRow}>
-                    <div className={styles.dateBadge}>
-                      <span className={styles.dateBadgeDay}>{day}</span>
-                      <span className={styles.dateBadgeMonth}>{month}</span>
+                  <div key={event.id} className={`${styles.eventRow} ${isExpanded ? styles.eventRowExpanded : ''}`}>
+                    <div className={styles.eventRowHeader} onClick={() => toggleExpand(event)}>
+                      <div className={styles.dateBadge}>
+                        <span className={styles.dateBadgeDay}>{day}</span>
+                        <span className={styles.dateBadgeMonth}>{month}</span>
+                      </div>
+                      <div className={styles.eventRowInfo}>
+                        <h3 className={styles.eventRowTitle}>{event.title}</h3>
+                        <p className={styles.eventRowMeta}>
+                          {event.location && <span>{event.location}</span>}
+                          {event.location && event.time && <span className={styles.metaDot}>·</span>}
+                          {event.time && <span>{event.time}</span>}
+                        </p>
+                      </div>
+                      {event.category && (
+                        <span className={styles.eventTag}>{event.category}</span>
+                      )}
+                      <span className={`${styles.expandIcon} ${isExpanded ? styles.expandIconOpen : ''}`}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                      </span>
                     </div>
-                    <div className={styles.eventRowInfo}>
-                      <h3 className={styles.eventRowTitle}>{event.title}</h3>
-                      <p className={styles.eventRowMeta}>
-                        {event.location && <span>{event.location}</span>}
-                        {event.location && event.time && <span className={styles.metaDot}>·</span>}
-                        {event.time && <span>{event.time}</span>}
-                      </p>
-                    </div>
-                    {event.category && (
-                      <span className={styles.eventTag}>{event.category}</span>
+
+                    {isExpanded && (
+                      <div className={styles.expandedPanel}>
+                        {/* Description */}
+                        {event.description && (
+                          <p className={styles.expandedDesc}>{event.description}</p>
+                        )}
+
+                        {/* Cover image / flyer */}
+                        {event.cover_image_url && (
+                          <div className={styles.expandedFlyer}>
+                            <img src={event.cover_image_url} alt={`${event.title} flyer`} />
+                          </div>
+                        )}
+
+                        {/* Event photos */}
+                        {details && details.photos && details.photos.length > 0 && (
+                          <div className={styles.expandedPhotos}>
+                            <p className={styles.expandedPhotosLabel}>Event Photos</p>
+                            <div className={styles.expandedPhotoGrid}>
+                              {details.photos.slice(0, 6).map((photo, idx) => (
+                                <div
+                                  key={photo.media_id || idx}
+                                  className={styles.expandedPhotoThumb}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setGalleryPhotos(details.photos);
+                                    setGalleryTitle(event.title);
+                                    setGalleryOpen(true);
+                                  }}
+                                >
+                                  <img
+                                    src={`/api/media/file/thumb/${photo.webp_thumb ? photo.webp_thumb.split('/').pop() : ''}`}
+                                    alt={photo.alt_text || photo.caption || event.title}
+                                    loading="lazy"
+                                  />
+                                  {idx === 5 && details.photos.length > 6 && (
+                                    <div className={styles.expandedPhotoMore}>+{details.photos.length - 6}</div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Details row with RSVP */}
+                        <div className={styles.expandedActions}>
+                          <div className={styles.expandedMeta}>
+                            <span className={styles.metaItem}>
+                              <svg className={styles.metaIcon} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                              {parseDateFull(event.date)}{event.time ? ` · ${event.time}` : ''}
+                            </span>
+                            {event.location && (
+                              <span className={styles.metaItem}>
+                                <svg className={styles.metaIcon} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                {event.location}
+                              </span>
+                            )}
+                          </div>
+                          <Button variant="primary" onClick={(e) => { e.stopPropagation(); openRsvp(event); }}>
+                            RSVP Now &rarr;
+                          </Button>
+                        </div>
+                      </div>
                     )}
-                    <Button variant="primary" onClick={() => openRsvp(event)}>
-                      RSVP
-                    </Button>
                   </div>
                 );
               })}
@@ -244,54 +333,115 @@ export default function EventsPage() {
             <div className={styles.emptyState}>No past events to display.</div>
           ) : (
             <div className={styles.pastGrid}>
-              {pastEvents.map((event) => (
-                <div key={event.id} className={styles.pastCard}>
-                  {event.photo_count > 0 && (
-                    <div className={styles.photoStrip}>
-                      {/* We show placeholder thumbs; actual thumbnails require pre-fetching */}
-                      <div className={styles.photoThumbWide}>
-                        <div className={styles.photoThumbPlaceholder} />
+              {pastEvents.map((event) => {
+                const isExpanded = expandedId === event.id;
+                const details = expandedData[event.id];
+                return (
+                  <div key={event.id} className={`${styles.pastCard} ${isExpanded ? styles.pastCardExpanded : ''}`}>
+                    {/* Cover image / flyer at top if available */}
+                    {event.cover_image_url && (
+                      <div className={styles.pastCardCover}>
+                        <img src={event.cover_image_url} alt={event.title} />
                       </div>
-                      <div className={styles.photoThumb}>
-                        <div className={styles.photoThumbPlaceholder} />
-                      </div>
-                      <div className={styles.photoThumb}>
-                        {event.photo_count > 3 ? (
-                          <div className={styles.photoThumbMore}>
-                            <div className={styles.photoThumbPlaceholder} />
-                            <div className={styles.photoThumbOverlay}>
-                              +{event.photo_count - 3}
-                            </div>
-                          </div>
-                        ) : (
+                    )}
+
+                    {/* Photo strip preview (if no cover but has photos) */}
+                    {!event.cover_image_url && event.photo_count > 0 && (
+                      <div className={styles.photoStrip}>
+                        <div className={styles.photoThumbWide}>
                           <div className={styles.photoThumbPlaceholder} />
+                        </div>
+                        <div className={styles.photoThumb}>
+                          <div className={styles.photoThumbPlaceholder} />
+                        </div>
+                        <div className={styles.photoThumb}>
+                          {event.photo_count > 3 ? (
+                            <div className={styles.photoThumbMore}>
+                              <div className={styles.photoThumbPlaceholder} />
+                              <div className={styles.photoThumbOverlay}>
+                                +{event.photo_count - 3}
+                              </div>
+                            </div>
+                          ) : (
+                            <div className={styles.photoThumbPlaceholder} />
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    <div className={styles.pastCardBody}>
+                      {/* Clickable title */}
+                      <div className={styles.pastCardTitleRow} onClick={() => toggleExpand(event)}>
+                        <h3 className={styles.pastCardTitle}>{event.title}</h3>
+                        <span className={`${styles.expandIcon} ${isExpanded ? styles.expandIconOpen : ''}`}>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                        </span>
+                      </div>
+
+                      <div className={styles.pastCardMeta}>
+                        {event.date && <span className={styles.pastCardDate}>{parseDateFull(event.date)}</span>}
+                        {event.location && <span className={styles.pastCardLocation}>{event.location}</span>}
+                        {event.photo_count > 0 && (
+                          <span className={styles.pastCardPhotoCount}>
+                            {event.photo_count} {event.photo_count === 1 ? 'photo' : 'photos'}
+                          </span>
                         )}
                       </div>
+
+                      {/* Expanded detail panel */}
+                      {isExpanded && (
+                        <div className={styles.pastExpandedPanel}>
+                          {event.description && (
+                            <p className={styles.expandedDesc}>{event.description}</p>
+                          )}
+
+                          {/* Photo gallery grid */}
+                          {details && details.photos && details.photos.length > 0 && (
+                            <div className={styles.expandedPhotos}>
+                              <p className={styles.expandedPhotosLabel}>Event Photos & Lifestyle Shots</p>
+                              <div className={styles.expandedPhotoGrid}>
+                                {details.photos.slice(0, 8).map((photo, idx) => (
+                                  <div
+                                    key={photo.media_id || idx}
+                                    className={styles.expandedPhotoThumb}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setGalleryPhotos(details.photos);
+                                      setGalleryTitle(event.title);
+                                      setGalleryOpen(true);
+                                    }}
+                                  >
+                                    <img
+                                      src={`/api/media/file/thumb/${photo.webp_thumb ? photo.webp_thumb.split('/').pop() : ''}`}
+                                      alt={photo.alt_text || photo.caption || event.title}
+                                      loading="lazy"
+                                    />
+                                    {idx === 7 && details.photos.length > 8 && (
+                                      <div className={styles.expandedPhotoMore}>+{details.photos.length - 8}</div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {!details && (
+                            <p className={styles.expandedLoading}>Loading details...</p>
+                          )}
+
+                          <div className={styles.expandedActions}>
+                            {event.photo_count > 0 && (
+                              <Button variant="secondary" onClick={(e) => { e.stopPropagation(); openGallery(event.id, event.title); }}>
+                                View Full Gallery
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  )}
-                  <div className={styles.pastCardBody}>
-                    <h3 className={styles.pastCardTitle}>{event.title}</h3>
-                    <div className={styles.pastCardMeta}>
-                      {event.date && (
-                        <span className={styles.pastCardDate}>{parseDateFull(event.date)}</span>
-                      )}
-                      {event.location && (
-                        <span className={styles.pastCardLocation}>{event.location}</span>
-                      )}
-                      {event.photo_count > 0 && (
-                        <span className={styles.pastCardPhotoCount}>
-                          {event.photo_count} {event.photo_count === 1 ? 'photo' : 'photos'}
-                        </span>
-                      )}
-                    </div>
-                    {event.photo_count > 0 && (
-                      <Button variant="outline" onClick={() => openGallery(event.id, event.title)}>
-                        View Gallery
-                      </Button>
-                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
