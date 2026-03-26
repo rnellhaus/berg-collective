@@ -6,6 +6,10 @@ import AdminLayout from './components/AdminLayout';
 import DashboardPage from './pages/DashboardPage';
 import PagesListPage from './pages/PagesListPage';
 import PageEditorPage from './pages/PageEditorPage';
+import MediaLibraryPage from './pages/MediaLibraryPage';
+import UsersPage from './pages/UsersPage';
+import EventsListPage from './pages/EventsListPage';
+import EventEditorPage from './pages/EventEditorPage';
 
 function ComingSoon({ label }) {
   return (
@@ -48,11 +52,11 @@ function AdminRoutes() {
         <Route index element={<DashboardPage />} />
         <Route path="pages" element={<PagesListPage />} />
         <Route path="pages/:slug" element={<PageEditorPage />} />
-        <Route path="events" element={<ComingSoon label="Events" />} />
-        <Route path="events/new" element={<ComingSoon label="New event" />} />
-        <Route path="events/:id" element={<ComingSoon label="Event editor" />} />
-        <Route path="media" element={<ComingSoon label="Media Library" />} />
-        <Route path="users" element={<ComingSoon label="Users" />} />
+        <Route path="events" element={<EventsListPage />} />
+        <Route path="events/new" element={<EventEditorPage />} />
+        <Route path="events/:id" element={<EventEditorPage />} />
+        <Route path="media" element={<MediaLibraryPage />} />
+        <Route path="users" element={<UsersPage />} />
         <Route path="settings" element={<ComingSoon label="Settings" />} />
       </Route>
     </Routes>
