@@ -1,0 +1,316 @@
+.container {
+  border: 1px solid #e8e1da;
+  border-radius: 8px;
+  padding: 20px;
+  background: #ffffff;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.sectionLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8e5f57;
+}
+
+.addBtn {
+  padding: 7px 14px;
+  background: #8b3223;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.addBtn:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+.addBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.emptyMsg {
+  font-size: 0.875rem;
+  color: #8e5f57;
+  font-style: italic;
+  margin: 8px 0 0;
+}
+
+.errorMsg {
+  font-size: 0.85rem;
+  color: #8b3223;
+  margin-bottom: 12px;
+}
+
+.photoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 14px;
+}
+
+.photoCard {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.photoThumbWrap {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f5f1ee;
+}
+
+.photoThumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.removeBtn {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(139, 50, 35, 0.85);
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: background 0.15s;
+}
+
+.removeBtn:hover:not(:disabled) {
+  background: #8b3223;
+}
+
+.removeBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.photoControls {
+  display: flex;
+  gap: 4px;
+}
+
+.moveBtn {
+  flex: 1;
+  padding: 4px;
+  border: 1px solid #e8e1da;
+  border-radius: 4px;
+  background: #fbfaf9;
+  color: #8e5f57;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.moveBtn:hover:not(:disabled) {
+  background: #f5f1ee;
+  color: #191110;
+}
+
+.moveBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.captionInput {
+  width: 100%;
+  padding: 6px 8px;
+  border: 1px solid #e8e1da;
+  border-radius: 5px;
+  font-size: 0.775rem;
+  color: #191110;
+  background: #fbfaf9;
+  box-sizing: border-box;
+  outline: none;
+}
+
+.captionInput::placeholder {
+  color: #b9a9a5;
+}
+
+.captionInput:focus {
+  border-color: #8b3223;
+}
+
+/* Media Picker Modal */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(25, 17, 16, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal {
+  background: #ffffff;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 680px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid #e8e1da;
+}
+
+.modalTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #191110;
+  margin: 0;
+}
+
+.modalClose {
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #8e5f57;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 4px;
+  line-height: 1;
+}
+
+.modalClose:hover {
+  background: #f5f1ee;
+}
+
+.stateMsg {
+  padding: 24px 20px;
+  color: #8e5f57;
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+.mediaGrid {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 10px;
+}
+
+.mediaThumb {
+  position: relative;
+  aspect-ratio: 1;
+  border: 2px solid #e8e1da;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f5f1ee;
+  cursor: pointer;
+  padding: 0;
+  transition: border-color 0.15s;
+}
+
+.mediaThumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.mediaThumb:hover {
+  border-color: #8b3223;
+}
+
+.mediaThumbSelected {
+  border-color: #8b3223;
+  border-width: 2px;
+}
+
+.checkMark {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  background: #8b3223;
+  color: #ffffff;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 20px;
+  border-top: 1px solid #e8e1da;
+}
+
+.btnPrimary {
+  padding: 8px 18px;
+  background: #8b3223;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.btnPrimary:hover:not(:disabled) {
+  opacity: 0.88;
+}
+
+.btnPrimary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btnSecondary {
+  padding: 8px 18px;
+  background: #ffffff;
+  color: #8e5f57;
+  border: 1px solid #e8e1da;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btnSecondary:hover {
+  background: #f5f1ee;
+}

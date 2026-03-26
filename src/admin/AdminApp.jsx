@@ -4,6 +4,8 @@ import { useAuth } from './hooks/useAuth';
 import LoginPage from './pages/LoginPage';
 import AdminLayout from './components/AdminLayout';
 import DashboardPage from './pages/DashboardPage';
+import PagesListPage from './pages/PagesListPage';
+import PageEditorPage from './pages/PageEditorPage';
 
 function ComingSoon({ label }) {
   return (
@@ -44,8 +46,8 @@ function AdminRoutes() {
       <Route path="login" element={<LoginPage />} />
       <Route element={<AdminLayout />}>
         <Route index element={<DashboardPage />} />
-        <Route path="pages" element={<ComingSoon label="Pages" />} />
-        <Route path="pages/:slug" element={<ComingSoon label="Page editor" />} />
+        <Route path="pages" element={<PagesListPage />} />
+        <Route path="pages/:slug" element={<PageEditorPage />} />
         <Route path="events" element={<ComingSoon label="Events" />} />
         <Route path="events/new" element={<ComingSoon label="New event" />} />
         <Route path="events/:id" element={<ComingSoon label="Event editor" />} />

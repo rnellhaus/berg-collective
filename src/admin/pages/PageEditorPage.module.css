@@ -1,0 +1,194 @@
+.page {
+  max-width: 860px;
+  position: relative;
+  padding-bottom: 80px;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  color: #8e5f57;
+  margin-bottom: 20px;
+}
+
+.breadcrumbLink {
+  color: #8b3223;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.breadcrumbLink:hover {
+  text-decoration: underline;
+}
+
+.breadcrumbSep {
+  color: #c8b8b4;
+}
+
+.breadcrumbCurrent {
+  color: #191110;
+  font-weight: 600;
+}
+
+/* Header row */
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.heading {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #191110;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.previewBtn {
+  padding: 8px 16px;
+  background: #fff;
+  border: 1px solid #e8e1da;
+  border-radius: 6px;
+  color: #191110;
+  font-size: 0.875rem;
+  font-family: Epilogue, sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.previewBtn:hover {
+  border-color: #8b3223;
+  background: #fdf9f8;
+}
+
+.saveBtn {
+  padding: 8px 20px;
+  background: #8b3223;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.875rem;
+  font-family: Epilogue, sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.saveBtn:hover:not(:disabled) {
+  background: #6e2619;
+}
+
+.saveBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Section Tabs */
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #e8e1da;
+  padding-bottom: 0;
+}
+
+.tab {
+  position: relative;
+  padding: 8px 16px;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  font-family: Epilogue, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #8e5f57;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: #191110;
+}
+
+.tabActive {
+  color: #8b3223;
+  border-bottom-color: #8b3223;
+}
+
+.unsavedDot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #8b3223;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+/* Editor Card */
+.editorCard {
+  background: #fff;
+  border: 1px solid #e8e1da;
+  border-radius: 8px;
+  padding: 24px;
+}
+
+/* Status / error */
+.statusMsg {
+  color: #8e5f57;
+  font-style: italic;
+  font-size: 0.9rem;
+  margin-top: 32px;
+}
+
+.errorMsg {
+  color: #8b3223;
+  font-size: 0.9rem;
+  margin-top: 32px;
+}
+
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: 0 4px 16px rgba(25, 17, 16, 0.18);
+  z-index: 2000;
+  animation: fadeIn 0.2s ease;
+}
+
+.toastSuccess {
+  background: #1a3d2b;
+  color: #d4f0e0;
+}
+
+.toastError {
+  background: #8b3223;
+  color: #fde8e4;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
