@@ -7,11 +7,13 @@ import PhotoGalleryManager from '../components/PhotoGalleryManager';
 import styles from './EventEditorPage.module.css';
 
 const CATEGORIES = ['Networking', 'Finance', 'Workshop', 'Summit', 'Cultural'];
-const CHAPTERS = [
-  { value: 'atlanta', label: 'Atlanta' },
+const CITIES = [
   { value: 'nyc', label: 'New York City' },
   { value: 'la', label: 'Los Angeles' },
+  { value: 'atlanta', label: 'Atlanta' },
   { value: 'dc', label: 'Washington D.C.' },
+  { value: 'chicago', label: 'Chicago' },
+  { value: 'houston', label: 'Houston' },
 ];
 
 function getThumbUrl(item) {
@@ -186,6 +188,7 @@ export default function EventEditorPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [customCity, setCustomCity] = useState(false);
 
   const loadEvent = useCallback(async () => {
     setLoading(true);
@@ -212,6 +215,9 @@ export default function EventEditorPage() {
       });
       if (event.cover_image) setCoverImage(event.cover_image);
       setPhotos(event.photos || []);
+      if (event.chapter && !CITIES.some(c => c.value === event.chapter)) {
+        setCustomCity(true);
+      }
     } catch (err) {
       setError('Failed to load event: ' + err.message);
     } finally {
@@ -371,17 +377,37 @@ export default function EventEditorPage() {
               </select>
             </div>
             <div className={styles.fieldGroup}>
-              <label className={styles.label}>Chapter</label>
+              <label className={styles.label}>City</label>
               <select
                 className={styles.select}
-                value={form.chapter}
-                onChange={(e) => handleField('chapter', e.target.value)}
+                value={customCity ? '__custom__' : form.chapter}
+                onChange={(e) => {
+                  if (e.target.value === '__custom__') {
+                    setCustomCity(true);
+                    handleField('chapter', '');
+                  } else {
+                    setCustomCity(false);
+                    handleField('chapter', e.target.value);
+                  }
+                }}
               >
-                <option value="">— Select chapter —</option>
-                {CHAPTERS.map((c) => (
+                <option value="">— Select city —</option>
+                {CITIES.map((c) => (
                   <option key={c.value} value={c.value}>{c.label}</option>
                 ))}
+                <option value="__custom__">Other (type your own)</option>
               </select>
+              {customCity && (
+                <input
+                  type="text"
+                  className={styles.input}
+                  value={form.chapter}
+                  onChange={(e) => handleField('chapter', e.target.value)}
+                  placeholder="Enter city name, e.g. Miami"
+                  style={{ marginTop: '8px' }}
+                  autoFocus
+                />
+              )}
             </div>
           </div>
 

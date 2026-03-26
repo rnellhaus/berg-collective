@@ -33,13 +33,29 @@ function coverUrlFull(path) {
   return `/api/media/file/${path.replace(/^medium\//, 'full/')}`;
 }
 
-const FILTERS = [
-  { label: 'All', value: 'all' },
-  { label: 'NYC', value: 'nyc' },
-  { label: 'LA', value: 'la' },
-  { label: 'ATL', value: 'atlanta' },
-  { label: 'DC', value: 'dc' },
-];
+const CITY_LABELS = {
+  nyc: 'NYC',
+  la: 'LA',
+  atlanta: 'ATL',
+  dc: 'DC',
+  chicago: 'CHI',
+  houston: 'HOU',
+};
+
+function buildFilters(events) {
+  const cities = new Set();
+  for (const e of events) {
+    if (e.chapter) cities.add(e.chapter.toLowerCase());
+  }
+  const filters = [{ label: 'All', value: 'all' }];
+  for (const city of [...cities].sort()) {
+    filters.push({
+      label: CITY_LABELS[city] || city.charAt(0).toUpperCase() + city.slice(1),
+      value: city,
+    });
+  }
+  return filters;
+}
 
 export default function EventsPage() {
   usePageMeta('Events', 'Upcoming summits, workshops, and networking events.');
@@ -211,7 +227,7 @@ export default function EventsPage() {
           <div className={styles.upcomingHeader}>
             <h2 className={styles.sectionTitle}>Upcoming Events</h2>
             <div className={styles.filterTabs}>
-              {FILTERS.map((f) => (
+              {buildFilters(upcomingEvents).map((f) => (
                 <button
                   key={f.value}
                   className={`${styles.filterTab} ${activeFilter === f.value ? styles.filterTabActive : ''}`}
