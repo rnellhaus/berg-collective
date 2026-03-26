@@ -4,8 +4,10 @@ import SectionHeader from '../../components/SectionHeader/SectionHeader';
 import StatCard from '../../components/StatCard/StatCard';
 import ProgramCard from '../../components/ProgramCard/ProgramCard';
 import ChapterCard from '../../components/ChapterCard/ChapterCard';
+import usePageMeta from '../../hooks/usePageMeta';
 
 export default function HomePage() {
+  usePageMeta(null, 'A collective dedicated to elevating voices, fostering executive leadership, and building generational wealth for Black professionals.');
   return (
     <main>
       {/* Hero Section */}

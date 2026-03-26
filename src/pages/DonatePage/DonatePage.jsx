@@ -1,8 +1,10 @@
 import DonationWidget from '../../components/DonationWidget/DonationWidget';
 import Button from '../../components/Button/Button';
 import styles from './DonatePage.module.css';
+import usePageMeta from '../../hooks/usePageMeta';
 
 export default function DonatePage() {
+  usePageMeta('Donate', 'Support BERG Collective with a tax-deductible contribution.');
   return (
     <main className={styles.page}>
       {/* Hero */}

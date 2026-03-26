@@ -1,8 +1,10 @@
 import HeroBanner from '../../components/HeroBanner/HeroBanner';
 import Button from '../../components/Button/Button';
 import styles from './ProgramsPage.module.css';
+import usePageMeta from '../../hooks/usePageMeta';
 
 export default function ProgramsPage() {
+  usePageMeta('Programs', 'Leadership development, career growth, and cultural impact programs.');
   return (
     <main>
       {/* Hero */}

@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
 import Button from '../../components/Button/Button';
 import styles from './EventsPage.module.css';
+import usePageMeta from '../../hooks/usePageMeta';
 
 export default function EventsPage() {
+  usePageMeta('Events', 'Upcoming summits, workshops, and networking events.');
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://embed.lu.ma/checkout-button.js';

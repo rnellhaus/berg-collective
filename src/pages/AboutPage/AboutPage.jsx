@@ -1,8 +1,10 @@
 import styles from './AboutPage.module.css';
 import Button from '../../components/Button/Button';
 import SectionHeader from '../../components/SectionHeader/SectionHeader';
+import usePageMeta from '../../hooks/usePageMeta';
 
 export default function AboutPage() {
+  usePageMeta('About', 'Learn about BERG Collective\'s mission to empower Black professionals.');
   return (
     <main>
       {/* Hero Section */}

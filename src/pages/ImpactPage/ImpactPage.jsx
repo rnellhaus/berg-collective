@@ -3,8 +3,10 @@ import DonationWidget from '../../components/DonationWidget/DonationWidget';
 import DonutChart from '../../components/DonutChart/DonutChart';
 import Button from '../../components/Button/Button';
 import styles from './ImpactPage.module.css';
+import usePageMeta from '../../hooks/usePageMeta';
 
 export default function ImpactPage() {
+  usePageMeta('Impact', 'See how BERG Collective is driving change for Black professionals.');
   return (
     <main className={styles.page}>
       {/* Hero */}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Button from '../../components/Button/Button';
 import styles from './ContactPage.module.css';
+import usePageMeta from '../../hooks/usePageMeta';
 
 const subjects = [
   'General Inquiry',
@@ -35,6 +36,7 @@ const chapters = [
 ];
 
 export default function ContactPage() {
+  usePageMeta('Contact', 'Get in touch with the BERG Collective team.');
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',

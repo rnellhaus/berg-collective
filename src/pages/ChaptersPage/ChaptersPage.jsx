@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Button from '../../components/Button/Button';
 import styles from './ChaptersPage.module.css';
+import usePageMeta from '../../hooks/usePageMeta';
 
 const chapters = {
   atlanta: {
@@ -45,6 +46,7 @@ const cityList = [
 ];
 
 export default function ChaptersPage() {
+  usePageMeta('Chapters', 'Find a BERG Collective chapter near you.');
   const [selectedCity, setSelectedCity] = useState('atlanta');
   const chapter = chapters[selectedCity];
 

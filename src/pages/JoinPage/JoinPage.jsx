@@ -1,5 +1,6 @@
 import Button from '../../components/Button/Button';
 import styles from './JoinPage.module.css';
+import usePageMeta from '../../hooks/usePageMeta';
 
 const tiers = [
   {
@@ -58,6 +59,7 @@ const tiers = [
 ];
 
 export default function JoinPage() {
+  usePageMeta('Join', 'Become a BERG Collective member.');
   return (
     <main className={styles.page}>
       {/* Hero */}
