@@ -1,0 +1,68 @@
+@import '@fontsource/epilogue/400.css';
+@import '@fontsource/epilogue/500.css';
+@import '@fontsource/epilogue/600.css';
+@import '@fontsource/epilogue/700.css';
+@import '@fontsource/epilogue/800.css';
+@import '@fontsource/epilogue/900.css';
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  overflow-x: hidden;
+}
+
+body {
+  font-family: 'Epilogue', sans-serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #191110;
+  background-color: #fbfaf9;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Epilogue', sans-serif;
+  font-weight: 700;
+  color: #191110;
+}
+
+:focus {
+  outline: 2px solid #8b3223;
+  outline-offset: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid #8b3223;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
