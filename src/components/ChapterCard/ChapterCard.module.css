@@ -1,0 +1,30 @@
+.card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 24px;
+  padding: 32px;
+}
+.card h3 {
+  color: #ffffff;
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+.meta {
+  color: #B59410;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+.desc {
+  color: rgba(255,255,255,0.7);
+  font-size: 15px;
+  line-height: 1.7;
+  margin-bottom: 16px;
+}
+.link {
+  color: #B59410;
+  font-size: 14px;
+  font-weight: 600;
+}
+.link:hover {
+  text-decoration: underline;
+}

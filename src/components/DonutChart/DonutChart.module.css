@@ -1,0 +1,30 @@
+.wrapper {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin: 0 auto;
+}
+.chart {
+  display: block;
+}
+.center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+.percentage {
+  color: #8b3223;
+  font-size: 40px;
+  font-weight: 900;
+  line-height: 1;
+}
+.label {
+  color: #8e5f57;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 4px;
+}
