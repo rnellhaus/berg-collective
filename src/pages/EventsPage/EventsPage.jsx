@@ -33,19 +33,43 @@ function coverUrlFull(path) {
   return `/api/media/file/${path.replace(/^medium\//, 'full/')}`;
 }
 
+// Normalize variant city names to a single key
+const CITY_NORMALIZE = {
+  'nyc': 'nyc',
+  'new york': 'nyc',
+  'new york city': 'nyc',
+  'la': 'la',
+  'los angeles': 'la',
+  'atlanta': 'atlanta',
+  'atl': 'atlanta',
+  'dc': 'dc',
+  'washington d.c.': 'dc',
+  'washington dc': 'dc',
+  'chicago': 'chicago',
+  'chi': 'chicago',
+  'houston': 'houston',
+  'hou': 'houston',
+};
+
 const CITY_LABELS = {
   nyc: 'NYC',
-  la: 'LA',
-  atlanta: 'ATL',
+  la: 'Los Angeles',
+  atlanta: 'Atlanta',
   dc: 'DC',
-  chicago: 'CHI',
-  houston: 'HOU',
+  chicago: 'Chicago',
+  houston: 'Houston',
 };
+
+function normalizeCity(chapter) {
+  if (!chapter) return '';
+  return CITY_NORMALIZE[chapter.toLowerCase()] || chapter.toLowerCase();
+}
 
 function buildFilters(events) {
   const cities = new Set();
   for (const e of events) {
-    if (e.chapter) cities.add(e.chapter.toLowerCase());
+    const key = normalizeCity(e.chapter);
+    if (key) cities.add(key);
   }
   const filters = [{ label: 'All', value: 'all' }];
   for (const city of [...cities].sort()) {
@@ -144,7 +168,7 @@ export default function EventsPage() {
     activeFilter === 'all'
       ? upcomingEvents
       : upcomingEvents.filter(
-          (e) => e.chapter && e.chapter.toLowerCase() === activeFilter
+          (e) => normalizeCity(e.chapter) === activeFilter
         );
 
   return (
