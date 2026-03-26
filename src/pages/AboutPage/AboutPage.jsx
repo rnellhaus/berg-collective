@@ -58,13 +58,15 @@ export default function AboutPage() {
       {/* Logo Bar */}
       <section className={styles.logoBar}>
         <div className={styles.logoBarInner}>
-          <span className={styles.featuredLabel}>Featured In</span>
+          <span className={styles.featuredLabel}>Featured BERG Companies</span>
           <div className={styles.logos}>
-            <span className={styles.logo}>Vogue</span>
-            <span className={styles.logo}>Forbes</span>
-            <span className={styles.logo}>Bloomberg</span>
-            <span className={styles.logo}>Wired</span>
-            <span className={styles.logo}>TechCrunch</span>
+            <span className={`${styles.logo} ${styles.logoDisney}`}>Disney</span>
+            <span className={`${styles.logo} ${styles.logoBetterment}`}>betterment</span>
+            <span className={`${styles.logo} ${styles.logoNfl}`}>NFL</span>
+            <span className={`${styles.logo} ${styles.logoNetflix}`}>NETFLIX</span>
+            <span className={`${styles.logo} ${styles.logoLoreal}`}>L'ORÉAL</span>
+            <span className={`${styles.logo} ${styles.logoDowjones}`}>Dow Jones</span>
+            <span className={`${styles.logo} ${styles.logoFortune}`}>FORTUNE</span>
           </div>
         </div>
       </section>
