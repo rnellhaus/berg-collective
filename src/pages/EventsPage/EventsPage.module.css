@@ -387,11 +387,12 @@
 .expandedFlyer {
   border-radius: 12px;
   overflow: hidden;
-  max-width: 400px;
+  max-width: 100%;
 }
 
 .expandedFlyer img {
   width: 100%;
+  max-width: 700px;
   height: auto;
   display: block;
   border-radius: 12px;

@@ -26,6 +26,13 @@ function coverUrl(path) {
   return `/api/media/file/${path}`;
 }
 
+function coverUrlFull(path) {
+  if (!path) return null;
+  if (path.startsWith('/') || path.startsWith('http')) return path;
+  // Swap 'medium/' for 'full/' to get the larger version
+  return `/api/media/file/${path.replace(/^medium\//, 'full/')}`;
+}
+
 const FILTERS = [
   { label: 'All', value: 'all' },
   { label: 'NYC', value: 'nyc' },
@@ -150,8 +157,8 @@ export default function EventsPage() {
             <div
               className={styles.featuredImageArea}
               style={
-                coverUrl(featuredEvent.cover_image_url)
-                  ? { backgroundImage: `url(${coverUrl(featuredEvent.cover_image_url)})` }
+                coverUrlFull(featuredEvent.cover_image_url)
+                  ? { backgroundImage: `url(${coverUrlFull(featuredEvent.cover_image_url)})` }
                   : {}
               }
             >
@@ -263,7 +270,7 @@ export default function EventsPage() {
                         {/* Cover image / flyer */}
                         {coverUrl(event.cover_image_url) && (
                           <div className={styles.expandedFlyer}>
-                            <img src={coverUrl(event.cover_image_url)} alt={`${event.title} flyer`} />
+                            <img src={coverUrlFull(event.cover_image_url)} alt={`${event.title} flyer`} />
                           </div>
                         )}
 
@@ -347,7 +354,7 @@ export default function EventsPage() {
                     {/* Cover image / flyer at top if available */}
                     {coverUrl(event.cover_image_url) && (
                       <div className={styles.pastCardCover}>
-                        <img src={coverUrl(event.cover_image_url)} alt={event.title} />
+                        <img src={coverUrlFull(event.cover_image_url)} alt={event.title} />
                       </div>
                     )}
 
