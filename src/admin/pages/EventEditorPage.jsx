@@ -167,7 +167,7 @@ const EMPTY_FORM = {
   category: '',
   chapter: '',
   status: 'upcoming',
-  featured: false,
+  is_featured: false,
   cover_image_id: null,
   rsvp_platform: 'luma',
   rsvp_url: '',
@@ -207,7 +207,7 @@ export default function EventEditorPage() {
         category: event.category || '',
         chapter: event.chapter || '',
         status: event.status || 'upcoming',
-        featured: !!event.featured,
+        is_featured: !!event.is_featured,
         cover_image_id: event.cover_image_id || null,
         rsvp_platform: event.rsvp_platform || 'luma',
         rsvp_url: event.rsvp_url || '',
@@ -431,8 +431,8 @@ export default function EventEditorPage() {
             <label className={styles.checkboxLabel}>
               <input
                 type="checkbox"
-                checked={form.featured}
-                onChange={(e) => handleField('featured', e.target.checked)}
+                checked={form.is_featured}
+                onChange={(e) => handleField('is_featured', e.target.checked)}
                 className={styles.checkbox}
               />
               Featured event
