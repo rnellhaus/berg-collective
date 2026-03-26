@@ -117,16 +117,6 @@ export default function EventsPage() {
         setUpcomingEvents(allUpcoming);
         setPastEvents(allPast);
 
-        // Pre-fetch photos for events that have them (for preview thumbnails)
-        const eventsWithPhotos = [...allUpcoming, ...allPast].filter(e => e.photo_count > 0);
-        for (const evt of eventsWithPhotos.slice(0, 10)) {
-          try {
-            const res = await fetch(`/api/events/${evt.id}`);
-            const data = await res.json();
-            const photos = data.photos || data.event?.photos || [];
-            setExpandedData(prev => ({ ...prev, [evt.id]: { ...data, photos } }));
-          } catch {}
-        }
       } catch (err) {
         console.error('Failed to fetch events:', err);
       } finally {
@@ -333,20 +323,6 @@ export default function EventsPage() {
                           {event.time && <span>{event.time}</span>}
                         </p>
                       </div>
-                      {/* Preview photo thumbnails — up to 4 small photos */}
-                      {event.photo_count > 0 && details && details.photos && (
-                        <div className={styles.previewThumbs}>
-                          {details.photos.slice(0, 4).map((photo, idx) => (
-                            <img
-                              key={photo.media_id || idx}
-                              src={`/api/media/file/${photo.webp_thumb ? photo.webp_thumb : 'thumb/' + photo.filename}`}
-                              alt=""
-                              className={styles.previewThumb}
-                              loading="lazy"
-                            />
-                          ))}
-                        </div>
-                      )}
                       {event.category && (
                         <span className={styles.eventTag}>{event.category}</span>
                       )}
