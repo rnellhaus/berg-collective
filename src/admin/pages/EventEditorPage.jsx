@@ -456,13 +456,23 @@ export default function EventEditorPage() {
           onChange={handleRsvpChange}
         />
 
-        {!isNew && (
-          <PhotoGalleryManager
-            eventId={id}
-            photos={photos}
-            onPhotosChange={loadEvent}
-          />
-        )}
+        <div className={styles.card}>
+          <div className={styles.cardTitle}>Event Photos</div>
+          <p style={{ fontSize: '13px', color: '#8e5f57', marginBottom: '16px' }}>
+            Add up to 4 preview photos so people can get a feel of what to expect. These appear as small thumbnails on the events page.
+          </p>
+          {isNew ? (
+            <p style={{ fontSize: '13px', color: '#8e5f57', fontStyle: 'italic' }}>
+              Save the event first, then you can add photos.
+            </p>
+          ) : (
+            <PhotoGalleryManager
+              eventId={id}
+              photos={photos}
+              onPhotosChange={loadEvent}
+            />
+          )}
+        </div>
 
         <div className={styles.actions}>
           <button

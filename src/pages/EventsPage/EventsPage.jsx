@@ -105,8 +105,20 @@ export default function EventsPage() {
         ]);
         const upData = await upRes.json();
         const pastData = await pastRes.json();
-        setUpcomingEvents(upData.events || []);
-        setPastEvents(pastData.events || []);
+        const allUpcoming = upData.events || [];
+        const allPast = pastData.events || [];
+        setUpcomingEvents(allUpcoming);
+        setPastEvents(allPast);
+
+        // Pre-fetch photos for events that have them (for preview thumbnails)
+        const eventsWithPhotos = [...allUpcoming, ...allPast].filter(e => e.photo_count > 0);
+        for (const evt of eventsWithPhotos.slice(0, 10)) {
+          try {
+            const res = await fetch(`/api/events/${evt.id}`);
+            const data = await res.json();
+            setExpandedData(prev => ({ ...prev, [evt.id]: data }));
+          } catch {}
+        }
       } catch (err) {
         console.error('Failed to fetch events:', err);
       } finally {
@@ -292,6 +304,20 @@ export default function EventsPage() {
                           {event.time && <span>{event.time}</span>}
                         </p>
                       </div>
+                      {/* Preview photo thumbnails — up to 4 small photos */}
+                      {event.photo_count > 0 && details && details.photos && (
+                        <div className={styles.previewThumbs}>
+                          {details.photos.slice(0, 4).map((photo, idx) => (
+                            <img
+                              key={photo.media_id || idx}
+                              src={`/api/media/file/${photo.webp_thumb ? photo.webp_thumb : 'thumb/' + photo.filename}`}
+                              alt=""
+                              className={styles.previewThumb}
+                              loading="lazy"
+                            />
+                          ))}
+                        </div>
+                      )}
                       {event.category && (
                         <span className={styles.eventTag}>{event.category}</span>
                       )}
@@ -317,9 +343,9 @@ export default function EventsPage() {
                         {/* Event photos */}
                         {details && details.photos && details.photos.length > 0 && (
                           <div className={styles.expandedPhotos}>
-                            <p className={styles.expandedPhotosLabel}>Event Photos</p>
+                            <p className={styles.expandedPhotosLabel}>What to Expect</p>
                             <div className={styles.expandedPhotoGrid}>
-                              {details.photos.slice(0, 6).map((photo, idx) => (
+                              {details.photos.slice(0, 4).map((photo, idx) => (
                                 <div
                                   key={photo.media_id || idx}
                                   className={styles.expandedPhotoThumb}
@@ -335,8 +361,8 @@ export default function EventsPage() {
                                     alt={photo.alt_text || photo.caption || event.title}
                                     loading="lazy"
                                   />
-                                  {idx === 5 && details.photos.length > 6 && (
-                                    <div className={styles.expandedPhotoMore}>+{details.photos.length - 6}</div>
+                                  {idx === 3 && details.photos.length > 4 && (
+                                    <div className={styles.expandedPhotoMore}>+{details.photos.length - 4}</div>
                                   )}
                                 </div>
                               ))}

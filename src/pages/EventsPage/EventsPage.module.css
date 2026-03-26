@@ -361,6 +361,27 @@
   color: #e8e1da;
 }
 
+/* Preview thumbnails in event row */
+.previewThumbs {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.previewThumb {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+  border: 1px solid #e8e1da;
+}
+
+@media (max-width: 768px) {
+  .previewThumbs {
+    display: none;
+  }
+}
+
 /* Expanded Panel (Upcoming Events) */
 .expandedPanel {
   padding: 0 24px 24px;
