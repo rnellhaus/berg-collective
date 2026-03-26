@@ -1,0 +1,58 @@
+.hero {
+  background-color: #fbfaf9;
+  padding: 80px 24px;
+}
+.inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.centered {
+  text-align: center;
+}
+.centered .subtitle {
+  margin-left: auto;
+  margin-right: auto;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #F5EFDB;
+  color: #B59410;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  margin-bottom: 24px;
+}
+.title {
+  font-size: 52px;
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 24px;
+}
+.subtitle {
+  color: #8e5f57;
+  font-size: 18px;
+  line-height: 1.7;
+  margin-bottom: 32px;
+  max-width: 600px;
+}
+.actions {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.centered .actions {
+  justify-content: center;
+}
+@media (max-width: 768px) {
+  .title {
+    font-size: 36px;
+  }
+  .hero {
+    padding: 60px 24px;
+  }
+}
