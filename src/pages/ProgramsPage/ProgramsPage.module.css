@@ -1,0 +1,214 @@
+/* ===== ProgramsPage ===== */
+
+/* Flagship / Leadership Development */
+.flagship {
+  padding: 80px 24px;
+  background: #fbfaf9;
+}
+
+.flagshipInner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: center;
+}
+
+.flagshipImageWrap {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(25, 17, 16, 0.12);
+}
+
+.flagshipImage {
+  width: 100%;
+  height: 480px;
+  object-fit: cover;
+  display: block;
+}
+
+.flagshipBadge {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: #B59410;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 20px;
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8b3223;
+  margin: 0 0 12px;
+}
+
+.flagshipTitle {
+  font-size: 32px;
+  font-weight: 800;
+  color: #191110;
+  margin: 0 0 20px;
+  line-height: 1.2;
+}
+
+.flagshipDesc {
+  font-size: 16px;
+  color: #8e5f57;
+  line-height: 1.7;
+  margin: 0 0 28px;
+}
+
+.checklist {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.checkItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  color: #191110;
+  font-weight: 500;
+}
+
+.checkIcon {
+  width: 24px;
+  height: 24px;
+  background: #F5EFDB;
+  color: #B59410;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+/* Secondary program cards */
+.secondary {
+  padding: 80px 24px;
+  background: #fff;
+}
+
+.secondaryGrid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+
+.programCard {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #e8e1da;
+  background: #fbfaf9;
+  transition: box-shadow 0.2s ease;
+}
+
+.programCard:hover {
+  box-shadow: 0 8px 24px rgba(25, 17, 16, 0.1);
+}
+
+.cardImageWrap {
+  overflow: hidden;
+  height: 240px;
+}
+
+.cardImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.programCard:hover .cardImage {
+  transform: scale(1.04);
+}
+
+.cardContent {
+  padding: 28px 28px 32px;
+}
+
+.cardTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #191110;
+  margin: 0 0 12px;
+}
+
+.cardDesc {
+  font-size: 15px;
+  color: #8e5f57;
+  line-height: 1.65;
+  margin: 0 0 20px;
+}
+
+.arrowLink {
+  font-size: 14px;
+  font-weight: 700;
+  color: #8b3223;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: gap 0.2s ease;
+}
+
+.arrowLink:hover {
+  gap: 10px;
+}
+
+/* CTA */
+.cta {
+  background: linear-gradient(135deg, #8b3223 0%, #6b2419 100%);
+  padding: 80px 24px;
+  text-align: center;
+}
+
+.ctaInner {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.ctaTitle {
+  font-size: 36px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 16px;
+}
+
+.ctaSubtitle {
+  font-size: 17px;
+  color: rgba(255, 255, 255, 0.82);
+  margin: 0 0 36px;
+  line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .flagshipInner,
+  .secondaryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .flagshipImage {
+    height: 280px;
+  }
+}
