@@ -13,14 +13,15 @@ const DonatePage = lazy(() => import('./pages/DonatePage/DonatePage'));
 const JoinPage = lazy(() => import('./pages/JoinPage/JoinPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage/ContactPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage/NotFoundPage'));
+const AdminApp = lazy(() => import('./admin/AdminApp'));
 
 function Loading() {
   return <div style={{ padding: '100px 24px', textAlign: 'center', color: '#8e5f57' }}>Loading...</div>;
 }
 
-export default function App() {
+function PublicLayout() {
   return (
-    <BrowserRouter>
+    <>
       <Header />
       <main id="main-content" role="main">
         <Suspense fallback={<Loading />}>
@@ -39,6 +40,19 @@ export default function App() {
         </Suspense>
       </main>
       <Footer />
+    </>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Suspense fallback={<Loading />}>
+        <Routes>
+          <Route path="/admin/*" element={<AdminApp />} />
+          <Route path="/*" element={<PublicLayout />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

@@ -1,0 +1,121 @@
+.page {
+  min-height: 100vh;
+  background-color: #fbfaf9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e8e3e0;
+  border-radius: 8px;
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 2px 12px rgba(25, 17, 16, 0.08);
+}
+
+.branding {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #191110;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.badge {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background-color: #8b3223;
+  color: #fbfaf9;
+  padding: 2px 7px;
+  border-radius: 3px;
+  vertical-align: middle;
+  position: relative;
+  top: -2px;
+}
+
+.subtitle {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: #6b5752;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #191110;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.input {
+  padding: 10px 12px;
+  border: 1px solid #ccc5c2;
+  border-radius: 5px;
+  font-size: 0.95rem;
+  color: #191110;
+  background: #fbfaf9;
+  transition: border-color 0.15s;
+  outline: none;
+}
+
+.input:focus {
+  border-color: #8b3223;
+  box-shadow: 0 0 0 3px rgba(139, 50, 35, 0.12);
+}
+
+.error {
+  background: #fdf0ee;
+  border: 1px solid #e8a89e;
+  border-radius: 5px;
+  padding: 10px 14px;
+  font-size: 0.875rem;
+  color: #8b3223;
+}
+
+.submit {
+  padding: 11px 16px;
+  background-color: #8b3223;
+  color: #fbfaf9;
+  border: none;
+  border-radius: 5px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  transition: background-color 0.15s;
+  margin-top: 4px;
+}
+
+.submit:hover:not(:disabled) {
+  background-color: #72291d;
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
