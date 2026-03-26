@@ -213,7 +213,14 @@ export default function EventEditorPage() {
         rsvp_url: event.rsvp_url || '',
         rsvp_event_id: event.rsvp_event_id || '',
       });
-      if (event.cover_image) setCoverImage(event.cover_image);
+      // Restore cover image for display
+      if (event.cover_image_id) {
+        setCoverImage({
+          id: event.cover_image_id,
+          webp_thumb: event.cover_image_url ? event.cover_image_url.replace(/^medium\//, 'thumb/') : null,
+          webp_medium: event.cover_image_url || null,
+        });
+      }
       setPhotos(event.photos || []);
       if (event.chapter && !CITIES.some(c => c.value === event.chapter)) {
         setCustomCity(true);
