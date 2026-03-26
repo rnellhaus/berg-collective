@@ -1,0 +1,242 @@
+.page {
+  min-height: 100vh;
+  background: #fbfaf9;
+}
+
+/* Hero */
+.hero {
+  background: #fbfaf9;
+  padding: 96px 0 64px;
+  text-align: center;
+  border-bottom: 1px solid #e8e1da;
+}
+
+.heroInner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.heroTitle {
+  font-size: clamp(40px, 5vw, 64px);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #191110;
+  margin: 0;
+}
+
+.primary {
+  color: #8b3223;
+}
+
+.heroSubtitle {
+  font-size: 18px;
+  line-height: 1.7;
+  color: #8e5f57;
+  margin: 0;
+  max-width: 560px;
+}
+
+/* Tiers */
+.tiersSection {
+  padding: 80px 0;
+}
+
+.tiersInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.tiersGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.tierCard {
+  background: #fff;
+  border: 2px solid #e8e1da;
+  border-radius: 20px;
+  padding: 36px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  position: relative;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.tierCard:hover {
+  box-shadow: 0 8px 32px rgba(139, 50, 35, 0.08);
+  transform: translateY(-2px);
+}
+
+.tierFeatured {
+  border-color: #8b3223;
+  box-shadow: 0 4px 24px rgba(139, 50, 35, 0.12);
+}
+
+.tierAccent {
+  background: linear-gradient(145deg, #2f1e1b 0%, #1a0f0d 100%);
+  border-color: #B59410;
+}
+
+.tierBadge {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #8b3223;
+  color: #fbfaf9;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+
+.tierHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tierName {
+  font-size: 20px;
+  font-weight: 700;
+  color: #191110;
+  margin: 0;
+}
+
+.tierAccent .tierName {
+  color: #fbfaf9;
+}
+
+.tierPricing {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.tierPrice {
+  font-size: 36px;
+  font-weight: 800;
+  color: #8b3223;
+  line-height: 1;
+}
+
+.tierAccent .tierPrice {
+  color: #B59410;
+}
+
+.tierNote {
+  font-size: 14px;
+  color: #8e5f57;
+  font-weight: 500;
+}
+
+.tierAccent .tierNote {
+  color: rgba(251, 250, 249, 0.6);
+}
+
+.featureList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.featureItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 15px;
+  color: #191110;
+  line-height: 1.4;
+}
+
+.tierAccent .featureItem {
+  color: rgba(251, 250, 249, 0.85);
+}
+
+.checkIcon {
+  color: #8b3223;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.tierAccent .checkIcon {
+  color: #B59410;
+}
+
+.tierCta {
+  margin-top: auto;
+}
+
+.tierCta a,
+.tierCta button {
+  width: 100%;
+  text-align: center;
+  justify-content: center;
+}
+
+/* CTA */
+.cta {
+  background: #F5EFDB;
+  padding: 80px 24px;
+  text-align: center;
+}
+
+.ctaInner {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.ctaTitle {
+  font-size: clamp(26px, 3vw, 36px);
+  font-weight: 800;
+  color: #191110;
+  margin: 0;
+}
+
+.ctaDesc {
+  font-size: 16px;
+  line-height: 1.7;
+  color: #8e5f57;
+  margin: 0 0 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero {
+    padding: 64px 0 48px;
+  }
+
+  .tiersSection {
+    padding: 56px 0;
+  }
+
+  .tiersGrid {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .cta {
+    padding: 56px 24px;
+  }
+}

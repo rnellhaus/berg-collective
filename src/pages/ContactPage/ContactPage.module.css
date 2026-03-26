@@ -1,0 +1,402 @@
+.page {
+  min-height: 100vh;
+  background: #fbfaf9;
+}
+
+/* Hero */
+.hero {
+  background: #191110;
+  padding: 96px 0 80px;
+  text-align: center;
+}
+
+.heroInner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 6px 16px;
+  background: rgba(181, 148, 16, 0.15);
+  border: 1px solid rgba(181, 148, 16, 0.4);
+  border-radius: 100px;
+  color: #B59410;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.heroTitle {
+  font-size: clamp(36px, 5vw, 60px);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #fbfaf9;
+  margin: 0;
+}
+
+.gold {
+  color: #B59410;
+}
+
+.heroSubtitle {
+  font-size: 18px;
+  line-height: 1.7;
+  color: rgba(251, 250, 249, 0.7);
+  margin: 0;
+  max-width: 560px;
+}
+
+/* Contact Options */
+.contactOptions {
+  padding: 64px 0;
+  background: #fbfaf9;
+  border-bottom: 1px solid #e8e1da;
+}
+
+.optionsInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.optionsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+}
+
+.optionCard {
+  background: #fff;
+  border: 1px solid #e8e1da;
+  border-radius: 16px;
+  padding: 32px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: box-shadow 0.2s ease;
+}
+
+.optionCard:hover {
+  box-shadow: 0 4px 20px rgba(139, 50, 35, 0.08);
+}
+
+.iconBox {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.optionTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #191110;
+  margin: 0;
+}
+
+.optionValue {
+  font-size: 15px;
+  font-weight: 600;
+  color: #8b3223;
+  margin: 0;
+}
+
+.optionNote {
+  font-size: 13px;
+  color: #8e5f57;
+  margin: 0;
+}
+
+/* Form Section */
+.formSection {
+  padding: 80px 0;
+}
+
+.formInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 64px;
+  align-items: start;
+}
+
+/* Form */
+.formArea {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.formTitle {
+  font-size: 28px;
+  font-weight: 800;
+  color: #191110;
+  margin: 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.nameRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #191110;
+  letter-spacing: 0.02em;
+}
+
+.input,
+.select,
+.textarea {
+  padding: 12px 16px;
+  border: 1.5px solid #e8e1da;
+  border-radius: 10px;
+  font-size: 15px;
+  color: #191110;
+  background: #fff;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-family: inherit;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input::placeholder,
+.textarea::placeholder {
+  color: #c4b5b0;
+}
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  border-color: #8b3223;
+  box-shadow: 0 0 0 3px rgba(139, 50, 35, 0.08);
+}
+
+.select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238e5f57' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 140px;
+}
+
+.submitBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 32px;
+  background: #8b3223;
+  color: #fbfaf9;
+  font-size: 15px;
+  font-weight: 700;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.15s ease;
+  align-self: flex-start;
+  font-family: inherit;
+}
+
+.submitBtn:hover {
+  background: #7a2b1e;
+  transform: translateY(-1px);
+}
+
+/* Sidebar */
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: sticky;
+  top: 24px;
+}
+
+.sideCard {
+  background: #fff;
+  border: 1px solid #e8e1da;
+  border-radius: 16px;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sideCardTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #191110;
+  margin: 0;
+}
+
+.sideCardText {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #8e5f57;
+  margin: 0;
+}
+
+/* Social Links */
+.socialList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.socialLink {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0ebe5;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.socialLink:last-child {
+  border-bottom: none;
+}
+
+.socialLink:hover .socialName {
+  color: #8b3223;
+}
+
+.socialName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #191110;
+  transition: color 0.2s ease;
+}
+
+.socialHandle {
+  font-size: 13px;
+  color: #8e5f57;
+}
+
+/* Chapter Contacts */
+.chapterList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.chapterItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.chapterPhoto {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: top;
+  flex-shrink: 0;
+  border: 2px solid #e8e1da;
+}
+
+.chapterInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chapterName {
+  font-size: 14px;
+  font-weight: 700;
+  color: #191110;
+  margin: 0;
+}
+
+.chapterRole {
+  font-size: 12px;
+  color: #8e5f57;
+  margin: 0;
+}
+
+.chapterEmail {
+  font-size: 12px;
+  color: #8b3223;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.chapterEmail:hover {
+  text-decoration: underline;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .formInner {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+
+  .sidebar {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 64px 0 56px;
+  }
+
+  .contactOptions {
+    padding: 48px 0;
+  }
+
+  .optionsGrid {
+    grid-template-columns: 1fr;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .formSection {
+    padding: 56px 0;
+  }
+
+  .nameRow {
+    grid-template-columns: 1fr;
+  }
+
+  .submitBtn {
+    width: 100%;
+  }
+}

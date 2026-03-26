@@ -1,0 +1,44 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 24px;
+  background: #fbfaf9;
+}
+
+.page h1 {
+  font-size: 96px;
+  font-weight: 900;
+  color: #8b3223;
+  margin: 0 0 16px;
+  line-height: 1;
+}
+
+.page p {
+  font-size: 18px;
+  color: #8e5f57;
+  margin: 0 0 32px;
+}
+
+.homeLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 32px;
+  background: #8b3223;
+  color: #fbfaf9;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.15s ease;
+  letter-spacing: 0.02em;
+}
+
+.homeLink:hover {
+  background: #7a2b1e;
+  transform: translateY(-1px);
+}

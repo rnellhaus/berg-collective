@@ -1,0 +1,281 @@
+.page {
+  min-height: 100vh;
+}
+
+/* Hero */
+.hero {
+  background: #191110;
+  padding: 96px 0 80px;
+  overflow: hidden;
+}
+
+.heroInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+
+.heroLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 6px 16px;
+  background: rgba(181, 148, 16, 0.15);
+  border: 1px solid rgba(181, 148, 16, 0.4);
+  border-radius: 100px;
+  color: #B59410;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+.heroTitle {
+  font-size: clamp(36px, 4vw, 52px);
+  font-weight: 800;
+  line-height: 1.15;
+  color: #fbfaf9;
+  margin: 0;
+}
+
+.gold {
+  color: #B59410;
+}
+
+.heroSubtitle {
+  font-size: 17px;
+  line-height: 1.7;
+  color: rgba(251, 250, 249, 0.7);
+  margin: 0;
+  max-width: 480px;
+}
+
+.heroRight {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  width: 100%;
+}
+
+/* Donation Section */
+.donationSection {
+  padding: 96px 0;
+  background: #fbfaf9;
+}
+
+.donationInner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: start;
+}
+
+.donationLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #8b3223;
+  margin: 0;
+}
+
+.donationTitle {
+  font-size: clamp(32px, 3vw, 44px);
+  font-weight: 800;
+  line-height: 1.2;
+  color: #191110;
+  margin: 0;
+}
+
+.donationDesc {
+  font-size: 16px;
+  line-height: 1.7;
+  color: #8e5f57;
+  margin: 0;
+}
+
+/* Stewardship Card */
+.donationRight {
+  position: sticky;
+  top: 24px;
+}
+
+.stewardshipCard {
+  background: linear-gradient(135deg, #2f1e1b 0%, #1a0f0d 100%);
+  border-radius: 20px;
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.stewardshipTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #fbfaf9;
+  margin: 0;
+}
+
+.stewardshipSubtitle {
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(251, 250, 249, 0.6);
+  margin: 0;
+}
+
+.chartWrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.breakdownItem {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.breakdownLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: rgba(251, 250, 249, 0.85);
+  font-weight: 500;
+}
+
+.breakdownDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.breakdownBarTrack {
+  width: 80px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 100px;
+  overflow: hidden;
+}
+
+.breakdownBar {
+  height: 100%;
+  border-radius: 100px;
+  transition: width 0.6s ease;
+}
+
+.breakdownPct {
+  font-size: 13px;
+  font-weight: 700;
+  color: #fbfaf9;
+  min-width: 32px;
+  text-align: right;
+}
+
+/* CTA */
+.cta {
+  background: #8b3223;
+  padding: 80px 0;
+}
+
+.ctaInner {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.ctaTitle {
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 800;
+  color: #fbfaf9;
+  margin: 0;
+}
+
+.ctaDesc {
+  font-size: 17px;
+  line-height: 1.6;
+  color: rgba(251, 250, 249, 0.8);
+  margin: 0;
+}
+
+.ctaButtons {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero {
+    padding: 64px 0 56px;
+  }
+
+  .heroInner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .heroSubtitle {
+    max-width: 100%;
+  }
+
+  .donationSection {
+    padding: 64px 0;
+  }
+
+  .donationInner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .donationRight {
+    position: static;
+  }
+
+  .breakdownBarTrack {
+    width: 60px;
+  }
+
+  .cta {
+    padding: 56px 0;
+  }
+}
