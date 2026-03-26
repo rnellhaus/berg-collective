@@ -95,6 +95,7 @@ export default function EventsPage() {
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState(null);
   const [expandedData, setExpandedData] = useState({});
+  const [readMoreEvent, setReadMoreEvent] = useState(null);
 
   useEffect(() => {
     async function fetchEvents() {
@@ -228,7 +229,26 @@ export default function EventsPage() {
                 <span className={styles.eventTag}>{featuredEvent.category}</span>
               )}
               <h3 className={styles.featuredTitle}>{featuredEvent.title}</h3>
-              <p className={styles.featuredDesc}>{featuredEvent.description}</p>
+              {(() => {
+                const desc = featuredEvent.description || '';
+                const firstPara = desc.split(/\n\s*\n/)[0] || desc;
+                const truncated = firstPara.length > 180 ? firstPara.slice(0, 180).trimEnd() + '…' : firstPara;
+                const needsMore = desc.length > 180;
+                return (
+                  <>
+                    <p className={styles.featuredDesc}>{truncated}</p>
+                    {needsMore && (
+                      <button
+                        className={styles.readMoreBtn}
+                        onClick={() => setReadMoreEvent(featuredEvent)}
+                        style={{ marginBottom: '16px' }}
+                      >
+                        Read More
+                      </button>
+                    )}
+                  </>
+                );
+              })()}
               <div className={styles.featuredMeta}>
                 <div className={styles.metaItem}>
                   <svg className={styles.metaIcon} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -328,10 +348,25 @@ export default function EventsPage() {
 
                     {isExpanded && (
                       <div className={styles.expandedPanel}>
-                        {/* Description */}
-                        {event.description && (
-                          <p className={styles.expandedDesc} style={{ whiteSpace: 'pre-line' }}>{event.description}</p>
-                        )}
+                        {/* Description — truncated with Read More */}
+                        {event.description && (() => {
+                          const firstPara = event.description.split(/\n\s*\n/)[0] || event.description;
+                          const truncated = firstPara.length > 200 ? firstPara.slice(0, 200).trimEnd() + '…' : firstPara;
+                          const needsMore = event.description.length > 200;
+                          return (
+                            <div className={styles.expandedDescWrap}>
+                              <p className={styles.expandedDesc} style={{ whiteSpace: 'pre-line' }}>{truncated}</p>
+                              {needsMore && (
+                                <button
+                                  className={styles.readMoreBtn}
+                                  onClick={(e) => { e.stopPropagation(); setReadMoreEvent(event); }}
+                                >
+                                  Read More
+                                </button>
+                              )}
+                            </div>
+                          );
+                        })()}
 
                         {/* Cover image / flyer */}
                         {coverUrl(event.cover_image_url) && (
@@ -470,9 +505,24 @@ export default function EventsPage() {
                       {/* Expanded detail panel */}
                       {isExpanded && (
                         <div className={styles.pastExpandedPanel}>
-                          {event.description && (
-                            <p className={styles.expandedDesc}>{event.description}</p>
-                          )}
+                          {event.description && (() => {
+                            const firstPara = event.description.split(/\n\s*\n/)[0] || event.description;
+                            const truncated = firstPara.length > 200 ? firstPara.slice(0, 200).trimEnd() + '…' : firstPara;
+                            const needsMore = event.description.length > 200;
+                            return (
+                              <div className={styles.expandedDescWrap}>
+                                <p className={styles.expandedDesc} style={{ whiteSpace: 'pre-line' }}>{truncated}</p>
+                                {needsMore && (
+                                  <button
+                                    className={styles.readMoreBtn}
+                                    onClick={(e) => { e.stopPropagation(); setReadMoreEvent(event); }}
+                                  >
+                                    Read More
+                                  </button>
+                                )}
+                              </div>
+                            );
+                          })()}
 
                           {/* Photo gallery grid */}
                           {details && details.photos && details.photos.length > 0 && (
@@ -552,6 +602,42 @@ export default function EventsPage() {
         isOpen={galleryOpen}
         onClose={() => setGalleryOpen(false)}
       />
+
+      {/* Read More Lightbox */}
+      {readMoreEvent && (
+        <div className={styles.readMoreOverlay} onClick={() => setReadMoreEvent(null)}>
+          <div className={styles.readMoreModal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.readMoreHeader}>
+              <div>
+                <h3 className={styles.readMoreTitle}>{readMoreEvent.title}</h3>
+                <p className={styles.readMoreMeta}>
+                  {readMoreEvent.location && <span>{readMoreEvent.location}</span>}
+                  {readMoreEvent.location && readMoreEvent.date && <span> · </span>}
+                  {readMoreEvent.date && <span>{parseDateFull(readMoreEvent.date)}</span>}
+                  {readMoreEvent.time && <span> · {readMoreEvent.time}</span>}
+                </p>
+              </div>
+              <button
+                className={styles.readMoreClose}
+                onClick={() => setReadMoreEvent(null)}
+                aria-label="Close"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+            <div className={styles.readMoreBody}>
+              <p style={{ whiteSpace: 'pre-line' }}>{readMoreEvent.description}</p>
+            </div>
+            {readMoreEvent.rsvp_url && (
+              <div className={styles.readMoreFooter}>
+                <Button variant="primary" onClick={() => { setReadMoreEvent(null); openRsvp(readMoreEvent); }}>
+                  RSVP Now &rarr;
+                </Button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </main>
   );
 }
