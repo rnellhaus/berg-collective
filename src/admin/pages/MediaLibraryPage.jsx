@@ -5,6 +5,12 @@ import styles from './MediaLibraryPage.module.css';
 
 const CATEGORIES = ['All', 'Events', 'Pages', 'General'];
 
+function mediaUrl(path) {
+  if (!path) return null;
+  if (path.startsWith('/') || path.startsWith('http')) return path;
+  return `/api/media/file/${path}`;
+}
+
 function formatBytes(bytes) {
   if (!bytes || bytes === 0) return '0 B';
   const mb = bytes / (1024 * 1024);
@@ -219,7 +225,7 @@ export default function MediaLibraryPage() {
                 >
                   <img
                     className={styles.thumbImg}
-                    src={`/api/media/file/thumb/${item.webp_thumb || item.filename}`}
+                    src={mediaUrl(item.webp_thumb) || `/api/media/file/thumb/${item.filename}`}
                     alt={item.alt_text || item.filename}
                     loading="lazy"
                   />
@@ -241,7 +247,7 @@ export default function MediaLibraryPage() {
             <div className={styles.detailPreviewWrap}>
               <img
                 className={styles.detailPreview}
-                src={`/api/media/file/thumb/${selected.webp_thumb || selected.filename}`}
+                src={mediaUrl(selected.webp_medium || selected.webp_thumb) || `/api/media/file/thumb/${selected.filename}`}
                 alt={selected.alt_text || selected.filename}
               />
             </div>
