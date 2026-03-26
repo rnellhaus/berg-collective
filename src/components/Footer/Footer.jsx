@@ -16,7 +16,7 @@ export default function Footer() {
           <div>
             <Link to="/" style={{ display: 'inline-block', marginBottom: 16 }}>
               <img
-                src="/images/logo.png"
+                src="/images/logo-black.png"
                 alt="BERG Collective"
                 style={{ height: 40, width: 'auto', filter: 'brightness(0) invert(1)' }}
               />
