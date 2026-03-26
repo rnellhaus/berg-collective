@@ -4,6 +4,7 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { initDatabase } from './db/init.js';
+import authRoutes from './routes/auth.js';
 initDatabase();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -14,6 +15,8 @@ const PORT = process.env.PORT || 3001;
 app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
+
+app.use('/api/auth', authRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
