@@ -52,13 +52,16 @@ const CITY_NORMALIZE = {
 };
 
 const CITY_LABELS = {
-  nyc: 'NYC',
   la: 'Los Angeles',
-  atlanta: 'Atlanta',
-  dc: 'DC',
-  chicago: 'Chicago',
+  nyc: 'NYC',
   houston: 'Houston',
+  atlanta: 'Atlanta',
+  chicago: 'Chicago',
+  dc: 'DC',
 };
+
+// Defines the display order — main chapters first, then others
+const CITY_ORDER = ['la', 'nyc', 'houston', 'atlanta', 'chicago', 'dc'];
 
 function normalizeCity(chapter) {
   if (!chapter) return '';
@@ -72,7 +75,10 @@ function buildFilters(events) {
     if (key) cities.add(key);
   }
   const filters = [{ label: 'All', value: 'all' }];
-  for (const city of [...cities].sort()) {
+  // Add cities in defined order first, then any others alphabetically
+  const ordered = CITY_ORDER.filter(c => cities.has(c));
+  const remaining = [...cities].filter(c => !CITY_ORDER.includes(c)).sort();
+  for (const city of [...ordered, ...remaining]) {
     filters.push({
       label: CITY_LABELS[city] || city.charAt(0).toUpperCase() + city.slice(1),
       value: city,
