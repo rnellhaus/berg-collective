@@ -64,7 +64,12 @@ router.get('/', (req, res) => {
     params.push(chapter);
   }
 
-  query += ' ORDER BY e.date DESC';
+  // Upcoming/draft events: soonest first (ASC). Past events: most recent first (DESC).
+  if (status === 'upcoming' || status === 'draft') {
+    query += ' ORDER BY e.date ASC';
+  } else {
+    query += ' ORDER BY e.date DESC';
+  }
 
   const events = db.prepare(query).all(...params);
 
