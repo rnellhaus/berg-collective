@@ -5,6 +5,10 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { initDatabase } from './db/init.js';
 import authRoutes from './routes/auth.js';
+import mediaRoutes from './routes/media.js';
+import pagesRoutes from './routes/pages.js';
+import eventsRoutes from './routes/events.js';
+import usersRoutes from './routes/users.js';
 initDatabase();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -17,6 +21,10 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
+app.use('/api/media', mediaRoutes);
+app.use('/api/pages', pagesRoutes);
+app.use('/api/events', eventsRoutes);
+app.use('/api/users', usersRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
