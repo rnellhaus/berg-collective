@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+server/uploads/
+server/optimized/
+server/berg.db
+.superpowers/
