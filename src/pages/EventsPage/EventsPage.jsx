@@ -123,7 +123,8 @@ export default function EventsPage() {
           try {
             const res = await fetch(`/api/events/${evt.id}`);
             const data = await res.json();
-            setExpandedData(prev => ({ ...prev, [evt.id]: data }));
+            const photos = data.photos || data.event?.photos || [];
+            setExpandedData(prev => ({ ...prev, [evt.id]: { ...data, photos } }));
           } catch {}
         }
       } catch (err) {
@@ -157,7 +158,9 @@ export default function EventsPage() {
       try {
         const res = await fetch(`/api/events/${event.id}`);
         const data = await res.json();
-        setExpandedData(prev => ({ ...prev, [event.id]: data }));
+        // Normalize: photos may be at data.photos or data.event.photos
+        const photos = data.photos || data.event?.photos || [];
+        setExpandedData(prev => ({ ...prev, [event.id]: { ...data, photos } }));
       } catch (err) {
         console.error('Failed to fetch event details:', err);
       }
@@ -173,7 +176,7 @@ export default function EventsPage() {
     try {
       const res = await fetch(`/api/events/${eventId}`);
       const data = await res.json();
-      setGalleryPhotos(data.photos || []);
+      setGalleryPhotos(data.photos || data.event?.photos || []);
       setGalleryTitle(eventTitle);
       setGalleryOpen(true);
     } catch (err) {
