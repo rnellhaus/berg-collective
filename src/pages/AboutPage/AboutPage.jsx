@@ -30,8 +30,8 @@ export default function AboutPage() {
           <div className={styles.missionLeft}>
             <div className={styles.missionImageWrap}>
               <img
-                src="/images/photos/group-rich-rene-evol.jpg"
-                alt="BERG Collective leadership"
+                src="/images/photos/berg-panel-event.jpg"
+                alt="BERG Collective panel event"
                 className={styles.missionImage}
               />
               <div className={styles.goldAccent} />
