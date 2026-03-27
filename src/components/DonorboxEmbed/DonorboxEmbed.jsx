@@ -1,7 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import styles from './DonorboxEmbed.module.css';
 
 export default function DonorboxEmbed() {
+  const containerRef = useRef(null);
+
   useEffect(() => {
     // Load Donorbox widget script
     if (!document.querySelector('script[src*="donorbox.org/widgets.js"]')) {
@@ -11,16 +13,20 @@ export default function DonorboxEmbed() {
       script.async = true;
       document.body.appendChild(script);
     }
+
+    // Create the widget element via DOM so Donorbox script can detect it
+    if (containerRef.current && !containerRef.current.querySelector('dbox-widget')) {
+      const widget = document.createElement('dbox-widget');
+      widget.setAttribute('campaign', 'berg-collective-donation');
+      widget.setAttribute('type', 'donation_form');
+      widget.setAttribute('enable-auto-scroll', 'true');
+      containerRef.current.appendChild(widget);
+    }
   }, []);
 
   return (
     <div className={styles.wrapper}>
-      <div
-        className={styles.embed}
-        dangerouslySetInnerHTML={{
-          __html: '<dbox-widget campaign="berg-collective-donation" type="donation_form" enable-auto-scroll="true"></dbox-widget>',
-        }}
-      />
+      <div className={styles.embed} ref={containerRef} />
     </div>
   );
 }

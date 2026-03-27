@@ -7,5 +7,16 @@
 .embed {
   border-radius: 12px;
   overflow: hidden;
-  min-height: 400px;
+  min-height: 500px;
+  background: var(--color-gray-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Donorbox iframe takes full width when loaded */
+.embed iframe {
+  width: 100% !important;
+  min-height: 500px;
+  border: none;
 }
