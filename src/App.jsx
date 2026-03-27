@@ -14,6 +14,7 @@ const JoinPage = lazy(() => import('./pages/JoinPage/JoinPage'));
 const ContactPage = lazy(() => import('./pages/ContactPage/ContactPage'));
 const NewsletterPage = lazy(() => import('./pages/NewsletterPage/NewsletterPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage/NotFoundPage'));
+const PartnershipsPage = lazy(() => import('./pages/PartnershipsPage/PartnershipsPage'));
 const AdminApp = lazy(() => import('./admin/AdminApp'));
 
 function Loading() {
@@ -33,6 +34,7 @@ function PublicLayout() {
             <Route path="/chapters" element={<ChaptersPage />} />
             <Route path="/events" element={<EventsPage />} />
             <Route path="/impact" element={<ImpactPage />} />
+            <Route path="/partnerships" element={<PartnershipsPage />} />
             <Route path="/donate" element={<DonatePage />} />
             <Route path="/membership" element={<JoinPage />} />
             <Route path="/join" element={<JoinPage />} />

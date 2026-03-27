@@ -8,6 +8,7 @@ const FOOTER_COLS = [
     links: [
       { label: 'About Us',       to: '/about' },
       { label: 'Impact Report',  to: '/impact' },
+      { label: 'Partnerships',   to: '/partnerships' },
       { label: 'Our Chapters',   to: '/chapters' },
       { label: 'Leadership',     to: '/about#leadership' },
     ],

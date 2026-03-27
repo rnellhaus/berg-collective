@@ -8,8 +8,9 @@ const NAV_LINKS = [
   { label: 'Chapters',   to: '/chapters' },
   { label: 'Events',     to: '/events' },
   { label: 'Membership', to: '/membership' },
-  { label: 'Impact',     to: '/impact' },
-  { label: 'Newsletter', to: '/newsletter' },
+  { label: 'Impact',        to: '/impact' },
+  { label: 'Partnerships',  to: '/partnerships' },
+  { label: 'Newsletter',    to: '/newsletter' },
   { label: 'Donate',     to: '/donate' },
 ];
 

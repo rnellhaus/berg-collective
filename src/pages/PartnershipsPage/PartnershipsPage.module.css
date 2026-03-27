@@ -1,0 +1,539 @@
+/* ── Shared label ── */
+.label {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  margin-bottom: 12px;
+}
+
+/* ─────────────────────────────────────────
+   Section 1 — Hero
+───────────────────────────────────────── */
+.hero {
+  background-color: var(--color-black);
+  padding: 120px 24px var(--section-padding-y);
+}
+
+.heroInner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.heroHeading {
+  font-family: var(--font-heading);
+  font-size: clamp(2.4rem, 5vw, 4rem);
+  color: var(--color-white);
+  margin: 0 0 24px;
+  line-height: 1.15;
+}
+
+.heroSubtitle {
+  font-family: var(--font-body);
+  font-size: 1.125rem;
+  color: var(--color-gray-400);
+  max-width: 680px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* ─────────────────────────────────────────
+   Section 2 — Stats bar
+───────────────────────────────────────── */
+.statsBar {
+  background-color: var(--color-gold);
+  padding: 40px 24px;
+}
+
+.statsInner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 48px;
+  text-align: center;
+}
+
+.statNumber {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-black);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.statLabel {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-black);
+  letter-spacing: 0.03em;
+}
+
+.statDivider {
+  width: 1px;
+  height: 48px;
+  background-color: rgba(0, 0, 0, 0.25);
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .statsInner {
+    flex-direction: column;
+    gap: 24px;
+  }
+  .statDivider {
+    width: 48px;
+    height: 1px;
+  }
+  .stat {
+    padding: 0;
+  }
+}
+
+/* ─────────────────────────────────────────
+   Shared section heading
+───────────────────────────────────────── */
+.sectionHeading {
+  font-family: var(--font-heading);
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  color: var(--color-black);
+  margin: 0 0 56px;
+  line-height: 1.2;
+}
+
+/* ─────────────────────────────────────────
+   Section 3 — Featured Partnerships
+───────────────────────────────────────── */
+.featured {
+  background-color: var(--color-white);
+  padding: var(--section-padding-y) 24px;
+}
+
+.featuredInner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.partnerList {
+  display: flex;
+  flex-direction: column;
+  gap: 80px;
+}
+
+/* Alternating layout: odd = image left, even = image right */
+.partnerCard {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  align-items: center;
+}
+
+.partnerCard:nth-child(even) {
+  direction: rtl;
+}
+
+.partnerCard:nth-child(even) > * {
+  direction: ltr;
+}
+
+.partnerImage {
+  border-radius: 8px;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+}
+
+.partnerImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.partnerContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.partnerSubtitle {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  margin: 0;
+}
+
+.partnerTitle {
+  font-family: var(--font-heading);
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  color: var(--color-black);
+  margin: 0;
+  line-height: 1.25;
+}
+
+.partnerDesc {
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--color-gray-600);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.highlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+}
+
+.highlightPill {
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-gold);
+  border: 1px solid var(--color-gold-border);
+  border-radius: 20px;
+  padding: 5px 14px;
+  letter-spacing: 0.03em;
+}
+
+@media (max-width: 768px) {
+  .partnerCard {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    direction: ltr;
+  }
+  .partnerCard:nth-child(even) {
+    direction: ltr;
+  }
+}
+
+/* ─────────────────────────────────────────
+   Section 4 — Gallery
+───────────────────────────────────────── */
+.gallery {
+  background-color: var(--color-gray-100);
+  padding: var(--section-padding-y) 24px;
+}
+
+.galleryInner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.galleryGrid {
+  columns: 3;
+  column-gap: 16px;
+}
+
+.galleryItem {
+  break-inside: avoid;
+  margin-bottom: 16px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.galleryItem img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.galleryItem:hover img {
+  transform: scale(1.04);
+}
+
+@media (max-width: 768px) {
+  .galleryGrid {
+    columns: 1;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .galleryGrid {
+    columns: 2;
+  }
+}
+
+/* ─────────────────────────────────────────
+   Section 5 — Inquiry Form
+───────────────────────────────────────── */
+.inquirySection {
+  background-color: var(--color-white);
+  padding: var(--section-padding-y) 24px;
+}
+
+.inquiryInner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.inquiryHeader {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.inquirySubtitle {
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  color: var(--color-gray-600);
+  max-width: 580px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+.inquiryBody {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 64px;
+  align-items: start;
+}
+
+/* ── Form ── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formLabel {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-black);
+}
+
+.formInput,
+.formSelect,
+.formTextarea {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  color: var(--color-black);
+  background-color: var(--color-white);
+  border: 1px solid var(--color-gray-200);
+  border-radius: 6px;
+  padding: 11px 14px;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.formInput:focus,
+.formSelect:focus,
+.formTextarea:focus {
+  border-color: var(--color-gold);
+}
+
+.formSelect {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239E9E9E' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 36px;
+}
+
+.formTextarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.submitBtn {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-black);
+  background-color: var(--color-gold);
+  border: none;
+  border-radius: 6px;
+  padding: 14px 32px;
+  cursor: pointer;
+  align-self: flex-start;
+  transition: opacity 0.2s;
+}
+
+.submitBtn:hover {
+  opacity: 0.85;
+}
+
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.successMsg {
+  background-color: var(--color-gold-dim);
+  border: 1px solid var(--color-gold-border);
+  border-radius: 8px;
+  padding: 28px 32px;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--color-black);
+  line-height: 1.6;
+}
+
+.errorMsg {
+  font-family: var(--font-body);
+  font-size: 0.875rem;
+  color: #c0392b;
+  margin: 0;
+}
+
+/* ── Offer column ── */
+.offerWrap {
+  background-color: var(--color-dark-surface);
+  border-radius: 12px;
+  padding: 40px 36px;
+}
+
+.offerHeading {
+  font-family: var(--font-heading);
+  font-size: 1.25rem;
+  color: var(--color-white);
+  margin: 0 0 24px;
+}
+
+.offerList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.offerItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  color: var(--color-gray-200);
+  line-height: 1.5;
+}
+
+.checkmark {
+  color: var(--color-gold);
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.contactInfo {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 28px;
+}
+
+.contactHeading {
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-gray-400);
+  margin: 0 0 8px;
+}
+
+.contactEmail {
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  color: var(--color-gold);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.contactEmail:hover {
+  opacity: 0.75;
+}
+
+@media (max-width: 768px) {
+  .inquiryBody {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─────────────────────────────────────────
+   Section 6 — CTA
+───────────────────────────────────────── */
+.cta {
+  background-color: var(--color-black);
+  padding: var(--section-padding-y) 24px;
+}
+
+.ctaInner {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.ctaHeading {
+  font-family: var(--font-heading);
+  font-size: clamp(1.75rem, 3.5vw, 2.75rem);
+  color: var(--color-white);
+  margin: 0 0 20px;
+  line-height: 1.2;
+}
+
+.ctaSubtitle {
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  color: var(--color-gray-400);
+  line-height: 1.7;
+  margin: 0 0 36px;
+}
+
+.ctaBtn {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-black);
+  background-color: var(--color-gold);
+  border-radius: 6px;
+  padding: 14px 36px;
+  transition: opacity 0.2s;
+}
+
+.ctaBtn:hover {
+  opacity: 0.85;
+}
