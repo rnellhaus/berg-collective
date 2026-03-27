@@ -538,7 +538,7 @@ export default function JoinPage() {
       <section className={styles.cta}>
         <div className={styles.ctaInner}>
           <h2 className={styles.ctaTitle}>Ready to Elevate Your ERG?</h2>
-          <a href="mailto:rich@bergcollective.org" className={styles.ctaGoldBtn}>
+          <a href="#apply" className={styles.ctaGoldBtn} onClick={(e) => { e.preventDefault(); document.querySelector('#apply')?.scrollIntoView({ behavior: 'smooth' }); }}>
             Apply for ERG Membership
           </a>
         </div>

@@ -123,7 +123,7 @@ export default function MembershipTeaser() {
           expanding access to individual Black professionals later this year.
           Join our waitlist to be the first to know when individual memberships
           open.{' '}
-          <a href="mailto:rich@bergcollective.org" className={styles.noteLink}>
+          <a href="/membership#individual" className={styles.noteLink}>
             Join the waitlist →
           </a>
         </div>

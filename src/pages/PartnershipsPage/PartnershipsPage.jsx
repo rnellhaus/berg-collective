@@ -304,9 +304,9 @@ export default function PartnershipsPage() {
               </ul>
 
               <div className={styles.contactInfo}>
-                <h4 className={styles.contactHeading}>Direct Contact</h4>
-                <a href="mailto:rich@bergcollective.org" className={styles.contactEmail}>
-                  rich@bergcollective.org
+                <h4 className={styles.contactHeading}>Connect With Us</h4>
+                <a href="https://www.linkedin.com/company/berg-collective2" target="_blank" rel="noopener noreferrer" className={styles.contactEmail}>
+                  LinkedIn →
                 </a>
               </div>
             </div>
@@ -322,7 +322,7 @@ export default function PartnershipsPage() {
             Ready to partner with a community that's redefining what's possible for Black
             professionals? Let's build something meaningful together.
           </p>
-          <a href="mailto:rich@bergcollective.org" className={styles.ctaBtn}>
+          <a href="/contact" className={styles.ctaBtn}>
             Get In Touch
           </a>
         </div>

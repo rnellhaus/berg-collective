@@ -25,13 +25,13 @@ const chapters = [
     name: 'Rich Nellhaus',
     role: 'Los Angeles Chapter Lead',
     photo: '/images/photos/rich-headshot-new.jpg',
-    email: 'rich@bergcollective.org',
+    linkedin: 'https://www.linkedin.com/in/richnellhaus',
   },
   {
     name: 'Evol Greaves',
     role: 'New York City Chapter Lead',
     photo: '/images/photos/evol-headshot.jpg',
-    email: 'evol@bergcollective.org',
+    linkedin: 'https://www.linkedin.com/in/evolgreaves',
   },
 ];
 
@@ -92,7 +92,7 @@ export default function ContactPage() {
                 </svg>
               </div>
               <h3 className={styles.optionTitle}>Call Us</h3>
-              <p className={styles.optionValue}>(123) 456-7890</p>
+              <p className={styles.optionValue}>(347) 842-0827</p>
               <p className={styles.optionNote}>Mon–Fri, 9am–5pm PT</p>
             </div>
             <div className={styles.optionCard}>
@@ -221,7 +221,7 @@ export default function ContactPage() {
                     <div className={styles.chapterInfo}>
                       <p className={styles.chapterName}>{c.name}</p>
                       <p className={styles.chapterRole}>{c.role}</p>
-                      <a href={`mailto:${c.email}`} className={styles.chapterEmail}>{c.email}</a>
+                      <a href={c.linkedin} target="_blank" rel="noopener noreferrer" className={styles.chapterEmail}>Connect on LinkedIn →</a>
                     </div>
                   </div>
                 ))}
