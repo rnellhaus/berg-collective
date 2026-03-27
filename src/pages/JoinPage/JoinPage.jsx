@@ -57,6 +57,12 @@ const steps = [
   { number: '04', title: 'Join', desc: 'Welcome to BERG' },
 ];
 
+const WIZARD_STEPS = [
+  { label: 'Your Info', number: 1 },
+  { label: 'About Your ERG', number: 2 },
+  { label: 'Final Details', number: 3 },
+];
+
 const initialFields = {
   firstName: '',
   lastName: '',
@@ -80,6 +86,7 @@ export default function JoinPage() {
 
   const [fields, setFields] = useState(initialFields);
   const [file, setFile] = useState(null);
+  const [wizardStep, setWizardStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
@@ -210,263 +217,216 @@ export default function JoinPage() {
         </div>
       </section>
 
-      {/* Application Form */}
+      {/* Application Form — Multi-Step Wizard */}
       <section className={styles.formSection}>
         <div className={styles.formInner}>
           <span className={styles.sectionLabel}>APPLY NOW</span>
           <h2 className={styles.formTitle}>Send Your Application</h2>
           <p className={styles.formIntro}>
             The BERG Collective brings together a powerful network of Black Employee Resource
-            Groups across industries to amplify culture, create shared experiences, and drive
-            collective impact. If your company is looking to plug into a dynamic community of
-            Black professionals and industry leaders, please apply below.
+            Groups across industries. Apply below to plug into our dynamic community.
           </p>
 
-          <form className={styles.form} onSubmit={handleSubmit} encType="multipart/form-data">
-
-            {/* Row: First + Last Name */}
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel} htmlFor="firstName">First Name <span aria-hidden="true">*</span></label>
-                <input
-                  id="firstName"
-                  name="firstName"
-                  type="text"
-                  required
-                  className={styles.formInput}
-                  value={fields.firstName}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel} htmlFor="lastName">Last Name <span aria-hidden="true">*</span></label>
-                <input
-                  id="lastName"
-                  name="lastName"
-                  type="text"
-                  required
-                  className={styles.formInput}
-                  value={fields.lastName}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            {/* Row: Title + Company */}
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel} htmlFor="title">Title <span aria-hidden="true">*</span></label>
-                <input
-                  id="title"
-                  name="title"
-                  type="text"
-                  required
-                  className={styles.formInput}
-                  value={fields.title}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel} htmlFor="company">Company <span aria-hidden="true">*</span></label>
-                <input
-                  id="company"
-                  name="company"
-                  type="text"
-                  required
-                  className={styles.formInput}
-                  value={fields.company}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            {/* Row: ERG + Phone */}
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel} htmlFor="erg">ERG <span aria-hidden="true">*</span></label>
-                <input
-                  id="erg"
-                  name="erg"
-                  type="text"
-                  required
-                  className={styles.formInput}
-                  value={fields.erg}
-                  onChange={handleChange}
-                />
-              </div>
-              <div className={styles.formGroup}>
-                <label className={styles.formLabel} htmlFor="phone">Phone Number <span aria-hidden="true">*</span></label>
-                <input
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  required
-                  className={styles.formInput}
-                  value={fields.phone}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-
-            {/* Email */}
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel} htmlFor="email">Email <span aria-hidden="true">*</span></label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                required
-                className={styles.formInput}
-                value={fields.email}
-                onChange={handleChange}
-              />
-            </div>
-
-            {/* Question divider */}
-            <div className={styles.questionsDivider}>
-              <span>Please answer the questions below</span>
-            </div>
-
-            {/* Textareas */}
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel} htmlFor="q1">Have you been in existence for 2+ years?</label>
-              <textarea
-                id="q1"
-                name="q1"
-                className={styles.formTextarea}
-                value={fields.q1}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel} htmlFor="q2">How does your company embody the Collective ERG Mission Statement?</label>
-              <textarea
-                id="q2"
-                name="q2"
-                className={styles.formTextarea}
-                value={fields.q2}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel} htmlFor="q3">In what ways does your ERG strive to engage the pillars of the Collective?</label>
-              <textarea
-                id="q3"
-                name="q3"
-                className={styles.formTextarea}
-                value={fields.q3}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel} htmlFor="q4">Where do you see your company making strides in diversity over the next few years?</label>
-              <textarea
-                id="q4"
-                name="q4"
-                className={styles.formTextarea}
-                value={fields.q4}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel} htmlFor="q5">What would it mean to your ERG to be a part of the Collective?</label>
-              <textarea
-                id="q5"
-                name="q5"
-                className={styles.formTextarea}
-                value={fields.q5}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel} htmlFor="q6">If you were in charge of the next quarterly ERG event, what would it be? Please describe in detail.</label>
-              <textarea
-                id="q6"
-                name="q6"
-                className={styles.formTextarea}
-                value={fields.q6}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel} htmlFor="q7">What resources are you able to contribute to the Collective?</label>
-              <textarea
-                id="q7"
-                name="q7"
-                className={styles.formTextarea}
-                value={fields.q7}
-                onChange={handleChange}
-              />
-            </div>
-
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel} htmlFor="message">Your Message</label>
-              <textarea
-                id="message"
-                name="message"
-                className={styles.formTextarea}
-                value={fields.message}
-                onChange={handleChange}
-              />
-            </div>
-
-            {/* File Upload */}
-            <div className={styles.formGroup}>
-              <label className={styles.formLabel} htmlFor="applicationFile">Upload Your Application</label>
-              <label className={styles.fileLabel} htmlFor="applicationFile">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="17 8 12 3 7 8" />
-                  <line x1="12" y1="3" x2="12" y2="15" />
-                </svg>
-                <span>{file ? file.name : 'Choose file — PDF, DOC, or DOCX (max 10MB)'}</span>
-                <input
-                  id="applicationFile"
-                  name="applicationFile"
-                  type="file"
-                  accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                  className={styles.fileInput}
-                  onChange={handleFile}
-                />
-              </label>
-            </div>
-
-            {/* Feedback messages */}
-            {success && (
-              <p className={styles.successMsg}>
-                Your application has been submitted! We'll be in touch soon.
+          {success ? (
+            <div className={styles.successCard}>
+              <div className={styles.successIcon}>✓</div>
+              <h3 className={styles.successTitle}>Application Submitted!</h3>
+              <p className={styles.successText}>
+                Thank you for your interest in BERG Collective. Our team will review your
+                application and be in touch within 5 business days.
               </p>
-            )}
-            {error && (
-              <p className={styles.errorMsg}>{error}</p>
-            )}
+              <button className={styles.ctaBtnGold} onClick={() => { setSuccess(false); setWizardStep(1); setFields(initialFields); setFile(null); }}>
+                Submit Another Application
+              </button>
+            </div>
+          ) : (
+            <>
+              {/* Step indicator */}
+              <div className={styles.wizardNav}>
+                {WIZARD_STEPS.map((step) => (
+                  <div key={step.number} className={`${styles.wizardStep} ${wizardStep === step.number ? styles.wizardStepActive : ''} ${wizardStep > step.number ? styles.wizardStepDone : ''}`}>
+                    <div className={styles.wizardDot}>{wizardStep > step.number ? '✓' : step.number}</div>
+                    <span className={styles.wizardLabel}>{step.label}</span>
+                  </div>
+                ))}
+                <div className={styles.wizardLine} />
+              </div>
 
-            <button
-              type="submit"
-              className={styles.submitBtn}
-              disabled={loading}
-            >
-              {loading ? 'Submitting…' : 'Submit Application'}
-            </button>
+              <form className={styles.form} onSubmit={handleSubmit} encType="multipart/form-data">
 
-          </form>
+                {/* Step 1: Contact Info */}
+                {wizardStep === 1 && (
+                  <div className={styles.wizardPanel}>
+                    <h3 className={styles.wizardPanelTitle}>Contact Information</h3>
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.formLabel}>First Name *</label>
+                        <input name="firstName" type="text" required className={styles.formInput} value={fields.firstName} onChange={handleChange} />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.formLabel}>Last Name *</label>
+                        <input name="lastName" type="text" required className={styles.formInput} value={fields.lastName} onChange={handleChange} />
+                      </div>
+                    </div>
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.formLabel}>Title *</label>
+                        <input name="title" type="text" required className={styles.formInput} value={fields.title} onChange={handleChange} />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.formLabel}>Company *</label>
+                        <input name="company" type="text" required className={styles.formInput} value={fields.company} onChange={handleChange} />
+                      </div>
+                    </div>
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.formLabel}>ERG Name *</label>
+                        <input name="erg" type="text" required className={styles.formInput} value={fields.erg} onChange={handleChange} />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.formLabel}>Phone Number *</label>
+                        <input name="phone" type="tel" required className={styles.formInput} value={fields.phone} onChange={handleChange} />
+                      </div>
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>Email *</label>
+                      <input name="email" type="email" required className={styles.formInput} value={fields.email} onChange={handleChange} />
+                    </div>
+                    <div className={styles.wizardActions}>
+                      <div />
+                      <button type="button" className={styles.ctaBtnGold} onClick={() => {
+                        if (!fields.firstName || !fields.lastName || !fields.email || !fields.company || !fields.erg || !fields.phone || !fields.title) {
+                          setError('Please fill in all required fields.');
+                          return;
+                        }
+                        setError('');
+                        setWizardStep(2);
+                      }}>
+                        Next: About Your ERG →
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 2: ERG Questions */}
+                {wizardStep === 2 && (
+                  <div className={styles.wizardPanel}>
+                    <h3 className={styles.wizardPanelTitle}>About Your ERG</h3>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>Have you been in existence for 2+ years?</label>
+                      <textarea name="q1" className={styles.formTextarea} value={fields.q1} onChange={handleChange} rows={3} />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>How does your company embody the Collective ERG Mission Statement?</label>
+                      <textarea name="q2" className={styles.formTextarea} value={fields.q2} onChange={handleChange} rows={3} />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>In what ways does your ERG strive to engage the pillars of the Collective?</label>
+                      <textarea name="q3" className={styles.formTextarea} value={fields.q3} onChange={handleChange} rows={3} />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>Where do you see your company making strides in diversity?</label>
+                      <textarea name="q4" className={styles.formTextarea} value={fields.q4} onChange={handleChange} rows={3} />
+                    </div>
+                    <div className={styles.wizardActions}>
+                      <button type="button" className={styles.ctaBtnOutline} onClick={() => setWizardStep(1)}>
+                        ← Back
+                      </button>
+                      <button type="button" className={styles.ctaBtnGold} onClick={() => setWizardStep(3)}>
+                        Next: Final Details →
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Step 3: Final Details + Submit */}
+                {wizardStep === 3 && (
+                  <div className={styles.wizardPanel}>
+                    <h3 className={styles.wizardPanelTitle}>Final Details</h3>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>What would it mean to your ERG to be a part of the Collective?</label>
+                      <textarea name="q5" className={styles.formTextarea} value={fields.q5} onChange={handleChange} rows={3} />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>If you were in charge of the next quarterly ERG event, what would it be?</label>
+                      <textarea name="q6" className={styles.formTextarea} value={fields.q6} onChange={handleChange} rows={3} />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>What resources are you able to contribute to the Collective?</label>
+                      <textarea name="q7" className={styles.formTextarea} value={fields.q7} onChange={handleChange} rows={3} />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>Additional Message</label>
+                      <textarea name="message" className={styles.formTextarea} value={fields.message} onChange={handleChange} rows={3} />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>Upload Supporting Documents (optional)</label>
+                      <label className={styles.fileLabel}>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        <span>{file ? file.name : 'PDF, DOC, or DOCX (max 10MB)'}</span>
+                        <input type="file" accept=".pdf,.doc,.docx" className={styles.fileInput} onChange={handleFile} />
+                      </label>
+                    </div>
+
+                    {error && <p className={styles.errorMsg}>{error}</p>}
+
+                    <div className={styles.wizardActions}>
+                      <button type="button" className={styles.ctaBtnOutline} onClick={() => setWizardStep(2)}>
+                        ← Back
+                      </button>
+                      <button type="submit" className={styles.ctaBtnGold} disabled={loading}>
+                        {loading ? 'Submitting…' : 'Submit Application'}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </form>
+            </>
+          )}
         </div>
       </section>
 
-      {/* Individual Membership Callout */}
-      <section className={styles.callout}>
-        <div className={styles.calloutInner}>
-          <h2 className={styles.calloutTitle}>Individual Membership Coming in 2026</h2>
-          <p className={styles.calloutSub}>Join our waitlist to be the first to know.</p>
-          <a href="mailto:rich@bergcollective.org" className={styles.calloutBtn}>
-            Join Waitlist
-          </a>
+      {/* Individual Membership Callout — Enhanced */}
+      <section className={styles.individualSection}>
+        <div className={styles.individualInner}>
+          <div className={styles.individualContent}>
+            <span className={styles.individualBadge}>COMING 2026</span>
+            <h2 className={styles.individualTitle}>Individual Membership</h2>
+            <p className={styles.individualBody}>
+              We hear you — individual membership is our most requested feature.
+              Currently, BERG Collective membership is at the organization level through
+              your company's ERG. But that doesn't mean you can't be part of our community.
+            </p>
+            <div className={styles.individualHighlights}>
+              <div className={styles.individualHighlight}>
+                <span className={styles.highlightIcon}>🎟️</span>
+                <div>
+                  <strong>Attend Our Events</strong>
+                  <p>All BERG events are open to the public. No membership required to network, learn, and connect.</p>
+                </div>
+              </div>
+              <div className={styles.individualHighlight}>
+                <span className={styles.highlightIcon}>📬</span>
+                <div>
+                  <strong>Join Our Newsletter</strong>
+                  <p>Stay in the loop on events, opportunities, and community updates delivered to your inbox.</p>
+                </div>
+              </div>
+              <div className={styles.individualHighlight}>
+                <span className={styles.highlightIcon}>🔔</span>
+                <div>
+                  <strong>Get on the Waitlist</strong>
+                  <p>Be the first to know when individual membership launches in 2026.</p>
+                </div>
+              </div>
+            </div>
+            <div className={styles.individualActions}>
+              <a href="mailto:rich@bergcollective.org?subject=Individual Membership Waitlist" className={styles.ctaBtnGold}>
+                Join the Waitlist
+              </a>
+              <Button to="/events" variant="outline">Browse Events</Button>
+            </div>
+          </div>
         </div>
       </section>
 
