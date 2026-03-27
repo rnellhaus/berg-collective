@@ -34,47 +34,18 @@ export default function ChaptersPage() {
 
   return (
     <main>
-      {/* Hero — two column */}
+      {/* Hero */}
       <section className={styles.hero}>
         <div className={styles.heroInner}>
-          <div className={styles.heroLeft}>
-            <h1
-              className={styles.heroTitle}
-              dangerouslySetInnerHTML={{
-                __html: "Connect Locally, <span style='color:#B59410'>Lead Globally.</span>",
-              }}
-            />
-            <p className={styles.heroSubtitle}>
-              BERG chapters bring our mission to life in cities across the country — connecting Black
-              professionals locally while building a unified global network of leaders.
-            </p>
-            <div className={styles.heroActions}>
-              <Button variant="primary" href="#">Find Your Chapter</Button>
-              <Button variant="outline" href="#">Start a Chapter</Button>
-            </div>
-            <div className={styles.statsRow}>
-              <div className={styles.stat}>
-                <span className={styles.statNumber}>2</span>
-                <span className={styles.statLabel}>Active Chapters</span>
-              </div>
-              <div className={styles.statDivider} />
-              <div className={styles.stat}>
-                <span className={styles.statNumber}>5k+</span>
-                <span className={styles.statLabel}>Global Members</span>
-              </div>
-            </div>
-          </div>
-          <div className={styles.heroRight}>
-            <div className={styles.heroImageWrap}>
-              <img
-                src="/images/photos/group-photo-berg-panel-whitney.jpg"
-                alt="BERG chapter gathering"
-                className={styles.heroImage}
-              />
-              <div className={styles.floatingBadge}>
-                <span className={styles.floatingBadgeText}>Global Network</span>
-              </div>
-            </div>
+          <p className={styles.heroLabel}>Chapters</p>
+          <h1 className={styles.heroTitle}>Connect Locally, Lead Globally</h1>
+          <p className={styles.heroSubtitle}>
+            BERG chapters bring our mission to life in cities across the country — connecting Black
+            professionals locally while building a unified global network of leaders.
+          </p>
+          <div className={styles.heroActions}>
+            <Button variant="gold" href="#">Find Your Chapter</Button>
+            <Button variant="outline" href="#">Start a Chapter</Button>
           </div>
         </div>
       </section>
@@ -132,7 +103,7 @@ export default function ChaptersPage() {
           <p className={styles.ctaSubtitle}>
             BERG is growing. Help bring our mission to your community by starting a new chapter.
           </p>
-          <Button variant="white" href="#">Start a Chapter</Button>
+          <Button variant="gold" href="#">Start a Chapter</Button>
         </div>
       </section>
     </main>

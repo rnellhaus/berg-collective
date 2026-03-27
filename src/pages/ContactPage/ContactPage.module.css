@@ -1,12 +1,12 @@
 .page {
   min-height: 100vh;
-  background: #fbfaf9;
+  background: var(--color-white);
 }
 
 /* Hero */
 .hero {
-  background: #191110;
-  padding: 96px 0 80px;
+  background-color: var(--color-black);
+  padding: 100px 0 80px;
   text-align: center;
 }
 
@@ -20,35 +20,30 @@
   gap: 20px;
 }
 
-.badge {
-  display: inline-block;
-  padding: 6px 16px;
-  background: rgba(181, 148, 16, 0.15);
-  border: 1px solid rgba(181, 148, 16, 0.4);
-  border-radius: 100px;
-  color: #B59410;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
+.heroLabel {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
   text-transform: uppercase;
-}
-
-.heroTitle {
-  font-size: clamp(36px, 5vw, 60px);
-  font-weight: 800;
-  line-height: 1.15;
-  color: #fbfaf9;
+  color: var(--color-gold);
   margin: 0;
 }
 
-.gold {
-  color: #B59410;
+.heroTitle {
+  font-family: var(--font-heading);
+  font-size: clamp(36px, 5vw, 60px);
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--color-white);
+  margin: 0;
 }
 
 .heroSubtitle {
+  font-family: var(--font-body);
   font-size: 18px;
   line-height: 1.7;
-  color: rgba(251, 250, 249, 0.7);
+  color: var(--color-gray-400);
   margin: 0;
   max-width: 560px;
 }
@@ -56,12 +51,12 @@
 /* Contact Options */
 .contactOptions {
   padding: 64px 0;
-  background: #fbfaf9;
-  border-bottom: 1px solid #e8e1da;
+  background: var(--color-gray-100);
+  border-bottom: 1px solid var(--color-gray-200);
 }
 
 .optionsInner {
-  max-width: 1200px;
+  max-width: var(--max-width);
   margin: 0 auto;
   padding: 0 24px;
 }
@@ -73,8 +68,9 @@
 }
 
 .optionCard {
-  background: #fff;
-  border: 1px solid #e8e1da;
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-200);
+  border-top: 3px solid var(--color-gold);
   border-radius: 16px;
   padding: 32px 28px;
   display: flex;
@@ -84,48 +80,54 @@
 }
 
 .optionCard:hover {
-  box-shadow: 0 4px 20px rgba(139, 50, 35, 0.08);
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.12);
 }
 
 .iconBox {
   width: 52px;
   height: 52px;
   border-radius: 14px;
+  background: var(--color-gold-dim);
+  border: 1px solid var(--color-gold-border);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--color-gold);
   margin-bottom: 8px;
   flex-shrink: 0;
 }
 
 .optionTitle {
+  font-family: var(--font-heading);
   font-size: 16px;
   font-weight: 700;
-  color: #191110;
+  color: var(--color-black);
   margin: 0;
 }
 
 .optionValue {
+  font-family: var(--font-body);
   font-size: 15px;
   font-weight: 600;
-  color: #8b3223;
+  color: var(--color-gold);
   margin: 0;
 }
 
 .optionNote {
+  font-family: var(--font-body);
   font-size: 13px;
-  color: #8e5f57;
+  color: var(--color-gray-600);
   margin: 0;
 }
 
 /* Form Section */
 .formSection {
   padding: 80px 0;
+  background: var(--color-white);
 }
 
 .formInner {
-  max-width: 1200px;
+  max-width: var(--max-width);
   margin: 0 auto;
   padding: 0 24px;
   display: grid;
@@ -142,9 +144,10 @@
 }
 
 .formTitle {
+  font-family: var(--font-heading);
   font-size: 28px;
   font-weight: 800;
-  color: #191110;
+  color: var(--color-black);
   margin: 0;
 }
 
@@ -167,9 +170,10 @@
 }
 
 .label {
+  font-family: var(--font-body);
   font-size: 13px;
   font-weight: 600;
-  color: #191110;
+  color: var(--color-black);
   letter-spacing: 0.02em;
 }
 
@@ -177,33 +181,33 @@
 .select,
 .textarea {
   padding: 12px 16px;
-  border: 1.5px solid #e8e1da;
+  border: 1.5px solid var(--color-gray-200);
   border-radius: 10px;
+  font-family: var(--font-body);
   font-size: 15px;
-  color: #191110;
-  background: #fff;
+  color: var(--color-black);
+  background: var(--color-white);
   outline: none;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
-  font-family: inherit;
   width: 100%;
   box-sizing: border-box;
 }
 
 .input::placeholder,
 .textarea::placeholder {
-  color: #c4b5b0;
+  color: var(--color-gray-400);
 }
 
 .input:focus,
 .select:focus,
 .textarea:focus {
-  border-color: #8b3223;
-  box-shadow: 0 0 0 3px rgba(139, 50, 35, 0.08);
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 3px var(--color-gold-dim);
 }
 
 .select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238e5f57' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239E9E9E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 14px center;
   padding-right: 40px;
@@ -221,8 +225,9 @@
   justify-content: center;
   gap: 8px;
   padding: 14px 32px;
-  background: #8b3223;
-  color: #fbfaf9;
+  background: var(--color-black);
+  color: var(--color-white);
+  font-family: var(--font-body);
   font-size: 15px;
   font-weight: 700;
   border: none;
@@ -230,11 +235,10 @@
   cursor: pointer;
   transition: background 0.2s ease, transform 0.15s ease;
   align-self: flex-start;
-  font-family: inherit;
 }
 
 .submitBtn:hover {
-  background: #7a2b1e;
+  background: var(--color-gray-800);
   transform: translateY(-1px);
 }
 
@@ -248,8 +252,8 @@
 }
 
 .sideCard {
-  background: #fff;
-  border: 1px solid #e8e1da;
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-200);
   border-radius: 16px;
   padding: 28px;
   display: flex;
@@ -258,16 +262,18 @@
 }
 
 .sideCardTitle {
+  font-family: var(--font-heading);
   font-size: 16px;
   font-weight: 700;
-  color: #191110;
+  color: var(--color-black);
   margin: 0;
 }
 
 .sideCardText {
+  font-family: var(--font-body);
   font-size: 14px;
   line-height: 1.6;
-  color: #8e5f57;
+  color: var(--color-gray-600);
   margin: 0;
 }
 
@@ -283,7 +289,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 0;
-  border-bottom: 1px solid #f0ebe5;
+  border-bottom: 1px solid var(--color-gray-100);
   text-decoration: none;
   transition: color 0.2s ease;
 }
@@ -293,19 +299,21 @@
 }
 
 .socialLink:hover .socialName {
-  color: #8b3223;
+  color: var(--color-gold);
 }
 
 .socialName {
+  font-family: var(--font-body);
   font-size: 14px;
   font-weight: 600;
-  color: #191110;
+  color: var(--color-black);
   transition: color 0.2s ease;
 }
 
 .socialHandle {
+  font-family: var(--font-body);
   font-size: 13px;
-  color: #8e5f57;
+  color: var(--color-gray-600);
 }
 
 /* Chapter Contacts */
@@ -328,7 +336,7 @@
   object-fit: cover;
   object-position: top;
   flex-shrink: 0;
-  border: 2px solid #e8e1da;
+  border: 2px solid var(--color-gold-border);
 }
 
 .chapterInfo {
@@ -338,27 +346,63 @@
 }
 
 .chapterName {
+  font-family: var(--font-heading);
   font-size: 14px;
   font-weight: 700;
-  color: #191110;
+  color: var(--color-black);
   margin: 0;
 }
 
 .chapterRole {
+  font-family: var(--font-body);
   font-size: 12px;
-  color: #8e5f57;
+  color: var(--color-gray-600);
   margin: 0;
 }
 
 .chapterEmail {
+  font-family: var(--font-body);
   font-size: 12px;
-  color: #8b3223;
+  color: var(--color-gold);
   text-decoration: none;
   font-weight: 500;
 }
 
 .chapterEmail:hover {
   text-decoration: underline;
+}
+
+/* Gold CTA Callout */
+.goldCta {
+  background: var(--color-gold-light);
+  border-top: 3px solid var(--color-gold);
+  padding: 80px 24px;
+  text-align: center;
+}
+
+.goldCtaInner {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.goldCtaTitle {
+  font-family: var(--font-heading);
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  font-weight: 800;
+  color: var(--color-black);
+  margin: 0;
+}
+
+.goldCtaSubtitle {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  color: var(--color-gray-800);
+  margin: 0;
+  line-height: 1.6;
 }
 
 /* Responsive */

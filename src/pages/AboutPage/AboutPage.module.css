@@ -2,260 +2,59 @@
    Hero
    ===================== */
 .hero {
-  background-color: #fbfaf9;
-  padding: 80px 24px 64px;
+  background-color: var(--color-black);
+  padding: 100px 24px;
+  text-align: center;
 }
 
 .heroInner {
-  max-width: 1200px;
+  max-width: var(--max-width);
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: 55% 45%;
-  gap: 48px;
-  align-items: center;
-}
-
-.heroLeft {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 24px;
 }
 
-.heroBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background-color: #fde8e4;
-  color: #8b3223;
-  font-size: 0.75rem;
+.heroLabel {
+  font-family: var(--font-body);
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 3px;
   text-transform: uppercase;
-  padding: 6px 14px;
-  border-radius: 100px;
-  border: 1px solid #8b3223;
-  width: fit-content;
+  color: var(--color-gold);
+  margin: 0;
 }
 
 .heroTitle {
-  font-size: clamp(2rem, 4vw, 3.2rem);
+  font-family: var(--font-heading);
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
   font-weight: 800;
   line-height: 1.15;
-  color: #191110;
+  color: var(--color-white);
   margin: 0;
+  max-width: 700px;
 }
 
 .heroSubtitle {
-  font-size: 1.05rem;
-  line-height: 1.65;
-  color: #8e5f57;
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: var(--color-gray-400);
   margin: 0;
-  max-width: 480px;
-}
-
-.heroActions {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.avatarRow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.avatarStack {
-  display: flex;
-}
-
-.avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #fbfaf9;
-  margin-left: -8px;
-}
-
-.avatar:first-child {
-  margin-left: 0;
-}
-
-.avatarLabel {
-  font-size: 0.875rem;
-  color: #8e5f57;
-  margin: 0;
-}
-
-.avatarLabel strong {
-  color: #191110;
-}
-
-/* Hero Right */
-.heroRight {
-  position: relative;
-}
-
-.heroImageWrap {
-  position: relative;
-  border-radius: 16px;
-  overflow: hidden;
-  aspect-ratio: 4 / 5;
-}
-
-.heroImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.heroGradient {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, transparent 40%, rgba(47, 40, 40, 0.8) 100%);
-}
-
-.quoteCard {
-  position: absolute;
-  bottom: 24px;
-  left: 20px;
-  right: 20px;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 10px;
-  padding: 16px 18px;
-}
-
-.quoteText {
-  font-size: 0.9rem;
-  line-height: 1.55;
-  color: #fff;
-  margin: 0 0 8px;
-  font-style: italic;
-}
-
-.quoteAttrib {
-  font-size: 0.78rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.75);
-  margin: 0;
-}
-
-/* =====================
-   Logo Bar
-   ===================== */
-.logoBar {
-  background-color: #f1eae9;
-  padding: 32px 24px;
-  border-top: 1px solid #e8e1da;
-  border-bottom: 1px solid #e8e1da;
-}
-
-.logoBarInner {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-
-.featuredLabel {
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: #8e5f57;
-  white-space: nowrap;
-}
-
-.logos {
-  display: flex;
-  gap: 2.5rem;
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.logo {
-  display: inline-block;
-  color: #191110;
-  opacity: 0.45;
-  transition: opacity 0.2s ease;
-  cursor: default;
-}
-
-.logo:hover {
-  opacity: 0.75;
-}
-
-.logoDisney {
-  font-family: 'Dancing Script', cursive;
-  font-weight: 700;
-  font-size: 2.2rem;
-  letter-spacing: 0.02em;
-}
-
-.logoBetterment {
-  font-family: 'DM Sans', sans-serif;
-  font-weight: 500;
-  font-size: 1.4rem;
-  letter-spacing: 0.08em;
-  text-transform: lowercase;
-}
-
-.logoNfl {
-  font-family: 'Oswald', sans-serif;
-  font-weight: 700;
-  font-size: 1.8rem;
-  letter-spacing: -0.02em;
-  text-transform: uppercase;
-}
-
-.logoNetflix {
-  font-family: 'Bebas Neue', sans-serif;
-  font-weight: 400;
-  font-size: 2rem;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.logoLoreal {
-  font-family: 'Helvetica Neue', 'Arial Black', Helvetica, Arial, sans-serif;
-  font-weight: 700;
-  font-size: 1.5rem;
-  letter-spacing: -0.02em;
-  text-transform: uppercase;
-}
-
-.logoDowjones {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 600;
-  font-size: 1.4rem;
-  letter-spacing: 0.03em;
-}
-
-.logoFortune {
-  font-family: 'Playfair Display', serif;
-  font-weight: 900;
-  font-size: 1.6rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  max-width: 560px;
 }
 
 /* =====================
    Mission
    ===================== */
 .mission {
-  padding: 96px 24px;
-  background-color: #fbfaf9;
+  padding: var(--section-padding-y) 24px;
+  background-color: var(--color-white);
 }
 
 .missionInner {
-  max-width: 1200px;
+  max-width: var(--max-width);
   margin: 0 auto;
   display: grid;
   grid-template-columns: 45% 55%;
@@ -285,9 +84,9 @@
   right: -20px;
   width: 120px;
   height: 120px;
-  background-color: #B59410;
+  background-color: var(--color-gold);
   border-radius: 50%;
-  opacity: 0.25;
+  opacity: 0.18;
   z-index: -1;
 }
 
@@ -298,26 +97,33 @@
 }
 
 .eyebrow {
-  font-size: 0.8rem;
+  font-family: var(--font-body);
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 3px;
   text-transform: uppercase;
-  color: #8b3223;
+  color: var(--color-gold);
   margin: 0;
 }
 
 .missionTitle {
+  font-family: var(--font-heading);
   font-size: clamp(1.75rem, 3vw, 2.5rem);
   font-weight: 800;
   line-height: 1.2;
-  color: #191110;
+  color: var(--color-black);
   margin: 0;
 }
 
+.goldText {
+  color: var(--color-gold);
+}
+
 .missionBody {
+  font-family: var(--font-body);
   font-size: 1rem;
   line-height: 1.7;
-  color: #8e5f57;
+  color: var(--color-gray-600);
   margin: 0;
 }
 
@@ -335,15 +141,17 @@
 }
 
 .statNumber {
+  font-family: var(--font-heading);
   font-size: 1.75rem;
   font-weight: 800;
-  color: #8b3223;
+  color: var(--color-gold);
   line-height: 1;
 }
 
 .statLabel {
+  font-family: var(--font-body);
   font-size: 0.8rem;
-  color: #8e5f57;
+  color: var(--color-gray-600);
   font-weight: 500;
 }
 
@@ -351,12 +159,12 @@
    Values
    ===================== */
 .values {
-  background-color: #2f2828;
-  padding: 96px 24px;
+  background-color: var(--color-gray-100);
+  padding: var(--section-padding-y) 24px;
 }
 
 .valuesInner {
-  max-width: 1200px;
+  max-width: var(--max-width);
   margin: 0 auto;
 }
 
@@ -368,8 +176,9 @@
 }
 
 .valueCard {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-200);
+  border-top: 3px solid var(--color-gold);
   border-radius: 12px;
   padding: 32px 28px;
   display: flex;
@@ -380,7 +189,7 @@
 .valueIcon {
   width: 52px;
   height: 52px;
-  background: rgba(181, 148, 16, 0.12);
+  background: var(--color-gold-dim);
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -388,16 +197,18 @@
 }
 
 .valueTitle {
+  font-family: var(--font-heading);
   font-size: 1.1rem;
   font-weight: 700;
-  color: #fff;
+  color: var(--color-black);
   margin: 0;
 }
 
 .valueDesc {
+  font-family: var(--font-body);
   font-size: 0.9rem;
   line-height: 1.65;
-  color: rgba(255, 255, 255, 0.65);
+  color: var(--color-gray-600);
   margin: 0;
 }
 
@@ -405,12 +216,12 @@
    Chapter Leaders
    ===================== */
 .leaders {
-  background-color: #F8F5F2;
-  padding: 96px 24px;
+  background-color: var(--color-white);
+  padding: var(--section-padding-y) 24px;
 }
 
 .leadersInner {
-  max-width: 1200px;
+  max-width: var(--max-width);
   margin: 0 auto;
 }
 
@@ -422,8 +233,8 @@
 }
 
 .leaderCard {
-  background: #fff;
-  border: 1px solid #e8e1da;
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-200);
   border-radius: 12px;
   overflow: hidden;
   display: flex;
@@ -456,25 +267,28 @@
 }
 
 .leaderName {
+  font-family: var(--font-heading);
   font-size: 1.2rem;
   font-weight: 700;
-  color: #191110;
+  color: var(--color-black);
   margin: 0;
 }
 
 .leaderRole {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #8b3223;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-gold);
   margin: 0;
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
 }
 
 .leaderDesc {
+  font-family: var(--font-body);
   font-size: 0.9rem;
   line-height: 1.65;
-  color: #8e5f57;
+  color: var(--color-gray-600);
   margin: 0;
   padding-top: 4px;
 }
@@ -483,8 +297,8 @@
    CTA
    ===================== */
 .cta {
-  background: linear-gradient(135deg, #8b3223 0%, #6b2419 100%);
-  padding: 96px 24px;
+  background-color: var(--color-black);
+  padding: var(--section-padding-y) 24px;
   text-align: center;
 }
 
@@ -498,16 +312,18 @@
 }
 
 .ctaTitle {
+  font-family: var(--font-heading);
   font-size: clamp(1.75rem, 3vw, 2.5rem);
   font-weight: 800;
-  color: #fff;
+  color: var(--color-white);
   margin: 0;
 }
 
 .ctaSubtitle {
+  font-family: var(--font-body);
   font-size: 1.05rem;
   line-height: 1.65;
-  color: rgba(255, 255, 255, 0.8);
+  color: var(--color-gray-400);
   margin: 0;
 }
 
@@ -522,18 +338,6 @@
    Responsive
    ===================== */
 @media (max-width: 768px) {
-  .heroInner {
-    grid-template-columns: 1fr;
-  }
-
-  .heroRight {
-    order: -1;
-  }
-
-  .heroImageWrap {
-    aspect-ratio: 4 / 3;
-  }
-
   .missionInner {
     grid-template-columns: 1fr;
   }
@@ -549,21 +353,4 @@
   .statsRow {
     gap: 20px;
   }
-
-  .logoBarInner {
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .logos {
-    gap: 1.5rem;
-  }
-
-  .logoDisney { font-size: 1.8rem; }
-  .logoBetterment { font-size: 1.1rem; }
-  .logoNfl { font-size: 1.4rem; }
-  .logoNetflix { font-size: 1.6rem; }
-  .logoLoreal { font-size: 1.2rem; }
-  .logoDowjones { font-size: 1.1rem; }
-  .logoFortune { font-size: 1.3rem; }
 }

@@ -69,3 +69,15 @@
 .outline:hover {
   background: rgba(255,255,255,0.1);
 }
+
+.gold {
+  background-color: var(--color-gold);
+  color: var(--color-black);
+  padding: 14px 32px;
+  font-weight: 700;
+}
+.gold:hover {
+  background-color: #c4a030;
+  transform: translateY(-2px);
+  color: var(--color-black);
+}

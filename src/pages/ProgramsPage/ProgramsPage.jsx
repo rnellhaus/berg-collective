@@ -1,4 +1,3 @@
-import HeroBanner from '../../components/HeroBanner/HeroBanner';
 import Button from '../../components/Button/Button';
 import styles from './ProgramsPage.module.css';
 import usePageMeta from '../../hooks/usePageMeta';
@@ -8,12 +7,16 @@ export default function ProgramsPage() {
   return (
     <main>
       {/* Hero */}
-      <HeroBanner
-        centered
-        badge="Our Core Pillars"
-        title="Empowering Black <span style='color:#8b3223'>Excellence</span>"
-        subtitle="BERG Collective offers transformative programs designed to elevate Black professionals into positions of leadership, influence, and lasting impact."
-      />
+      <section className={styles.hero}>
+        <div className={styles.heroInner}>
+          <p className={styles.heroLabel}>Programs</p>
+          <h1 className={styles.heroTitle}>Three Pillars of Excellence</h1>
+          <p className={styles.heroSubtitle}>
+            BERG Collective offers transformative programs designed to elevate Black professionals
+            into positions of leadership, influence, and lasting impact.
+          </p>
+        </div>
+      </section>
 
       {/* Leadership Development — flagship card */}
       <section className={styles.flagship}>
@@ -105,7 +108,7 @@ export default function ProgramsPage() {
           <p className={styles.ctaSubtitle}>
             Join hundreds of Black professionals who have transformed their careers through BERG programs.
           </p>
-          <Button variant="white" href="#">Join BERG Today</Button>
+          <Button variant="gold" href="#">Join BERG Today</Button>
         </div>
       </section>
     </main>

@@ -1,9 +1,53 @@
 /* ===== ProgramsPage ===== */
 
+/* Hero */
+.hero {
+  background-color: var(--color-black);
+  padding: var(--section-padding-y) 24px;
+  text-align: center;
+}
+
+.heroInner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.heroLabel {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--color-gold);
+  margin: 0;
+}
+
+.heroTitle {
+  font-family: var(--font-heading);
+  font-size: clamp(2.2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--color-white);
+  margin: 0;
+}
+
+.heroSubtitle {
+  font-family: var(--font-body);
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: var(--color-gray-400);
+  margin: 0;
+  max-width: 560px;
+}
+
 /* Flagship / Leadership Development */
 .flagship {
-  padding: 80px 24px;
-  background: #fbfaf9;
+  padding: var(--section-padding-y) 24px;
+  background: var(--color-white);
 }
 
 .flagshipInner {
@@ -19,7 +63,7 @@
   position: relative;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(25, 17, 16, 0.12);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
 }
 
 .flagshipImage {
@@ -33,9 +77,10 @@
   position: absolute;
   top: 20px;
   left: 20px;
-  background: #B59410;
-  color: #fff;
-  font-size: 12px;
+  background: var(--color-gold);
+  color: var(--color-black);
+  font-family: var(--font-body);
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -44,25 +89,28 @@
 }
 
 .eyebrow {
-  font-size: 12px;
+  font-family: var(--font-body);
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 3px;
   text-transform: uppercase;
-  color: #8b3223;
+  color: var(--color-gold);
   margin: 0 0 12px;
 }
 
 .flagshipTitle {
+  font-family: var(--font-heading);
   font-size: 32px;
   font-weight: 800;
-  color: #191110;
+  color: var(--color-black);
   margin: 0 0 20px;
   line-height: 1.2;
 }
 
 .flagshipDesc {
+  font-family: var(--font-body);
   font-size: 16px;
-  color: #8e5f57;
+  color: var(--color-gray-600);
   line-height: 1.7;
   margin: 0 0 28px;
 }
@@ -80,16 +128,17 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  font-family: var(--font-body);
   font-size: 15px;
-  color: #191110;
+  color: var(--color-black);
   font-weight: 500;
 }
 
 .checkIcon {
   width: 24px;
   height: 24px;
-  background: #F5EFDB;
-  color: #B59410;
+  background: var(--color-gold-dim);
+  color: var(--color-gold);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -101,8 +150,8 @@
 
 /* Secondary program cards */
 .secondary {
-  padding: 80px 24px;
-  background: #fff;
+  padding: var(--section-padding-y) 24px;
+  background: var(--color-gray-100);
 }
 
 .secondaryGrid {
@@ -116,13 +165,14 @@
 .programCard {
   border-radius: 16px;
   overflow: hidden;
-  border: 1px solid #e8e1da;
-  background: #fbfaf9;
+  border: 1px solid var(--color-gray-200);
+  border-top: 3px solid var(--color-gold);
+  background: var(--color-white);
   transition: box-shadow 0.2s ease;
 }
 
 .programCard:hover {
-  box-shadow: 0 8px 24px rgba(25, 17, 16, 0.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
 .cardImageWrap {
@@ -147,23 +197,26 @@
 }
 
 .cardTitle {
+  font-family: var(--font-heading);
   font-size: 22px;
   font-weight: 700;
-  color: #191110;
+  color: var(--color-black);
   margin: 0 0 12px;
 }
 
 .cardDesc {
+  font-family: var(--font-body);
   font-size: 15px;
-  color: #8e5f57;
+  color: var(--color-gray-600);
   line-height: 1.65;
   margin: 0 0 20px;
 }
 
 .arrowLink {
+  font-family: var(--font-body);
   font-size: 14px;
   font-weight: 700;
-  color: #8b3223;
+  color: var(--color-gold);
   text-decoration: none;
   display: inline-flex;
   align-items: center;
@@ -177,27 +230,33 @@
 
 /* CTA */
 .cta {
-  background: linear-gradient(135deg, #8b3223 0%, #6b2419 100%);
-  padding: 80px 24px;
+  background-color: var(--color-black);
+  padding: var(--section-padding-y) 24px;
   text-align: center;
 }
 
 .ctaInner {
   max-width: 680px;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
 }
 
 .ctaTitle {
+  font-family: var(--font-heading);
   font-size: 36px;
   font-weight: 800;
-  color: #fff;
-  margin: 0 0 16px;
+  color: var(--color-white);
+  margin: 0;
 }
 
 .ctaSubtitle {
+  font-family: var(--font-body);
   font-size: 17px;
-  color: rgba(255, 255, 255, 0.82);
-  margin: 0 0 36px;
+  color: var(--color-gray-400);
+  margin: 0;
   line-height: 1.6;
 }
 
