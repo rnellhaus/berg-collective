@@ -1,4 +1,5 @@
 import Newsletter from '../../components/Newsletter/Newsletter';
+import DonorboxEmbed from '../../components/DonorboxEmbed/DonorboxEmbed';
 import styles from './DonatePage.module.css';
 import usePageMeta from '../../hooks/usePageMeta';
 
@@ -67,19 +68,18 @@ export default function DonatePage() {
         </div>
       </section>
 
-      {/* Donation CTA */}
-      <section className={styles.ctaSection}>
-        <div className={styles.ctaInner}>
-          <h2 className={styles.ctaHeading}>Ready to Make an Impact?</h2>
-          <p className={styles.ctaBody}>
+      {/* Donation Form — Donorbox */}
+      <section className={styles.donateSection}>
+        <div className={styles.donateInner}>
+          <span className={styles.sectionLabelDark}>MAKE A DONATION</span>
+          <h2 className={styles.donateHeading}>Ready to Make an Impact?</h2>
+          <p className={styles.donateBody}>
             Your tax-deductible contribution empowers Black professionals through mentorship,
-            resources, and community.
+            resources, and community. Choose your amount below.
           </p>
-          <a href="#" className={styles.donateBtn}>
-            Donate Now
-          </a>
-          <p className={styles.ctaNote}>
-            Secure payment processing. Tax-deductible donation.
+          <DonorboxEmbed />
+          <p className={styles.donateNote}>
+            Powered by Donorbox. Secure, encrypted payment processing.
           </p>
         </div>
       </section>
