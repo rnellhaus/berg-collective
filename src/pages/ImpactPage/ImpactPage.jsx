@@ -31,8 +31,8 @@ const highlights = [
     body: "From our sold-out Women's Leadership Panel at the Whitney Museum to intimate executive roundtables, BERG programming in 2025 equipped ERG leaders with the skills, visibility, and relationships to lead with greater impact.",
   },
   {
-    image: '/images/photos/BERG-1562-scaled.jpg',
-    alt: 'BERG Collective members at a signature event',
+    image: '/images/photos/berg-fans-outdoor.jpg',
+    alt: 'BERG Collective members at outdoor market event',
     eyebrow: 'Economic Impact',
     title: 'Investing in Black-Owned Businesses',
     body: 'BERG Collective directed over $50,000 in spending toward Black-owned vendors, caterers, photographers, and production companies in 2025 — turning every event into an economic opportunity for Black entrepreneurs.',
