@@ -109,13 +109,68 @@
   cursor: not-allowed;
 }
 
+/* ── Chapter selector ── */
+.listSelector {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.listBtn {
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 8px 20px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.listBtn:hover {
+  border-color: var(--color-gold);
+  color: var(--color-gold);
+}
+
+.listBtnActive {
+  background: var(--color-gold);
+  border-color: var(--color-gold);
+  color: var(--color-black);
+}
+
 /* ── States ── */
+.successWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
 .successMsg {
   font-family: var(--font-body);
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--color-gold);
-  margin: 8px 0 0;
+  margin: 0;
+}
+
+.resetBtn {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-family: var(--font-body);
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.resetBtn:hover {
+  color: var(--color-white);
 }
 
 .errorMsg {
