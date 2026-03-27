@@ -3,50 +3,49 @@ import Button from '../../components/Button/Button';
 import styles from './JoinPage.module.css';
 import usePageMeta from '../../hooks/usePageMeta';
 
-const tiers = [
+const TIERS = [
   {
     id: 'growing',
-    name: 'Growing',
-    tagline: 'For emerging ERGs',
-    highlighted: false,
+    name: 'Growing Tier',
+    title: 'Growing',
+    desc: 'For smaller ERGs or local chapters looking to build momentum and establish their presence.',
     features: [
-      'Community access',
-      'Resource library',
-      'Quarterly events',
-      'BERG network directory',
+      '2 ERG Lead seats',
+      'Up to 50 ERG Member seats',
+      'Access to 4 annual flagship events',
+      'Members\' directory inclusion',
+      'Talent pipeline access',
     ],
-    cta: 'Apply Now',
-    ctaHref: 'mailto:rich@bergcollective.org',
+    featured: false,
   },
   {
     id: 'established',
-    name: 'Established',
-    tagline: 'For active ERGs with 50+ members',
-    highlighted: true,
+    name: 'Established Tier',
+    title: 'Established',
+    desc: 'For active ERGs seeking consistent engagement, visibility, and cross-industry connection.',
     features: [
-      'Everything in Growing',
-      'Dedicated chapter support',
-      'Annual summit access',
-      'Mentorship matching',
-      'Priority event access',
+      '2 ERG Lead seats',
+      'Up to 150 ERG Member seats',
+      'Access to 4 annual flagship events',
+      'Members\' directory inclusion',
+      'Monthly ERG leader meetings',
     ],
-    cta: 'Apply Now',
-    ctaHref: 'mailto:rich@bergcollective.org',
+    featured: true,
+    badge: 'Most Popular',
   },
   {
     id: 'enterprise',
-    name: 'Enterprise',
-    tagline: 'For Fortune 500 ERGs',
-    highlighted: false,
+    name: 'Enterprise Tier',
+    title: 'Enterprise',
+    desc: 'For large organizations maximizing recruitment, retention, and brand impact through BERG.',
     features: [
-      'Everything in Established',
-      'Custom programming',
-      'Executive roundtables',
-      'Board placement pipeline',
-      'White-glove onboarding',
+      '2 ERG Lead seats',
+      'Up to 250 ERG Member seats',
+      'Access to 4 annual flagship events',
+      'Members\' directory inclusion',
+      'Strategic input on BERG app & programming',
     ],
-    cta: 'Contact Us',
-    ctaHref: 'mailto:rich@bergcollective.org',
+    featured: false,
   },
 ];
 
@@ -169,51 +168,55 @@ export default function JoinPage() {
         </div>
       </section>
 
-      {/* Tiers */}
+      {/* Tiers — matches homepage MembershipTeaser layout */}
       <section className={styles.tiersSection}>
         <div className={styles.tiersInner}>
-          <div className={styles.tiersGrid}>
-            {tiers.map((tier) => (
-              <div
-                key={tier.id}
-                className={`${styles.tierCard} ${tier.highlighted ? styles.tierHighlighted : ''}`}
-              >
-                {tier.highlighted && (
-                  <span className={styles.tierBadge}>Most Popular</span>
-                )}
-                <div className={styles.tierHeader}>
-                  <h3 className={styles.tierName}>{tier.name}</h3>
-                  <p className={styles.tierTagline}>{tier.tagline}</p>
-                </div>
+          {/* Intro row */}
+          <div className={styles.intro}>
+            <div>
+              <span className={styles.sectionLabel}>CORPORATE MEMBERSHIP</span>
+              <h2 className={styles.introHeading}>Your ERG's seat<br />at the table.</h2>
+              <p className={styles.introSub}>
+                Three corporate membership tiers designed to meet your ERG where
+                it is — and take it further. No pricing listed; we believe the
+                right fit matters more than the right price.
+              </p>
+            </div>
+            <div className={styles.introCard}>
+              <p>
+                BERG membership gives your ERG access to{' '}
+                <strong>flagship events</strong>, a{' '}
+                <strong>talent pipeline</strong>,{' '}
+                <strong>leadership development</strong> with 45+ ERG leaders, and
+                direct <strong>community impact</strong> opportunities — all built
+                around Black professional excellence.
+              </p>
+            </div>
+          </div>
+
+          {/* Tier cards */}
+          <div className={styles.tiers}>
+            {TIERS.map(({ id, name, title, desc, features, featured, badge }) => (
+              <div key={id} className={`${styles.tier} ${featured ? styles.tierFeatured : ''}`}>
+                {badge && <span className={styles.tierBadge}>{badge}</span>}
+                <span className={styles.tierLabel}>{name}</span>
+                <h3 className={styles.tierTitle}>{title}</h3>
+                <p className={styles.tierDesc}>{desc}</p>
                 <ul className={styles.featureList}>
-                  {tier.features.map((feature) => (
-                    <li key={feature} className={styles.featureItem}>
-                      <svg
-                        className={styles.checkIcon}
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.5"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <path d="M20 6L9 17L4 12" />
-                      </svg>
-                      {feature}
+                  {features.map((f) => (
+                    <li key={f} className={styles.featureItem}>
+                      <span className={styles.checkDot} aria-hidden="true" />
+                      {f}
                     </li>
                   ))}
                 </ul>
-                <div className={styles.tierCta}>
-                  <a
-                    href={tier.ctaHref}
-                    className={`${styles.ctaBtn} ${tier.highlighted ? styles.ctaBtnGold : styles.ctaBtnOutline}`}
-                  >
-                    {tier.cta}
-                  </a>
-                </div>
+                <a
+                  href="#apply"
+                  className={`${styles.tierCta} ${featured ? styles.tierCtaGold : styles.tierCtaDark}`}
+                  onClick={(e) => { e.preventDefault(); document.querySelector('#apply')?.scrollIntoView({ behavior: 'smooth' }); }}
+                >
+                  Apply Now
+                </a>
               </div>
             ))}
           </div>
@@ -243,7 +246,7 @@ export default function JoinPage() {
       </section>
 
       {/* Application Form — Multi-Step Wizard */}
-      <section className={styles.formSection}>
+      <section className={styles.formSection} id="apply">
         <div className={styles.formInner}>
           <span className={styles.sectionLabel}>APPLY NOW</span>
           <h2 className={styles.formTitle}>Send Your Application</h2>
