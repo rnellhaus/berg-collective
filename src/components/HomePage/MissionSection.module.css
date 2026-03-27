@@ -1,0 +1,78 @@
+/* ─── Mission Section ─── */
+.section {
+  background: var(--color-white);
+  padding: var(--section-padding-y) var(--section-padding-x);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+/* ── Image ── */
+.imageWrap {
+  position: relative;
+}
+
+.image {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+/* Gold accent block — top-right corner decoration */
+.imageAccent {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 80px;
+  height: 160px;
+  background: var(--color-gold);
+  opacity: 0.9;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ── Content ── */
+.heading {
+  font-family: var(--font-heading);
+  font-size: clamp(28px, 3vw, 44px);
+  line-height: 1.15;
+  margin-bottom: 20px;
+}
+
+.body {
+  color: var(--color-gray-600);
+  font-size: 17px;
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+
+.body:last-of-type {
+  margin-bottom: 28px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .section {
+    padding: 72px 32px;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .imageAccent {
+    display: none;
+  }
+  .image {
+    aspect-ratio: 16 / 9;
+  }
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding: 56px 20px;
+  }
+}

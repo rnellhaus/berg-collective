@@ -1,0 +1,103 @@
+/* ─── Community Impact ─── */
+.section {
+  background: var(--color-white);
+  padding: var(--section-padding-y) var(--section-padding-x);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+/* ── Image mosaic ── */
+.mosaic {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.imgMain {
+  grid-column: 1 / -1;
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  object-fit: cover;
+}
+
+.imgSecond,
+.imgThird {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+/* ── Content ── */
+.heading {
+  font-family: var(--font-heading);
+  font-size: clamp(28px, 3vw, 44px);
+  line-height: 1.15;
+  margin-bottom: 20px;
+}
+
+.body {
+  color: var(--color-gray-600);
+  font-size: 16px;
+  line-height: 1.8;
+  margin-bottom: 28px;
+}
+
+/* ── Highlight list ── */
+.highlights {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 36px;
+}
+
+.highlight {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--color-gray-100);
+  border-left: 3px solid var(--color-gold);
+}
+
+.highlightNum {
+  font-family: var(--font-heading);
+  font-size: 26px;
+  color: var(--color-black);
+  font-weight: 700;
+  flex-shrink: 0;
+  min-width: 60px;
+}
+
+.highlightText {
+  font-size: 14px;
+  color: var(--color-gray-600);
+  line-height: 1.5;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .section {
+    padding: 72px 32px;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding: 56px 20px;
+  }
+  .highlight {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}

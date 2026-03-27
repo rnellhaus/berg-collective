@@ -1,0 +1,244 @@
+/* ─── Membership Teaser ─── */
+.section {
+  background: var(--color-white);
+  padding: var(--section-padding-y) var(--section-padding-x);
+}
+
+/* ── Intro row ── */
+.intro {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  margin-bottom: 56px;
+}
+
+.heading {
+  font-family: var(--font-heading);
+  font-size: clamp(28px, 3vw, 44px);
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+
+.sub {
+  color: var(--color-gray-600);
+  font-size: 17px;
+  line-height: 1.75;
+  max-width: 480px;
+}
+
+.introCard {
+  background: var(--color-black);
+  padding: 48px;
+  border-left: 4px solid var(--color-gold);
+}
+
+.introCard p {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.introCard strong {
+  color: var(--color-gold);
+}
+
+/* ── Tier cards ── */
+.tiers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--color-gray-200);
+  margin-bottom: 32px;
+}
+
+.tier {
+  padding: 48px 40px;
+  background: var(--color-white);
+  border-right: 1px solid var(--color-gray-200);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.tier:last-child {
+  border-right: none;
+}
+
+.tierFeatured {
+  background: var(--color-black);
+  padding-top: 68px; /* room for badge */
+}
+
+/* ── Badge ── */
+.badge {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-gold);
+  color: var(--color-black);
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  padding: 5px 16px;
+  white-space: nowrap;
+}
+
+/* ── Tier text ── */
+.tierName {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--color-gray-400);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.tierFeatured .tierName {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.tierTitle {
+  font-family: var(--font-heading);
+  font-size: 28px;
+  margin-bottom: 8px;
+  color: var(--color-black);
+}
+
+.tierFeatured .tierTitle {
+  color: var(--color-white);
+}
+
+.tierDesc {
+  font-size: 14px;
+  color: var(--color-gray-600);
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.tierFeatured .tierDesc {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ── Feature list ── */
+.features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 36px;
+  flex: 1; /* push CTA to bottom */
+}
+
+.feature {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--color-gray-800);
+  line-height: 1.5;
+}
+
+.tierFeatured .feature {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Gold checkmark circle */
+.check {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  background-color: var(--color-gold);
+  border-radius: 50%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8l3.5 3.5L13 5' stroke='%23000' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-size: 11px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* ── CTA buttons ── */
+.tierCta {
+  display: block;
+  text-align: center;
+  padding: 16px 32px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 2px;
+  transition: opacity var(--transition-fast);
+}
+
+.tierCta:hover {
+  opacity: 0.85;
+}
+
+.tierCtaDark {
+  background: var(--color-black);
+  color: var(--color-white);
+}
+
+.tierCtaGold {
+  background: var(--color-gold);
+  color: var(--color-black);
+}
+
+/* ── Individual membership note ── */
+.note {
+  padding: 20px 28px;
+  background: var(--color-gold-light);
+  border-left: 3px solid var(--color-gold);
+  font-size: 14px;
+  color: var(--color-gray-800);
+  line-height: 1.7;
+}
+
+.noteLink {
+  color: var(--color-black);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: opacity var(--transition-fast);
+}
+
+.noteLink:hover {
+  opacity: 0.7;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .section {
+    padding: 72px 32px;
+  }
+  .intro {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .tiers {
+    grid-template-columns: 1fr;
+    border: 1px solid var(--color-gray-200);
+  }
+  .tier {
+    border-right: none;
+    border-bottom: 1px solid var(--color-gray-200);
+  }
+  .tier:last-child {
+    border-bottom: none;
+  }
+  .tierFeatured {
+    padding-top: 68px;
+  }
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding: 56px 20px;
+  }
+  .introCard {
+    padding: 28px;
+  }
+}

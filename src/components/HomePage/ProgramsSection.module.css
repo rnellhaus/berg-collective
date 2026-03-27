@@ -1,0 +1,122 @@
+/* ─── Programs Section ─── */
+.section {
+  background: var(--color-gray-100);
+  padding: var(--section-padding-y) var(--section-padding-x);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 56px;
+}
+
+.heading {
+  font-family: var(--font-heading);
+  font-size: clamp(28px, 3vw, 44px);
+  line-height: 1.15;
+}
+
+/* ── Cards ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+}
+
+.card {
+  background: var(--color-white);
+  overflow: hidden;
+  transition: transform var(--transition-med);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.imageWrap {
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  filter: brightness(0.9);
+  transition: filter var(--transition-med), transform var(--transition-med);
+}
+
+.card:hover .image {
+  filter: brightness(1);
+  transform: scale(1.03);
+}
+
+.body {
+  padding: 32px;
+}
+
+.tag {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--color-gold);
+  margin-bottom: 12px;
+}
+
+.cardTitle {
+  font-family: var(--font-heading);
+  font-size: 22px;
+  margin-bottom: 12px;
+  line-height: 1.2;
+}
+
+.cardBody {
+  color: var(--color-gray-600);
+  font-size: 15px;
+  line-height: 1.65;
+  margin-bottom: 20px;
+}
+
+.cardLink {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-black);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-bottom: 1.5px solid var(--color-gold);
+  padding-bottom: 2px;
+  transition: gap var(--transition-fast);
+}
+
+.cardLink:hover {
+  gap: 10px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .section {
+    padding: 72px 32px;
+  }
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding: 56px 20px;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

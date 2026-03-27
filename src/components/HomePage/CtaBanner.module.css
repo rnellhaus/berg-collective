@@ -1,0 +1,87 @@
+/* ─── CTA Banner ─── */
+.banner {
+  background: var(--color-gold);
+  padding: 80px var(--section-padding-x);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.heading {
+  font-family: var(--font-heading);
+  font-size: clamp(24px, 3vw, 40px);
+  color: var(--color-black);
+  line-height: 1.2;
+  max-width: 600px;
+}
+
+.actions {
+  display: flex;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.btnBlack {
+  background: var(--color-black);
+  color: var(--color-white);
+  padding: 16px 36px;
+  border-radius: 2px;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  transition: opacity var(--transition-fast);
+}
+
+.btnBlack:hover {
+  opacity: 0.85;
+}
+
+.btnOutline {
+  background: transparent;
+  color: var(--color-black);
+  border: 2px solid var(--color-black);
+  padding: 14px 34px;
+  border-radius: 2px;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.btnOutline:hover {
+  background: var(--color-black);
+  color: var(--color-white);
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .banner {
+    flex-direction: column;
+    text-align: center;
+    padding: 72px 32px;
+    gap: 32px;
+  }
+  .heading {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .banner {
+    padding: 56px 20px;
+  }
+  .actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .btnBlack,
+  .btnOutline {
+    text-align: center;
+    width: 100%;
+  }
+}

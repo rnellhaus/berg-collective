@@ -1,0 +1,63 @@
+/* ─── Partner Marquee ─── */
+.bar {
+  background: var(--color-white);
+  border-bottom: 1px solid var(--color-gray-200);
+  padding: 28px 0;
+  overflow: hidden;
+}
+
+.label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--color-gray-400);
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+/* ── Scrolling track ── */
+.track {
+  display: flex;
+  align-items: center;
+  gap: 56px;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+
+.track:hover {
+  animation-play-state: paused;
+}
+
+.name {
+  font-family: var(--font-heading);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-gray-400);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  white-space: nowrap;
+  transition: color var(--transition-fast);
+  cursor: default;
+}
+
+.name:hover {
+  color: var(--color-black);
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* Respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+    flex-wrap: wrap;
+    justify-content: center;
+    width: auto;
+    padding: 0 80px;
+    gap: 32px;
+  }
+}
