@@ -42,7 +42,7 @@ export default function FooterNew() {
             advancement, and community building across industries.
           </p>
           <div className={styles.social}>
-            <a href="https://www.linkedin.com/company/berg-collective" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className={styles.socialLink}>in</a>
+            <a href="https://www.linkedin.com/company/berg-collective2" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className={styles.socialLink}>in</a>
             <a href="https://www.instagram.com/bergcollective" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className={styles.socialLink}>ig</a>
             <a href="https://twitter.com/bergcollective" target="_blank" rel="noopener noreferrer" aria-label="Twitter / X" className={styles.socialLink}>𝕏</a>
           </div>
