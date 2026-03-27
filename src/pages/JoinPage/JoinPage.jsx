@@ -91,6 +91,11 @@ export default function JoinPage() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
 
+  // Individual waitlist form
+  const [indForm, setIndForm] = useState({ name: '', email: '', linkedin: '', company: '', title: '', reason: '' });
+  const [indLoading, setIndLoading] = useState(false);
+  const [indStatus, setIndStatus] = useState('idle'); // idle | success | error
+
   function handleChange(e) {
     const { name, value } = e.target;
     setFields((prev) => ({ ...prev, [name]: value }));
@@ -126,6 +131,26 @@ export default function JoinPage() {
       setError(err.message || 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleIndividualSubmit(e) {
+    e.preventDefault();
+    if (!indForm.name || !indForm.email) return;
+    setIndLoading(true);
+    setIndStatus('idle');
+    try {
+      const res = await fetch('/api/forms/individual-waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(indForm),
+      });
+      if (!res.ok) throw new Error('Failed');
+      setIndStatus('success');
+    } catch {
+      setIndStatus('error');
+    } finally {
+      setIndLoading(false);
     }
   }
 
@@ -386,45 +411,121 @@ export default function JoinPage() {
         </div>
       </section>
 
-      {/* Individual Membership Callout — Enhanced */}
+      {/* Individual Membership — Waitlist with Form */}
       <section className={styles.individualSection}>
         <div className={styles.individualInner}>
-          <div className={styles.individualContent}>
-            <span className={styles.individualBadge}>COMING 2026</span>
-            <h2 className={styles.individualTitle}>Individual Membership</h2>
-            <p className={styles.individualBody}>
-              We hear you — individual membership is our most requested feature.
-              Currently, BERG Collective membership is at the organization level through
-              your company's ERG. But that doesn't mean you can't be part of our community.
-            </p>
-            <div className={styles.individualHighlights}>
-              <div className={styles.individualHighlight}>
-                <span className={styles.highlightIcon}>🎟️</span>
-                <div>
-                  <strong>Attend Our Events</strong>
-                  <p>All BERG events are open to the public. No membership required to network, learn, and connect.</p>
+          <div className={styles.individualGrid}>
+            {/* Left: Info */}
+            <div className={styles.individualContent}>
+              <span className={styles.individualBadge}>COMING 2026</span>
+              <h2 className={styles.individualTitle}>Individual Membership</h2>
+              <p className={styles.individualBody}>
+                We hear you — individual membership is our most requested feature.
+                Currently, BERG Collective membership is at the organization level through
+                your company's ERG. But that doesn't mean you can't be part of our community.
+              </p>
+              <div className={styles.individualHighlights}>
+                <div className={styles.individualHighlight}>
+                  <span className={styles.highlightIcon}>🎟️</span>
+                  <div>
+                    <strong>Attend Our Events</strong>
+                    <p>All BERG events are open to the public. No membership required.</p>
+                  </div>
                 </div>
-              </div>
-              <div className={styles.individualHighlight}>
-                <span className={styles.highlightIcon}>📬</span>
-                <div>
-                  <strong>Join Our Newsletter</strong>
-                  <p>Stay in the loop on events, opportunities, and community updates delivered to your inbox.</p>
-                </div>
-              </div>
-              <div className={styles.individualHighlight}>
-                <span className={styles.highlightIcon}>🔔</span>
-                <div>
-                  <strong>Get on the Waitlist</strong>
-                  <p>Be the first to know when individual membership launches in 2026.</p>
+                <div className={styles.individualHighlight}>
+                  <span className={styles.highlightIcon}>📬</span>
+                  <div>
+                    <strong>Join Our Newsletter</strong>
+                    <p>Stay in the loop on events, opportunities, and community updates.</p>
+                  </div>
                 </div>
               </div>
             </div>
-            <div className={styles.individualActions}>
-              <a href="mailto:rich@bergcollective.org?subject=Individual Membership Waitlist" className={styles.ctaBtnGold}>
-                Join the Waitlist
-              </a>
-              <Button to="/events" variant="outline">Browse Events</Button>
+
+            {/* Right: Waitlist Form */}
+            <div className={styles.waitlistCard}>
+              {indStatus === 'success' ? (
+                <div className={styles.waitlistSuccess}>
+                  <div className={styles.waitlistSuccessIcon}>✓</div>
+                  <h3 className={styles.waitlistSuccessTitle}>You're on the list!</h3>
+                  <p className={styles.waitlistSuccessText}>
+                    We'll notify you as soon as individual membership launches. In the meantime, check out our upcoming events.
+                  </p>
+                  <Button to="/events" variant="gold">Browse Events</Button>
+                </div>
+              ) : (
+                <>
+                  <h3 className={styles.waitlistTitle}>Join the Waitlist</h3>
+                  <p className={styles.waitlistSubtitle}>Be the first to know when individual membership launches.</p>
+                  <form className={styles.waitlistForm} onSubmit={handleIndividualSubmit}>
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.formLabel}>Full Name *</label>
+                        <input
+                          type="text"
+                          required
+                          className={styles.formInput}
+                          value={indForm.name}
+                          onChange={(e) => setIndForm(p => ({ ...p, name: e.target.value }))}
+                        />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.formLabel}>Email *</label>
+                        <input
+                          type="email"
+                          required
+                          className={styles.formInput}
+                          value={indForm.email}
+                          onChange={(e) => setIndForm(p => ({ ...p, email: e.target.value }))}
+                        />
+                      </div>
+                    </div>
+                    <div className={styles.formRow}>
+                      <div className={styles.formGroup}>
+                        <label className={styles.formLabel}>Company</label>
+                        <input
+                          type="text"
+                          className={styles.formInput}
+                          value={indForm.company}
+                          onChange={(e) => setIndForm(p => ({ ...p, company: e.target.value }))}
+                        />
+                      </div>
+                      <div className={styles.formGroup}>
+                        <label className={styles.formLabel}>Job Title</label>
+                        <input
+                          type="text"
+                          className={styles.formInput}
+                          value={indForm.title}
+                          onChange={(e) => setIndForm(p => ({ ...p, title: e.target.value }))}
+                        />
+                      </div>
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>LinkedIn Profile URL</label>
+                      <input
+                        type="url"
+                        className={styles.formInput}
+                        placeholder="https://linkedin.com/in/..."
+                        value={indForm.linkedin}
+                        onChange={(e) => setIndForm(p => ({ ...p, linkedin: e.target.value }))}
+                      />
+                    </div>
+                    <div className={styles.formGroup}>
+                      <label className={styles.formLabel}>Why do you want to join BERG?</label>
+                      <textarea
+                        className={styles.formTextarea}
+                        rows={3}
+                        value={indForm.reason}
+                        onChange={(e) => setIndForm(p => ({ ...p, reason: e.target.value }))}
+                      />
+                    </div>
+                    {indStatus === 'error' && <p className={styles.errorMsg}>Something went wrong. Please try again.</p>}
+                    <button type="submit" className={styles.ctaBtnGold} disabled={indLoading} style={{ width: '100%' }}>
+                      {indLoading ? 'Submitting…' : 'Join the Waitlist'}
+                    </button>
+                  </form>
+                </>
+              )}
             </div>
           </div>
         </div>

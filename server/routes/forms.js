@@ -130,6 +130,46 @@ router.post('/membership', appUpload.single('application_file'), async (req, res
   }
 });
 
+// ─── POST /api/forms/individual-waitlist — Individual Membership Waitlist ───
+router.post('/individual-waitlist', async (req, res) => {
+  try {
+    const { name, email, company, title: jobTitle, linkedin, reason } = req.body;
+
+    if (!name || !email) {
+      return res.status(400).json({ error: 'Name and email are required' });
+    }
+
+    const db = getDb();
+    const data = { name, email, company, title: jobTitle, linkedin, reason };
+
+    const result = db.prepare(
+      'INSERT INTO form_submissions (form_type, data) VALUES (?, ?)'
+    ).run('individual_waitlist', JSON.stringify(data));
+
+    const emailFields = [
+      ['Name', name],
+      ['Email', email],
+      ['Company', company],
+      ['Job Title', jobTitle],
+      ['LinkedIn', linkedin],
+      ['Reason for Joining', reason],
+    ];
+
+    const sent = await sendFormEmail(
+      `Individual Membership Waitlist: ${name}${company ? ` (${company})` : ''}`,
+      formatEmailHtml('Individual Membership Waitlist Signup', emailFields),
+      email
+    );
+
+    db.prepare('UPDATE form_submissions SET email_sent = ? WHERE id = ?').run(sent ? 1 : 0, result.lastInsertRowid);
+
+    res.status(201).json({ message: 'Successfully joined the waitlist!' });
+  } catch (err) {
+    console.error('Individual waitlist error:', err);
+    res.status(500).json({ error: 'Failed to join waitlist' });
+  }
+});
+
 // ─── POST /api/forms/impact-download — Impact Report Download Gate ───
 router.post('/impact-download', async (req, res) => {
   try {
