@@ -175,7 +175,7 @@ export default function AboutPage() {
             and stands with you every step of the way.
           </p>
           <div className={styles.ctaActions}>
-            <Button to="/join" variant="gold">Join the Collective</Button>
+            <Button to="/membership" variant="gold">Join the Collective</Button>
             <Button to="/programs" variant="outline">Explore Programs</Button>
           </div>
         </div>

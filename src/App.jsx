@@ -34,6 +34,7 @@ function PublicLayout() {
             <Route path="/events" element={<EventsPage />} />
             <Route path="/impact" element={<ImpactPage />} />
             <Route path="/donate" element={<DonatePage />} />
+            <Route path="/membership" element={<JoinPage />} />
             <Route path="/join" element={<JoinPage />} />
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/newsletter" element={<NewsletterPage />} />

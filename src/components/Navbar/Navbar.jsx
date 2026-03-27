@@ -7,7 +7,7 @@ const NAV_LINKS = [
   { label: 'Programs',   to: '/programs' },
   { label: 'Chapters',   to: '/chapters' },
   { label: 'Events',     to: '/events' },
-  { label: 'Membership', to: '/join' },
+  { label: 'Membership', to: '/membership' },
   { label: 'Impact',     to: '/impact' },
   { label: 'Newsletter', to: '/newsletter' },
   { label: 'Donate',     to: '/donate' },
@@ -45,7 +45,7 @@ export default function Navbar() {
           ))}
         </ul>
 
-        <Link to="/join" className={styles.cta}>
+        <Link to="/membership" className={styles.cta}>
           Partner With Us
         </Link>
 
@@ -76,7 +76,7 @@ export default function Navbar() {
           ))}
           <li>
             <Link
-              to="/join"
+              to="/membership"
               className={styles.drawerCta}
               onClick={() => setMenuOpen(false)}
             >

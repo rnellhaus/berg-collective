@@ -52,7 +52,7 @@ export default function Footer() {
           <div className={styles.navColumn}>
             <h4>Get Involved</h4>
             <a href="https://www.bergcollective.org" target="_blank" rel="noopener noreferrer">Member Portal</a>
-            <Link to="/join">Become a Member</Link>
+            <Link to="/membership">Become a Member</Link>
             <Link to="/donate">Donate</Link>
             <Link to="/contact">Contact Us</Link>
           </div>

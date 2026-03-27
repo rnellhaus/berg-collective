@@ -247,7 +247,7 @@ export default function ContactPage() {
           <p className={styles.goldCtaSubtitle}>
             Become part of a network that invests in your growth and amplifies your voice.
           </p>
-          <Button to="/join" variant="primary">Join BERG Collective</Button>
+          <Button to="/membership" variant="primary">Join BERG Collective</Button>
         </div>
       </section>
     </main>
