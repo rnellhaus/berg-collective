@@ -1,0 +1,180 @@
+/* ─── Navbar ─── */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--color-black);
+  border-bottom: 1px solid var(--color-dark-border);
+  transition: box-shadow var(--transition-fast);
+}
+
+.navScrolled {
+  box-shadow: 0 2px 24px rgba(0, 0, 0, 0.5);
+}
+
+.inner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  height: 72px;
+  padding: 0 var(--section-padding-x);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+/* ── Logo ── */
+.logo img {
+  height: 36px;
+  width: auto;
+}
+
+/* ── Desktop Links ── */
+.links {
+  display: flex;
+  align-items: center;
+  gap: 36px;
+  list-style: none;
+}
+
+.link {
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  transition: color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.link:hover,
+.linkActive {
+  color: var(--color-white);
+}
+
+/* ── CTA Button ── */
+.cta {
+  background: var(--color-gold);
+  color: var(--color-black);
+  padding: 10px 24px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+  transition: opacity var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.cta:hover {
+  opacity: 0.88;
+}
+
+/* ── Mobile Hamburger ── */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  flex-shrink: 0;
+}
+
+.bar {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: var(--color-white);
+  border-radius: 2px;
+  transition: transform var(--transition-fast), opacity var(--transition-fast);
+}
+
+.barOpen1 { transform: translateY(7px) rotate(45deg); }
+.barOpen2 { opacity: 0; }
+.barOpen3 { transform: translateY(-7px) rotate(-45deg); }
+
+/* ── Mobile Drawer ── */
+.drawer {
+  display: none;
+  background: var(--color-black);
+  border-top: 1px solid var(--color-dark-border);
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.35s ease;
+}
+
+.drawerOpen {
+  max-height: 480px;
+}
+
+.drawerLinks {
+  list-style: none;
+  padding: 24px var(--section-padding-x);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.drawerLink {
+  display: block;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--color-dark-border);
+  transition: color var(--transition-fast);
+}
+
+.drawerLink:hover {
+  color: var(--color-white);
+}
+
+.drawerCta {
+  display: inline-block;
+  margin-top: 20px;
+  background: var(--color-gold);
+  color: var(--color-black);
+  padding: 14px 32px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: opacity var(--transition-fast);
+}
+
+.drawerCta:hover {
+  opacity: 0.88;
+}
+
+/* ── Responsive ── */
+@media (max-width: 1024px) {
+  .inner {
+    padding: 0 32px;
+  }
+  .links {
+    gap: 24px;
+  }
+}
+
+@media (max-width: 768px) {
+  .links,
+  .cta {
+    display: none;
+  }
+  .hamburger {
+    display: flex;
+  }
+  .drawer {
+    display: block;
+  }
+  .inner {
+    padding: 0 20px;
+  }
+  .drawerLinks {
+    padding: 16px 20px;
+  }
+}

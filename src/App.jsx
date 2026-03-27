@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Header from './components/Header/Header';
-import Footer from './components/Footer/Footer';
+import Navbar from './components/Navbar/Navbar';
+import FooterNew from './components/FooterNew/FooterNew';
 
 const HomePage = lazy(() => import('./pages/HomePage/HomePage'));
 const AboutPage = lazy(() => import('./pages/AboutPage/AboutPage'));
@@ -22,7 +22,7 @@ function Loading() {
 function PublicLayout() {
   return (
     <>
-      <Header />
+      <Navbar />
       <main id="main-content" role="main">
         <Suspense fallback={<Loading />}>
           <Routes>
@@ -39,7 +39,7 @@ function PublicLayout() {
           </Routes>
         </Suspense>
       </main>
-      <Footer />
+      <FooterNew />
     </>
   );
 }
