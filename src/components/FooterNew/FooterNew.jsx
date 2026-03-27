@@ -58,7 +58,7 @@ export default function FooterNew() {
       <div className={`${styles.top} container`}>
         <div className={styles.brand}>
           <Link to="/" aria-label="BERG Collective home">
-            <img src="/images/logo-black.png" alt="BERG Collective" className={styles.logo} style={{ filter: 'brightness(0) invert(1)' }} />
+            <img src="/images/logo.png" alt="BERG Collective" className={styles.logo} style={{ filter: 'brightness(0) invert(1)' }} />
           </Link>
           <p className={styles.tagline}>
             Empowering Black excellence through leadership development, career

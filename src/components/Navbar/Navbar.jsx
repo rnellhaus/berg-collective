@@ -28,7 +28,7 @@ export default function Navbar() {
     <nav className={`${styles.nav} ${scrolled ? styles.navScrolled : ''}`} role="banner">
       <div className={styles.inner}>
         <Link to="/" className={styles.logo} aria-label="BERG Collective home">
-          <img src="/images/logo-black.png" alt="BERG Collective" style={{ filter: 'brightness(0) invert(1)' }} />
+          <img src="/images/logo.png" alt="BERG Collective" style={{ filter: 'brightness(0) invert(1)' }} />
         </Link>
 
         <ul className={styles.links}>
