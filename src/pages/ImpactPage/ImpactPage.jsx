@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import styles from './ImpactPage.module.css';
 import usePageMeta from '../../hooks/usePageMeta';
 
@@ -45,8 +46,39 @@ const highlights = [
   },
 ];
 
+const emptyForm = { name: '', email: '', company: '', title: '', linkedin: '' };
+
 export default function ImpactPage() {
   usePageMeta('Impact', 'See the 2025 impact BERG Collective is making for Black professionals and ERGs.');
+
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState(emptyForm);
+  const [status, setStatus] = useState('idle'); // idle | submitting | success | error
+  const [errorMsg, setErrorMsg] = useState('');
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setStatus('submitting');
+    setErrorMsg('');
+    try {
+      const res = await fetch('/api/forms/impact-download', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      if (!res.ok) throw new Error('Submission failed. Please try again.');
+      setStatus('success');
+    } catch (err) {
+      setErrorMsg(err.message || 'Something went wrong. Please try again.');
+      setStatus('error');
+    }
+  };
+
   return (
     <main className={styles.page}>
 
@@ -128,9 +160,117 @@ export default function ImpactPage() {
           <p className={styles.downloadSub}>
             Get the complete data, stories, and vision for what BERG Collective is building.
           </p>
-          <a href="#" className={styles.downloadBtn}>
-            Download PDF
-          </a>
+
+          {!showForm && (
+            <button
+              className={styles.downloadBtn}
+              onClick={() => setShowForm(true)}
+            >
+              Download 2025 Impact Report
+            </button>
+          )}
+
+          {showForm && status !== 'success' && (
+            <form className={styles.gateForm} onSubmit={handleSubmit} noValidate>
+              <p className={styles.gateFormIntro}>
+                Fill in your info to access the full report.
+              </p>
+
+              <div className={styles.gateFormRow}>
+                <div className={styles.gateFieldGroup}>
+                  <label htmlFor="gate-name" className={styles.gateLabel}>Full Name <span className={styles.required}>*</span></label>
+                  <input
+                    id="gate-name"
+                    name="name"
+                    type="text"
+                    className={styles.gateInput}
+                    placeholder="Jane Smith"
+                    value={formData.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className={styles.gateFieldGroup}>
+                  <label htmlFor="gate-email" className={styles.gateLabel}>Email <span className={styles.required}>*</span></label>
+                  <input
+                    id="gate-email"
+                    name="email"
+                    type="email"
+                    className={styles.gateInput}
+                    placeholder="you@company.com"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className={styles.gateFormRow}>
+                <div className={styles.gateFieldGroup}>
+                  <label htmlFor="gate-company" className={styles.gateLabel}>Company</label>
+                  <input
+                    id="gate-company"
+                    name="company"
+                    type="text"
+                    className={styles.gateInput}
+                    placeholder="Acme Corp"
+                    value={formData.company}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className={styles.gateFieldGroup}>
+                  <label htmlFor="gate-title" className={styles.gateLabel}>Title</label>
+                  <input
+                    id="gate-title"
+                    name="title"
+                    type="text"
+                    className={styles.gateInput}
+                    placeholder="VP of People"
+                    value={formData.title}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+
+              <div className={styles.gateFieldGroup}>
+                <label htmlFor="gate-linkedin" className={styles.gateLabel}>LinkedIn Profile URL</label>
+                <input
+                  id="gate-linkedin"
+                  name="linkedin"
+                  type="url"
+                  className={styles.gateInput}
+                  placeholder="https://linkedin.com/in/yourprofile"
+                  value={formData.linkedin}
+                  onChange={handleChange}
+                />
+              </div>
+
+              {status === 'error' && (
+                <p className={styles.gateError}>{errorMsg}</p>
+              )}
+
+              <button
+                type="submit"
+                className={styles.gateSubmitBtn}
+                disabled={status === 'submitting'}
+              >
+                {status === 'submitting' ? 'Submitting…' : 'Get the Report'}
+              </button>
+            </form>
+          )}
+
+          {status === 'success' && (
+            <div className={styles.gateSuccess}>
+              <p className={styles.gateSuccessMsg}>Thank you! Your report is ready.</p>
+              <a
+                href="/impact-report-2025.pdf"
+                className={styles.downloadBtn}
+                download
+              >
+                Download PDF
+              </a>
+            </div>
+          )}
         </div>
       </section>
 

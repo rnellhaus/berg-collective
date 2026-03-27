@@ -1,0 +1,141 @@
+/* ─────────────────────────────────────────
+   Newsletter — Reusable signup section
+   Design system: globals.css variables only
+───────────────────────────────────────── */
+
+.section {
+  background: var(--color-black);
+  padding: var(--section-padding-y) 24px;
+  text-align: center;
+}
+
+.inner {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--color-gold);
+}
+
+.heading {
+  font-family: var(--font-heading);
+  font-size: clamp(28px, 3.5vw, 42px);
+  font-weight: 400;
+  color: var(--color-white);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.subtitle {
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--color-gray-400);
+  margin: 0;
+  max-width: 480px;
+}
+
+/* ── Form ── */
+.form {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.inputRow {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.emailInput {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1.5px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  padding: 13px 16px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--color-white);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  min-width: 0;
+}
+
+.emailInput::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.emailInput:focus {
+  border-color: var(--color-gold);
+  box-shadow: 0 0 0 3px var(--color-gold-dim);
+}
+
+.subscribeBtn {
+  background: var(--color-gold);
+  color: var(--color-black);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  padding: 13px 28px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.subscribeBtn:hover:not(:disabled) {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.subscribeBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── States ── */
+.successMsg {
+  font-family: var(--font-body);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-gold);
+  margin: 8px 0 0;
+}
+
+.errorMsg {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: #e57373;
+  text-align: left;
+  margin: 0;
+  padding: 8px 12px;
+  background: rgba(229, 115, 115, 0.1);
+  border-radius: 4px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 520px) {
+  .inputRow {
+    flex-direction: column;
+  }
+
+  .subscribeBtn {
+    width: 100%;
+  }
+}

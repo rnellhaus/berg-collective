@@ -22,6 +22,7 @@ import CommunityImpact  from './CommunityImpact';
 import MembershipTeaser from './MembershipTeaser';
 import EventsSection    from './EventsSection';
 import CtaBanner        from './CtaBanner';
+import Newsletter       from '../Newsletter/Newsletter';
 
 export default function HomePage() {
   return (
@@ -34,6 +35,7 @@ export default function HomePage() {
       <CommunityImpact />
       <MembershipTeaser />
       <EventsSection />
+      <Newsletter />
       <CtaBanner />
     </main>
   );

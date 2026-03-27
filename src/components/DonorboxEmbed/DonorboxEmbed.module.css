@@ -1,0 +1,11 @@
+.wrapper {
+  max-width: 600px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.embed {
+  border-radius: 12px;
+  overflow: hidden;
+  min-height: 400px;
+}

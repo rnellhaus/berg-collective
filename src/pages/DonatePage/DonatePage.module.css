@@ -1,77 +1,152 @@
+/* ─────────────────────────────────────────
+   DonatePage — Donation landing page
+   Design system: globals.css variables only
+───────────────────────────────────────── */
+
 .page {
   min-height: 100vh;
-  background: #fbfaf9;
+  background: var(--color-white);
 }
 
-/* Hero */
+/* ── Shared label ── */
+.sectionLabel {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--color-gold);
+  margin-bottom: 16px;
+}
+
+.sectionLabelDark {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--color-gold);
+  margin-bottom: 14px;
+}
+
+/* ── Hero ── */
 .hero {
-  background: #191110;
-  padding: 96px 0 80px;
+  background: var(--color-black);
+  padding: var(--section-padding-y) 24px;
   text-align: center;
 }
 
 .heroInner {
-  max-width: 720px;
+  max-width: 760px;
   margin: 0 auto;
-  padding: 0 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-}
-
-.badge {
-  display: inline-block;
-  padding: 6px 16px;
-  background: rgba(181, 148, 16, 0.15);
-  border: 1px solid rgba(181, 148, 16, 0.4);
-  border-radius: 100px;
-  color: #B59410;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .heroTitle {
-  font-size: clamp(40px, 5vw, 64px);
-  font-weight: 800;
+  font-family: var(--font-heading);
+  font-size: clamp(38px, 5vw, 64px);
+  font-weight: 400;
   line-height: 1.15;
-  color: #fbfaf9;
-  margin: 0;
-}
-
-.gold {
-  color: #B59410;
+  color: var(--color-white);
+  margin: 0 0 20px;
 }
 
 .heroSubtitle {
+  font-family: var(--font-body);
   font-size: 18px;
-  line-height: 1.7;
-  color: rgba(251, 250, 249, 0.7);
+  line-height: 1.75;
+  color: var(--color-gray-400);
   margin: 0;
   max-width: 600px;
 }
 
-/* Widget */
-.widgetSection {
-  padding: 80px 24px;
+/* ── Donation Info ── */
+.infoSection {
+  background: var(--color-white);
+  padding: var(--section-padding-y) 24px;
 }
 
-.widgetInner {
-  max-width: 500px;
+.infoInner {
+  max-width: var(--max-width);
   margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: start;
 }
 
-/* CTA */
-.cta {
-  background: #F5EFDB;
-  padding: 80px 24px;
+.infoHeading {
+  font-family: var(--font-heading);
+  font-size: clamp(24px, 2.5vw, 34px);
+  font-weight: 400;
+  color: var(--color-black);
+  margin: 0 0 24px;
+  line-height: 1.2;
+}
+
+.infoBody {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.8;
+  color: var(--color-gray-600);
+  margin: 0 0 16px;
+}
+
+.infoBody:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Allocation ── */
+.allocationList {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 8px;
+}
+
+.allocationItem {
+  display: flex;
+  align-items: baseline;
+  gap: 20px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--color-gray-200);
+}
+
+.allocationItem:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.allocationPercent {
+  font-family: var(--font-heading);
+  font-size: clamp(36px, 4vw, 48px);
+  font-weight: 400;
+  color: var(--color-gold);
+  line-height: 1;
+  min-width: 80px;
+}
+
+.allocationLabel {
+  font-family: var(--font-body);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--color-black);
+  line-height: 1.3;
+}
+
+/* ── Donation CTA ── */
+.ctaSection {
+  background: var(--color-gray-100);
+  padding: var(--section-padding-y) 24px;
   text-align: center;
 }
 
 .ctaInner {
-  max-width: 600px;
+  max-width: 640px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -79,30 +154,62 @@
   gap: 16px;
 }
 
-.ctaTitle {
-  font-size: clamp(28px, 3vw, 36px);
-  font-weight: 800;
-  color: #191110;
+.ctaHeading {
+  font-family: var(--font-heading);
+  font-size: clamp(28px, 3.5vw, 44px);
+  font-weight: 400;
+  color: var(--color-black);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.ctaBody {
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.7;
+  color: var(--color-gray-600);
+  margin: 0;
+  max-width: 520px;
+}
+
+.donateBtn {
+  display: inline-block;
+  background: var(--color-gold);
+  color: var(--color-black);
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 700;
+  padding: 16px 48px;
+  border-radius: 4px;
+  text-decoration: none;
+  margin-top: 8px;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.donateBtn:hover {
+  opacity: 0.88;
+  transform: translateY(-2px);
+}
+
+.ctaNote {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--color-gray-400);
   margin: 0;
 }
 
-.ctaDesc {
-  font-size: 16px;
-  line-height: 1.7;
-  color: #8e5f57;
-  margin: 0 0 8px;
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .infoInner {
+    grid-template-columns: 1fr;
+    gap: 56px;
+  }
 }
 
-@media (max-width: 768px) {
-  .hero {
-    padding: 64px 0 56px;
-  }
-
-  .widgetSection {
-    padding: 56px 24px;
-  }
-
-  .cta {
-    padding: 56px 24px;
+@media (max-width: 600px) {
+  .hero,
+  .infoSection,
+  .ctaSection {
+    padding: 72px 20px;
   }
 }

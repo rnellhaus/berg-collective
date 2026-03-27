@@ -280,6 +280,131 @@
   transform: translateY(-2px);
 }
 
+/* ── Download Gate Form ── */
+.gateForm {
+  width: 100%;
+  max-width: 560px;
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: left;
+}
+
+.gateFormIntro {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--color-black);
+  opacity: 0.75;
+  margin: 0;
+  text-align: center;
+}
+
+.gateFormRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.gateFieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gateLabel {
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-black);
+  letter-spacing: 0.03em;
+}
+
+.required {
+  color: var(--color-black);
+  opacity: 0.5;
+}
+
+.gateInput {
+  background: var(--color-white);
+  border: 1.5px solid rgba(0, 0, 0, 0.25);
+  border-radius: 4px;
+  padding: 10px 14px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--color-black);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.gateInput::placeholder {
+  color: rgba(0, 0, 0, 0.35);
+}
+
+.gateInput:focus {
+  border-color: var(--color-black);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.12);
+}
+
+.gateSubmitBtn {
+  background: var(--color-black);
+  color: var(--color-gold);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  padding: 14px 36px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  align-self: center;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  margin-top: 4px;
+}
+
+.gateSubmitBtn:hover:not(:disabled) {
+  opacity: 0.85;
+  transform: translateY(-2px);
+}
+
+.gateSubmitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.gateError {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: #c0392b;
+  background: rgba(192, 57, 43, 0.1);
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin: 0;
+}
+
+.gateSuccess {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.gateSuccessMsg {
+  font-family: var(--font-body);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-black);
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .gateFormRow {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ── Responsive ── */
 @media (max-width: 1100px) {
   .partnerGrid {
