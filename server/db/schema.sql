@@ -62,6 +62,21 @@ CREATE TABLE IF NOT EXISTS events (
   updated_by INTEGER REFERENCES users(id)
 );
 
+CREATE TABLE IF NOT EXISTS form_submissions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  form_type TEXT NOT NULL,
+  data TEXT NOT NULL DEFAULT '{}',
+  file_path TEXT,
+  email_sent INTEGER NOT NULL DEFAULT 0,
+  created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE TABLE IF NOT EXISTS newsletter_subscribers (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  email TEXT UNIQUE NOT NULL,
+  subscribed_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 CREATE TABLE IF NOT EXISTS event_photos (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   event_id INTEGER NOT NULL REFERENCES events(id) ON DELETE CASCADE,

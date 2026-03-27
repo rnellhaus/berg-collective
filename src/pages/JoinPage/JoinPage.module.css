@@ -376,6 +376,183 @@
   transform: translateY(-2px);
 }
 
+/* ── Application Form ── */
+.formSection {
+  background: var(--color-white);
+  padding: var(--section-padding-y) 24px;
+}
+
+.formInner {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.formTitle {
+  font-family: var(--font-heading);
+  font-size: clamp(28px, 3vw, 42px);
+  font-weight: 400;
+  color: var(--color-black);
+  margin: 0 0 20px;
+}
+
+.formIntro {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--color-gray-600);
+  margin: 0 0 48px;
+  max-width: 680px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formLabel {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-black);
+}
+
+.formInput,
+.formTextarea {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: var(--color-black);
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-200);
+  border-radius: 8px;
+  padding: 14px;
+  outline: none;
+  transition: border-color 0.18s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.formInput:focus,
+.formTextarea:focus {
+  border-color: var(--color-gold);
+}
+
+.formTextarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* Questions divider */
+.questionsDivider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 8px 0 4px;
+}
+
+.questionsDivider span {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--color-gold);
+  white-space: nowrap;
+}
+
+.questionsDivider::before,
+.questionsDivider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--color-gray-200);
+}
+
+/* File upload */
+.fileLabel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 2px dashed var(--color-gray-200);
+  border-radius: 8px;
+  padding: 18px 20px;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-gray-600);
+  transition: border-color 0.18s ease, color 0.18s ease;
+  background: var(--color-white);
+}
+
+.fileLabel:hover {
+  border-color: var(--color-gold);
+  color: var(--color-black);
+}
+
+.fileInput {
+  display: none;
+}
+
+/* Feedback */
+.successMsg {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: #1a7a3b;
+  background: #eaf7ef;
+  border: 1px solid #b6e4c8;
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 0;
+}
+
+.errorMsg {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin: 0;
+}
+
+/* Submit button */
+.submitBtn {
+  align-self: flex-start;
+  background: var(--color-gold);
+  color: var(--color-black);
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 700;
+  padding: 16px 40px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.submitBtn:hover:not(:disabled) {
+  opacity: 0.88;
+  transform: translateY(-2px);
+}
+
+.submitBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 /* ── Responsive ── */
 @media (max-width: 900px) {
   .tiersGrid {
@@ -404,6 +581,12 @@
   }
 }
 
+@media (max-width: 768px) {
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 600px) {
   .hero {
     padding: 72px 20px;
@@ -411,11 +594,16 @@
 
   .tiersSection,
   .howSection,
+  .formSection,
   .cta {
     padding: 72px 20px;
   }
 
   .callout {
     padding: 60px 20px;
+  }
+
+  .submitBtn {
+    width: 100%;
   }
 }
