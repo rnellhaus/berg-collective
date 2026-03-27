@@ -44,8 +44,7 @@ export default function FooterNew() {
           <div className={styles.social}>
             <a href="https://www.linkedin.com/company/berg-collective2" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className={styles.socialLink}>in</a>
             <a href="https://www.instagram.com/bergcollective" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className={styles.socialLink}>ig</a>
-            <a href="https://twitter.com/bergcollective" target="_blank" rel="noopener noreferrer" aria-label="Twitter / X" className={styles.socialLink}>𝕏</a>
-            <a href="https://www.tiktok.com/@berg.collective" target="_blank" rel="noopener noreferrer" aria-label="TikTok" className={styles.socialLink}>
+<a href="https://www.tiktok.com/@berg.collective" target="_blank" rel="noopener noreferrer" aria-label="TikTok" className={styles.socialLink}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 0010.86 4.46V13.2a8.16 8.16 0 005.58 2.2V12a4.85 4.85 0 01-5.58-2.2V2h3.45a4.83 4.83 0 002.13 4.69z"/></svg>
             </a>
           </div>
