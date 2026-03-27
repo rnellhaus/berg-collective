@@ -4,101 +4,106 @@ import usePageMeta from '../../hooks/usePageMeta';
 
 const tiers = [
   {
-    id: 'community',
-    name: 'Community',
-    price: 'Free',
-    priceNote: 'forever',
-    badge: null,
-    accent: false,
+    id: 'growing',
+    name: 'Growing',
+    tagline: 'For emerging ERGs',
+    highlighted: false,
     features: [
-      'Events calendar access',
-      'Monthly newsletter',
-      'Community forum',
-      'Public resource library',
-    ],
-    cta: 'Join Free',
-    ctaVariant: 'outline',
-    ctaTo: '/contact',
-  },
-  {
-    id: 'professional',
-    name: 'Professional',
-    price: '$50',
-    priceNote: '/month',
-    badge: 'Most Popular',
-    accent: false,
-    features: [
-      'Everything in Community',
-      '1-on-1 mentorship matching',
-      'Exclusive workshops',
-      'Chapter access nationwide',
-      '20% event discounts',
-    ],
-    cta: 'Get Started',
-    ctaVariant: 'primary',
-    ctaTo: '/contact',
-  },
-  {
-    id: 'executive',
-    name: 'Executive',
-    price: '$150',
-    priceNote: '/month',
-    badge: null,
-    accent: true,
-    features: [
-      'Everything in Professional',
-      'C-suite mentorship program',
-      'Board placement assistance',
-      'VIP event access',
-      'Annual executive retreat',
+      'Community access',
+      'Resource library',
+      'Quarterly events',
+      'BERG network directory',
     ],
     cta: 'Apply Now',
-    ctaVariant: 'primary',
-    ctaTo: '/contact',
+    ctaHref: 'mailto:rich@bergcollective.org',
+  },
+  {
+    id: 'established',
+    name: 'Established',
+    tagline: 'For active ERGs with 50+ members',
+    highlighted: true,
+    features: [
+      'Everything in Growing',
+      'Dedicated chapter support',
+      'Annual summit access',
+      'Mentorship matching',
+      'Priority event access',
+    ],
+    cta: 'Apply Now',
+    ctaHref: 'mailto:rich@bergcollective.org',
+  },
+  {
+    id: 'enterprise',
+    name: 'Enterprise',
+    tagline: 'For Fortune 500 ERGs',
+    highlighted: false,
+    features: [
+      'Everything in Established',
+      'Custom programming',
+      'Executive roundtables',
+      'Board placement pipeline',
+      'White-glove onboarding',
+    ],
+    cta: 'Contact Us',
+    ctaHref: 'mailto:rich@bergcollective.org',
   },
 ];
 
+const steps = [
+  { number: '01', title: 'Apply', desc: 'Submit your ERG details' },
+  { number: '02', title: 'Interview', desc: 'Meet with our team' },
+  { number: '03', title: 'Confirm Tier', desc: 'Select the right fit' },
+  { number: '04', title: 'Join', desc: 'Welcome to BERG' },
+];
+
 export default function JoinPage() {
-  usePageMeta('Join', 'Become a BERG Collective member.');
+  usePageMeta('Membership', 'ERG membership built for impact. Join the BERG Collective.');
   return (
     <main className={styles.page}>
+
       {/* Hero */}
       <section className={styles.hero}>
         <div className={styles.heroInner}>
-          <h1 className={styles.heroTitle}>
-            Become a{' '}
-            <span className={styles.primary}>Member</span>
-          </h1>
+          <span className={styles.sectionLabel}>MEMBERSHIP</span>
+          <h1 className={styles.heroTitle}>Built for ERGs. Designed for Impact.</h1>
           <p className={styles.heroSubtitle}>
-            Unlock access to a powerful network of Black professionals, mentorship opportunities,
-            exclusive events, and resources designed to accelerate your growth.
+            BERG Collective membership gives your ERG the structure, support, and community
+            to drive real change inside your organization and beyond.
           </p>
         </div>
       </section>
 
-      {/* Tier Grid */}
+      {/* Tiers */}
       <section className={styles.tiersSection}>
         <div className={styles.tiersInner}>
           <div className={styles.tiersGrid}>
             {tiers.map((tier) => (
               <div
                 key={tier.id}
-                className={`${styles.tierCard} ${tier.accent ? styles.tierAccent : ''} ${tier.badge ? styles.tierFeatured : ''}`}
+                className={`${styles.tierCard} ${tier.highlighted ? styles.tierHighlighted : ''}`}
               >
-                {tier.badge && (
-                  <span className={styles.tierBadge}>{tier.badge}</span>
+                {tier.highlighted && (
+                  <span className={styles.tierBadge}>Most Popular</span>
                 )}
                 <div className={styles.tierHeader}>
                   <h3 className={styles.tierName}>{tier.name}</h3>
-                  <div className={styles.tierPricing}>
-                    <span className={styles.tierPrice}>{tier.price}</span>
-                    <span className={styles.tierNote}>{tier.priceNote}</span>
-                  </div>
+                  <p className={styles.tierTagline}>{tier.tagline}</p>
                 </div>
                 <ul className={styles.featureList}>
                   {tier.features.map((feature) => (
                     <li key={feature} className={styles.featureItem}>
-                      <svg className={styles.checkIcon} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <svg
+                        className={styles.checkIcon}
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
                         <path d="M20 6L9 17L4 12" />
                       </svg>
                       {feature}
@@ -106,9 +111,12 @@ export default function JoinPage() {
                   ))}
                 </ul>
                 <div className={styles.tierCta}>
-                  <Button to={tier.ctaTo} variant={tier.accent ? 'white' : tier.ctaVariant}>
+                  <a
+                    href={tier.ctaHref}
+                    className={`${styles.ctaBtn} ${tier.highlighted ? styles.ctaBtnGold : styles.ctaBtnOutline}`}
+                  >
                     {tier.cta}
-                  </Button>
+                  </a>
                 </div>
               </div>
             ))}
@@ -116,16 +124,49 @@ export default function JoinPage() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className={styles.cta}>
-        <div className={styles.ctaInner}>
-          <h2 className={styles.ctaTitle}>Not Sure Which Tier Is Right for You?</h2>
-          <p className={styles.ctaDesc}>
-            Reach out and our team will help you find the membership that best fits your goals.
-          </p>
-          <Button to="/contact" variant="primary">Talk to Us</Button>
+      {/* How It Works */}
+      <section className={styles.howSection}>
+        <div className={styles.howInner}>
+          <span className={styles.sectionLabel}>THE PROCESS</span>
+          <h2 className={styles.howTitle}>How It Works</h2>
+          <div className={styles.stepsRow}>
+            {steps.map((step, i) => (
+              <div key={step.number} className={styles.stepWrapper}>
+                <div className={styles.stepItem}>
+                  <div className={styles.stepCircle}>{step.number}</div>
+                  <h3 className={styles.stepTitle}>{step.title}</h3>
+                  <p className={styles.stepDesc}>{step.desc}</p>
+                </div>
+                {i < steps.length - 1 && (
+                  <div className={styles.stepConnector} aria-hidden="true" />
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
+
+      {/* Individual Membership Callout */}
+      <section className={styles.callout}>
+        <div className={styles.calloutInner}>
+          <h2 className={styles.calloutTitle}>Individual Membership Coming in 2026</h2>
+          <p className={styles.calloutSub}>Join our waitlist to be the first to know.</p>
+          <a href="mailto:rich@bergcollective.org" className={styles.calloutBtn}>
+            Join Waitlist
+          </a>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className={styles.cta}>
+        <div className={styles.ctaInner}>
+          <h2 className={styles.ctaTitle}>Ready to Elevate Your ERG?</h2>
+          <a href="mailto:rich@bergcollective.org" className={styles.ctaGoldBtn}>
+            Apply for ERG Membership
+          </a>
+        </div>
+      </section>
+
     </main>
   );
 }

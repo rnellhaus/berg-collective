@@ -1,55 +1,67 @@
+/* ─────────────────────────────────────────
+   JoinPage — Membership / ERG Tiers
+   Design system: globals.css variables only
+───────────────────────────────────────── */
+
 .page {
   min-height: 100vh;
-  background: #fbfaf9;
+  background: var(--color-white);
 }
 
-/* Hero */
+/* ── Shared label ── */
+.sectionLabel {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--color-gold);
+  margin-bottom: 16px;
+}
+
+/* ── Hero ── */
 .hero {
-  background: #fbfaf9;
-  padding: 96px 0 64px;
+  background: var(--color-black);
+  padding: var(--section-padding-y) 24px;
   text-align: center;
-  border-bottom: 1px solid #e8e1da;
 }
 
 .heroInner {
-  max-width: 720px;
+  max-width: 760px;
   margin: 0 auto;
-  padding: 0 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
 }
 
 .heroTitle {
-  font-size: clamp(40px, 5vw, 64px);
-  font-weight: 800;
+  font-family: var(--font-heading);
+  font-size: clamp(36px, 5vw, 64px);
+  font-weight: 400;
   line-height: 1.15;
-  color: #191110;
-  margin: 0;
-}
-
-.primary {
-  color: #8b3223;
+  color: var(--color-white);
+  margin: 0 0 20px;
 }
 
 .heroSubtitle {
+  font-family: var(--font-body);
   font-size: 18px;
   line-height: 1.7;
-  color: #8e5f57;
+  color: var(--color-gray-400);
   margin: 0;
-  max-width: 560px;
+  max-width: 580px;
 }
 
-/* Tiers */
+/* ── Tiers ── */
 .tiersSection {
-  padding: 80px 0;
+  padding: var(--section-padding-y) 24px;
+  background: var(--color-white);
 }
 
 .tiersInner {
-  max-width: 1200px;
+  max-width: var(--max-width);
   margin: 0 auto;
-  padding: 0 24px;
 }
 
 .tiersGrid {
@@ -60,30 +72,27 @@
 }
 
 .tierCard {
-  background: #fff;
-  border: 2px solid #e8e1da;
-  border-radius: 20px;
-  padding: 36px 32px;
+  background: var(--color-white);
+  border: 1px solid var(--color-gray-200);
+  border-top: 4px solid var(--color-gold);
+  border-radius: 4px;
+  padding: 40px 32px 36px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 28px;
   position: relative;
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  transition: box-shadow var(--transition-fast), transform var(--transition-fast);
 }
 
 .tierCard:hover {
-  box-shadow: 0 8px 32px rgba(139, 50, 35, 0.08);
-  transform: translateY(-2px);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08);
+  transform: translateY(-3px);
 }
 
-.tierFeatured {
-  border-color: #8b3223;
-  box-shadow: 0 4px 24px rgba(139, 50, 35, 0.12);
-}
-
-.tierAccent {
-  background: linear-gradient(145deg, #2f1e1b 0%, #1a0f0d 100%);
-  border-color: #B59410;
+.tierHighlighted {
+  border: 2px solid var(--color-gold);
+  border-top: 4px solid var(--color-gold);
+  box-shadow: 0 4px 32px rgba(212, 175, 55, 0.18);
 }
 
 .tierBadge {
@@ -91,11 +100,12 @@
   top: -14px;
   left: 50%;
   transform: translateX(-50%);
-  background: #8b3223;
-  color: #fbfaf9;
-  font-size: 11px;
+  background: var(--color-gold);
+  color: var(--color-black);
+  font-family: var(--font-body);
+  font-size: 10px;
   font-weight: 800;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   padding: 5px 14px;
   border-radius: 100px;
@@ -105,45 +115,22 @@
 .tierHeader {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .tierName {
-  font-size: 20px;
-  font-weight: 700;
-  color: #191110;
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 400;
+  color: var(--color-black);
   margin: 0;
 }
 
-.tierAccent .tierName {
-  color: #fbfaf9;
-}
-
-.tierPricing {
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-}
-
-.tierPrice {
-  font-size: 36px;
-  font-weight: 800;
-  color: #8b3223;
-  line-height: 1;
-}
-
-.tierAccent .tierPrice {
-  color: #B59410;
-}
-
-.tierNote {
+.tierTagline {
+  font-family: var(--font-body);
   font-size: 14px;
-  color: #8e5f57;
-  font-weight: 500;
-}
-
-.tierAccent .tierNote {
-  color: rgba(251, 250, 249, 0.6);
+  color: var(--color-gray-600);
+  margin: 0;
 }
 
 .featureList {
@@ -160,40 +147,197 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
+  font-family: var(--font-body);
   font-size: 15px;
-  color: #191110;
-  line-height: 1.4;
-}
-
-.tierAccent .featureItem {
-  color: rgba(251, 250, 249, 0.85);
+  color: var(--color-gray-800);
+  line-height: 1.45;
 }
 
 .checkIcon {
-  color: #8b3223;
+  color: var(--color-gold);
   flex-shrink: 0;
-  margin-top: 1px;
-}
-
-.tierAccent .checkIcon {
-  color: #B59410;
+  margin-top: 2px;
 }
 
 .tierCta {
   margin-top: auto;
 }
 
-.tierCta a,
-.tierCta button {
+/* Tier CTA buttons (inline — not using Button component to allow full-width) */
+.ctaBtn {
+  display: block;
   width: 100%;
   text-align: center;
-  justify-content: center;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  padding: 14px 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+  text-decoration: none;
 }
 
-/* CTA */
-.cta {
-  background: #F5EFDB;
+.ctaBtnGold {
+  background: var(--color-gold);
+  color: var(--color-black);
+  border: 2px solid var(--color-gold);
+}
+
+.ctaBtnGold:hover {
+  background: var(--color-black);
+  color: var(--color-gold);
+  transform: translateY(-2px);
+}
+
+.ctaBtnOutline {
+  background: transparent;
+  color: var(--color-black);
+  border: 2px solid var(--color-gray-200);
+}
+
+.ctaBtnOutline:hover {
+  border-color: var(--color-gold);
+  color: var(--color-gold);
+  transform: translateY(-2px);
+}
+
+/* ── How It Works ── */
+.howSection {
+  background: var(--color-gray-100);
+  padding: var(--section-padding-y) 24px;
+  text-align: center;
+}
+
+.howInner {
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.howTitle {
+  font-family: var(--font-heading);
+  font-size: clamp(28px, 3vw, 42px);
+  font-weight: 400;
+  color: var(--color-black);
+  margin: 0 0 60px;
+}
+
+.stepsRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+}
+
+.stepWrapper {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.stepItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  padding: 0 12px;
+}
+
+.stepConnector {
+  flex: 0 0 60px;
+  height: 2px;
+  background: var(--color-gold);
+  margin-top: -52px; /* align with center of circle */
+  opacity: 0.5;
+}
+
+.stepCircle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-gold);
+  color: var(--color-black);
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stepTitle {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--color-black);
+  margin: 0;
+}
+
+.stepDesc {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-gray-600);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Gold Callout Banner ── */
+.callout {
+  background: var(--color-gold);
   padding: 80px 24px;
+  text-align: center;
+}
+
+.calloutInner {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.calloutTitle {
+  font-family: var(--font-heading);
+  font-size: clamp(24px, 3vw, 36px);
+  font-weight: 400;
+  color: var(--color-black);
+  margin: 0;
+}
+
+.calloutSub {
+  font-family: var(--font-body);
+  font-size: 17px;
+  color: var(--color-black);
+  opacity: 0.75;
+  margin: 0;
+}
+
+.calloutBtn {
+  display: inline-block;
+  background: var(--color-black);
+  color: var(--color-gold);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  padding: 14px 32px;
+  border-radius: 4px;
+  text-decoration: none;
+  margin-top: 8px;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.calloutBtn:hover {
+  opacity: 0.85;
+  transform: translateY(-2px);
+}
+
+/* ── Final CTA ── */
+.cta {
+  background: var(--color-black);
+  padding: var(--section-padding-y) 24px;
   text-align: center;
 }
 
@@ -203,40 +347,75 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  gap: 32px;
 }
 
 .ctaTitle {
-  font-size: clamp(26px, 3vw, 36px);
-  font-weight: 800;
-  color: #191110;
+  font-family: var(--font-heading);
+  font-size: clamp(28px, 3.5vw, 46px);
+  font-weight: 400;
+  color: var(--color-white);
   margin: 0;
 }
 
-.ctaDesc {
+.ctaGoldBtn {
+  display: inline-block;
+  background: var(--color-gold);
+  color: var(--color-black);
+  font-family: var(--font-body);
   font-size: 16px;
-  line-height: 1.7;
-  color: #8e5f57;
-  margin: 0 0 8px;
+  font-weight: 700;
+  padding: 16px 40px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .hero {
-    padding: 64px 0 48px;
-  }
+.ctaGoldBtn:hover {
+  opacity: 0.88;
+  transform: translateY(-2px);
+}
 
-  .tiersSection {
-    padding: 56px 0;
-  }
-
+/* ── Responsive ── */
+@media (max-width: 900px) {
   .tiersGrid {
     grid-template-columns: 1fr;
     max-width: 480px;
     margin: 0 auto;
   }
 
+  .stepsRow {
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .stepWrapper {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .stepConnector {
+    width: 2px;
+    height: 32px;
+    flex: none;
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero {
+    padding: 72px 20px;
+  }
+
+  .tiersSection,
+  .howSection,
   .cta {
-    padding: 56px 24px;
+    padding: 72px 20px;
+  }
+
+  .callout {
+    padding: 60px 20px;
   }
 }
