@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './FooterNew.module.css';
 
@@ -30,6 +31,26 @@ const FOOTER_COLS = [
 ];
 
 export default function FooterNew() {
+  const [nlEmail, setNlEmail] = useState('');
+  const [nlStatus, setNlStatus] = useState('idle');
+
+  async function handleNewsletter(e) {
+    e.preventDefault();
+    if (!nlEmail) return;
+    setNlStatus('submitting');
+    try {
+      await fetch('/api/forms/newsletter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: nlEmail, list: 'nyc' }),
+      });
+      window.open('http://eepurl.com/iCmefM', '_blank');
+      setNlStatus('success');
+    } catch {
+      setNlStatus('error');
+    }
+  }
+
   return (
     <footer className={styles.footer} role="contentinfo">
       <div className={`${styles.top} container`}>
@@ -47,6 +68,30 @@ export default function FooterNew() {
 <a href="https://www.tiktok.com/@berg.collective" target="_blank" rel="noopener noreferrer" aria-label="TikTok" className={styles.socialLink}>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1v-3.5a6.37 6.37 0 00-.79-.05A6.34 6.34 0 003.15 15.2a6.34 6.34 0 0010.86 4.46V13.2a8.16 8.16 0 005.58 2.2V12a4.85 4.85 0 01-5.58-2.2V2h3.45a4.83 4.83 0 002.13 4.69z"/></svg>
             </a>
+          </div>
+
+          {/* Footer newsletter signup */}
+          <div className={styles.newsletter}>
+            <h4 className={styles.nlHeading}>Stay Connected</h4>
+            {nlStatus === 'success' ? (
+              <p className={styles.nlSuccess}>You're in! Check the tab that opened to confirm.</p>
+            ) : (
+              <form className={styles.nlForm} onSubmit={handleNewsletter}>
+                <input
+                  type="email"
+                  className={styles.nlInput}
+                  placeholder="Your email"
+                  value={nlEmail}
+                  onChange={(e) => setNlEmail(e.target.value)}
+                  required
+                  aria-label="Newsletter email"
+                />
+                <button type="submit" className={styles.nlBtn} disabled={nlStatus === 'submitting'}>
+                  {nlStatus === 'submitting' ? '...' : 'Join'}
+                </button>
+              </form>
+            )}
+            {nlStatus === 'error' && <p className={styles.nlError}>Try again</p>}
           </div>
         </div>
 

@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { label: 'Events',     to: '/events' },
   { label: 'Membership', to: '/join' },
   { label: 'Impact',     to: '/impact' },
+  { label: 'Newsletter', to: '/newsletter' },
 ];
 
 export default function Navbar() {
