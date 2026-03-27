@@ -24,6 +24,7 @@ const FOOTER_COLS = [
   {
     heading: 'Connect',
     links: [
+      { label: 'Donate',                   to: '/donate' },
       { label: 'Contact Us',              to: '/contact' },
       { label: 'rich@bergcollective.org', to: 'mailto:rich@bergcollective.org', external: true },
     ],

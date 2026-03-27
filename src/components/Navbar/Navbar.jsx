@@ -10,6 +10,7 @@ const NAV_LINKS = [
   { label: 'Membership', to: '/join' },
   { label: 'Impact',     to: '/impact' },
   { label: 'Newsletter', to: '/newsletter' },
+  { label: 'Donate',     to: '/donate' },
 ];
 
 export default function Navbar() {
