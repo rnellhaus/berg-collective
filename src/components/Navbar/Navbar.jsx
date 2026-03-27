@@ -9,7 +9,6 @@ const NAV_LINKS = [
   { label: 'Events',     to: '/events' },
   { label: 'Membership', to: '/membership' },
   { label: 'Impact',        to: '/impact' },
-  { label: 'Partnerships',  to: '/partnerships' },
   { label: 'Newsletter',    to: '/newsletter' },
   { label: 'Donate',     to: '/donate' },
 ];
@@ -46,7 +45,7 @@ export default function Navbar() {
           ))}
         </ul>
 
-        <Link to="/membership" className={styles.cta}>
+        <Link to="/partnerships" className={styles.cta}>
           Partner With Us
         </Link>
 
