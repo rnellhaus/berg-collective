@@ -4,6 +4,10 @@ import { useAuth } from '../hooks/useAuth';
 import styles from './MediaLibraryPage.module.css';
 
 const CATEGORIES = ['All', 'Events', 'Pages', 'General'];
+const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
+
+let uploadIdCounter = 0;
 
 function mediaUrl(path) {
   if (!path) return null;
@@ -24,6 +28,44 @@ function savingsPct(original, webp) {
   return Math.round(((original - webp) / original) * 100);
 }
 
+function uploadFileWithProgress(file, onProgress) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    const formData = new FormData();
+    formData.append('image', file);
+
+    xhr.upload.addEventListener('progress', (e) => {
+      if (e.lengthComputable) {
+        onProgress(Math.round((e.loaded / e.total) * 100));
+      }
+    });
+
+    xhr.addEventListener('load', () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          resolve(JSON.parse(xhr.responseText));
+        } catch {
+          resolve({});
+        }
+      } else {
+        try {
+          const body = JSON.parse(xhr.responseText);
+          reject(new Error(body.error || `Upload failed (${xhr.status})`));
+        } catch {
+          reject(new Error(`Upload failed (${xhr.status})`));
+        }
+      }
+    });
+
+    xhr.addEventListener('error', () => reject(new Error('Network error')));
+    xhr.addEventListener('abort', () => reject(new Error('Upload cancelled')));
+
+    xhr.open('POST', '/api/media/upload');
+    xhr.withCredentials = true;
+    xhr.send(formData);
+  });
+}
+
 export default function MediaLibraryPage() {
   const { apiFetch, uploadFile } = useApi();
   const { user } = useAuth();
@@ -41,8 +83,11 @@ export default function MediaLibraryPage() {
   const [saving, setSaving] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [loadError, setLoadError] = useState('');
+  const [isDragging, setIsDragging] = useState(false);
+  const [batchUploads, setBatchUploads] = useState([]);
 
   const fileInputRef = useRef(null);
+  const dragCounterRef = useRef(0);
 
   const loadMedia = useCallback(async () => {
     setLoadError('');
@@ -132,30 +177,146 @@ export default function MediaLibraryPage() {
     }
   }
 
-  async function handleFileChange(e) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  function validateFiles(fileList) {
+    const valid = [];
+    const errors = [];
+    for (const file of fileList) {
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        errors.push(`${file.name}: unsupported format`);
+      } else if (file.size > MAX_FILE_SIZE) {
+        errors.push(`${file.name}: exceeds 10 MB`);
+      } else {
+        valid.push(file);
+      }
+    }
+    return { valid, errors };
+  }
+
+  function startBatchUpload(files) {
+    if (files.length === 0) return;
+
+    const newItems = files.map((file) => ({
+      id: ++uploadIdCounter,
+      file,
+      name: file.name,
+      preview: URL.createObjectURL(file),
+      progress: 0,
+      status: 'pending', // pending | uploading | done | error
+      error: null,
+    }));
+
+    setBatchUploads((prev) => [...prev, ...newItems]);
     setUploading(true);
     setUploadError('');
-    try {
-      const res = await uploadFile('/api/media/upload', file);
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        throw new Error(body.error || 'Upload failed');
+
+    // Upload sequentially to avoid overwhelming the server
+    const queue = [...newItems];
+    (async () => {
+      for (const item of queue) {
+        setBatchUploads((prev) =>
+          prev.map((u) => (u.id === item.id ? { ...u, status: 'uploading' } : u))
+        );
+
+        try {
+          await uploadFileWithProgress(item.file, (pct) => {
+            setBatchUploads((prev) =>
+              prev.map((u) => (u.id === item.id ? { ...u, progress: pct } : u))
+            );
+          });
+
+          setBatchUploads((prev) =>
+            prev.map((u) => (u.id === item.id ? { ...u, status: 'done', progress: 100 } : u))
+          );
+        } catch (err) {
+          setBatchUploads((prev) =>
+            prev.map((u) =>
+              u.id === item.id ? { ...u, status: 'error', error: err.message } : u
+            )
+          );
+        }
       }
+
       await loadMedia();
-    } catch (err) {
-      setUploadError(err.message || 'Upload failed');
-    } finally {
       setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    }
+    })();
+  }
+
+  function dismissBatchUploads() {
+    setBatchUploads((prev) => {
+      // Revoke object URLs to free memory
+      for (const item of prev) {
+        if (item.preview) URL.revokeObjectURL(item.preview);
+      }
+      return [];
+    });
+  }
+
+  async function handleFileChange(e) {
+    const fileList = Array.from(e.target.files || []);
+    if (fileList.length === 0) return;
+    const { valid, errors } = validateFiles(fileList);
+    if (errors.length > 0) setUploadError(errors.join('; '));
+    startBatchUpload(valid);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  }
+
+  function handleDragEnter(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounterRef.current++;
+    if (dragCounterRef.current === 1) setIsDragging(true);
+  }
+
+  function handleDragLeave(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounterRef.current--;
+    if (dragCounterRef.current === 0) setIsDragging(false);
+  }
+
+  function handleDragOver(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    dragCounterRef.current = 0;
+    setIsDragging(false);
+
+    const fileList = Array.from(e.dataTransfer.files || []);
+    if (fileList.length === 0) return;
+    const { valid, errors } = validateFiles(fileList);
+    if (errors.length > 0) setUploadError(errors.join('; '));
+    startBatchUpload(valid);
   }
 
   const pct = selected ? savingsPct(selected.original_size, selected.webp_size) : null;
+  const hasActiveUploads = batchUploads.length > 0;
+  const allDone = hasActiveUploads && batchUploads.every((u) => u.status === 'done' || u.status === 'error');
+  const uploadedCount = batchUploads.filter((u) => u.status === 'done').length;
+  const errorCount = batchUploads.filter((u) => u.status === 'error').length;
 
   return (
-    <div className={styles.page}>
+    <div
+      className={styles.page}
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver}
+      onDrop={handleDrop}
+    >
+      {/* Drag overlay */}
+      {isDragging && (
+        <div className={styles.dropOverlay}>
+          <div className={styles.dropOverlayContent}>
+            <span className={`material-symbols-outlined ${styles.dropIcon}`}>upload</span>
+            <span className={styles.dropText}>Drop images to upload</span>
+            <span className={styles.dropSubtext}>JPG, PNG, WebP, HEIC — up to 10 MB each</span>
+          </div>
+        </div>
+      )}
+
       {/* Top bar */}
       <div className={styles.topBar}>
         <div className={styles.topBarLeft}>
@@ -177,7 +338,6 @@ export default function MediaLibraryPage() {
           </select>
         </div>
         <div className={styles.topBarRight}>
-          {uploading && <span className={styles.uploadingText}>Uploading…</span>}
           {uploadError && <span className={styles.uploadError}>{uploadError}</span>}
           <button
             className={styles.uploadBtn}
@@ -190,6 +350,7 @@ export default function MediaLibraryPage() {
             ref={fileInputRef}
             type="file"
             accept="image/*"
+            multiple
             style={{ display: 'none' }}
             onChange={handleFileChange}
           />
@@ -207,6 +368,48 @@ export default function MediaLibraryPage() {
       </div>
 
       {loadError && <div className={styles.errorMsg}>{loadError}</div>}
+
+      {/* Upload progress panel */}
+      {hasActiveUploads && (
+        <div className={styles.uploadPanel}>
+          <div className={styles.uploadPanelHeader}>
+            <span className={styles.uploadPanelTitle}>
+              {allDone
+                ? `${uploadedCount} uploaded${errorCount > 0 ? `, ${errorCount} failed` : ''}`
+                : `Uploading ${batchUploads.length} ${batchUploads.length === 1 ? 'file' : 'files'}…`}
+            </span>
+            {allDone && (
+              <button className={styles.uploadPanelDismiss} onClick={dismissBatchUploads}>
+                Dismiss
+              </button>
+            )}
+          </div>
+          <div className={styles.uploadPanelList}>
+            {batchUploads.map((item) => (
+              <div key={item.id} className={styles.uploadItem}>
+                <img className={styles.uploadItemThumb} src={item.preview} alt="" />
+                <div className={styles.uploadItemInfo}>
+                  <span className={styles.uploadItemName}>{item.name}</span>
+                  {item.status === 'uploading' && (
+                    <div className={styles.progressBarWrap}>
+                      <div className={styles.progressBar} style={{ width: `${item.progress}%` }} />
+                    </div>
+                  )}
+                  {item.status === 'pending' && (
+                    <span className={styles.uploadItemStatus}>Waiting…</span>
+                  )}
+                  {item.status === 'done' && (
+                    <span className={styles.uploadItemDone}>Complete</span>
+                  )}
+                  {item.status === 'error' && (
+                    <span className={styles.uploadItemError}>{item.error}</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Main layout */}
       <div className={styles.mainLayout}>
