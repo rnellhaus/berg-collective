@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import path from 'path';
 import fs from 'fs';
+import dns from 'dns/promises';
 import { fileURLToPath } from 'url';
 import { getDb } from '../db/connection.js';
 import { verifyToken } from '../middleware/auth.js';
@@ -15,6 +16,23 @@ const uploadDir = path.join(__dirname, '..', 'uploads');
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
 const MAX_IMPORT_SIZE = 10 * 1024 * 1024; // 10 MB
 const IMPORT_TIMEOUT_MS = 30_000; // 30 seconds
+
+function isPrivateIP(ip) {
+  // IPv4-mapped IPv6
+  const v4 = ip.startsWith('::ffff:') ? ip.slice(7) : ip;
+  const parts = v4.split('.').map(Number);
+  if (parts.length === 4) {
+    if (parts[0] === 10) return true;                              // 10.0.0.0/8
+    if (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) return true; // 172.16.0.0/12
+    if (parts[0] === 192 && parts[1] === 168) return true;        // 192.168.0.0/16
+    if (parts[0] === 127) return true;                             // 127.0.0.0/8
+    if (parts[0] === 169 && parts[1] === 254) return true;        // 169.254.0.0/16
+    if (parts[0] === 0) return true;                               // 0.0.0.0/8
+  }
+  // IPv6 loopback and link-local
+  if (ip === '::1' || ip.startsWith('fe80:') || ip.startsWith('fc00:') || ip.startsWith('fd00:')) return true;
+  return false;
+}
 
 const router = Router();
 
@@ -97,12 +115,12 @@ router.post('/upload', verifyToken, upload.single('image'), async (req, res) => 
     // Clean up placeholder on failure
     db.prepare('DELETE FROM media WHERE id = ?').run(mediaId);
     console.error('Image processing error:', err);
-    res.status(500).json({ error: 'Image processing failed', details: err.message });
+    res.status(500).json({ error: 'Image processing failed' });
   }
 });
 
 // POST /import-url — Download image from URL and process it
-router.post('/import-url', verifyToken, async (req, res) => {
+router.post('/import-url', verifyToken, requireRole('admin'), async (req, res) => {
   const { url, alt_text, category } = req.body;
 
   if (!url || typeof url !== 'string') {
@@ -128,6 +146,16 @@ router.post('/import-url', verifyToken, async (req, res) => {
     return res.status(400).json({ error: 'Only HTTP and HTTPS URLs are supported' });
   }
 
+  // SSRF protection: resolve hostname and reject private/reserved IPs
+  try {
+    const { address } = await dns.lookup(parsedUrl.hostname);
+    if (isPrivateIP(address)) {
+      return res.status(400).json({ error: 'URLs pointing to private/internal addresses are not allowed' });
+    }
+  } catch {
+    return res.status(400).json({ error: 'Could not resolve hostname' });
+  }
+
   const db = getDb();
   let tempPath = null;
   let mediaId = null;
@@ -148,12 +176,14 @@ router.post('/import-url', verifyToken, async (req, res) => {
     }
 
     if (!response.ok) {
+      response.body?.cancel().catch(() => {});
       return res.status(422).json({ error: `Failed to download image (HTTP ${response.status})` });
     }
 
     // Validate content type
     const contentType = (response.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
     if (!ALLOWED_MIME_TYPES.includes(contentType)) {
+      response.body?.cancel().catch(() => {});
       return res.status(422).json({
         error: `Unsupported content type: ${contentType || 'unknown'}. Allowed: JPG, PNG, WebP, HEIC`,
       });
@@ -162,6 +192,7 @@ router.post('/import-url', verifyToken, async (req, res) => {
     // Check content length if provided
     const contentLength = parseInt(response.headers.get('content-length'), 10);
     if (contentLength && contentLength > MAX_IMPORT_SIZE) {
+      response.body?.cancel().catch(() => {});
       return res.status(422).json({ error: `Image too large (${Math.round(contentLength / 1024 / 1024)}MB). Maximum is 10 MB` });
     }
 
@@ -253,7 +284,7 @@ router.post('/import-url', verifyToken, async (req, res) => {
     if (err.name === 'AbortError') {
       return res.status(422).json({ error: 'Download timed out (30s limit)' });
     }
-    res.status(500).json({ error: 'Image import failed', details: err.message });
+    res.status(500).json({ error: 'Image import failed' });
   }
 });
 

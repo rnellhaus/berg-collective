@@ -67,7 +67,7 @@ function uploadFileWithProgress(file, onProgress) {
 }
 
 export default function MediaLibraryPage() {
-  const { apiFetch, uploadFile } = useApi();
+  const { apiFetch } = useApi();
   const { user } = useAuth();
   const isAdmin = user?.role === 'admin';
 
