@@ -85,6 +85,12 @@ export default function MediaLibraryPage() {
   const [loadError, setLoadError] = useState('');
   const [isDragging, setIsDragging] = useState(false);
   const [batchUploads, setBatchUploads] = useState([]);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importUrl, setImportUrl] = useState('');
+  const [importAlt, setImportAlt] = useState('');
+  const [importCategory, setImportCategory] = useState('General');
+  const [importLoading, setImportLoading] = useState(false);
+  const [importError, setImportError] = useState('');
 
   const fileInputRef = useRef(null);
   const dragCounterRef = useRef(0);
@@ -292,6 +298,36 @@ export default function MediaLibraryPage() {
     startBatchUpload(valid);
   }
 
+  async function handleImportUrl(e) {
+    e.preventDefault();
+    if (!importUrl.trim()) return;
+    setImportLoading(true);
+    setImportError('');
+    try {
+      const res = await apiFetch('/api/media/import-url', {
+        method: 'POST',
+        body: JSON.stringify({
+          url: importUrl.trim(),
+          alt_text: importAlt.trim(),
+          category: importCategory === 'All' ? null : importCategory,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || `Import failed (${res.status})`);
+      }
+      setShowImportModal(false);
+      setImportUrl('');
+      setImportAlt('');
+      setImportCategory('General');
+      await loadMedia();
+    } catch (err) {
+      setImportError(err.message || 'Import failed');
+    } finally {
+      setImportLoading(false);
+    }
+  }
+
   const pct = selected ? savingsPct(selected.original_size, selected.webp_size) : null;
   const hasActiveUploads = batchUploads.length > 0;
   const allDone = hasActiveUploads && batchUploads.every((u) => u.status === 'done' || u.status === 'error');
@@ -313,6 +349,82 @@ export default function MediaLibraryPage() {
             <span className={`material-symbols-outlined ${styles.dropIcon}`}>upload</span>
             <span className={styles.dropText}>Drop images to upload</span>
             <span className={styles.dropSubtext}>JPG, PNG, WebP, HEIC — up to 10 MB each</span>
+          </div>
+        </div>
+      )}
+
+      {/* Import from URL modal */}
+      {showImportModal && (
+        <div className={styles.modalOverlay} onClick={() => !importLoading && setShowImportModal(false)}>
+          <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <span className={styles.modalTitle}>Import from URL</span>
+              <button
+                className={styles.closeBtn}
+                onClick={() => !importLoading && setShowImportModal(false)}
+                aria-label="Close"
+              >
+                &#x2715;
+              </button>
+            </div>
+            <form onSubmit={handleImportUrl} className={styles.modalBody}>
+              <label className={styles.fieldLabel}>Image URL</label>
+              <input
+                className={styles.fieldInput}
+                type="url"
+                value={importUrl}
+                onChange={(e) => setImportUrl(e.target.value)}
+                placeholder="https://example.com/photo.jpg"
+                required
+                autoFocus
+                disabled={importLoading}
+              />
+              <span className={styles.importHint}>
+                Supports direct links, Google Drive, and Dropbox share URLs
+              </span>
+
+              <label className={styles.fieldLabel}>Alt Text (optional)</label>
+              <input
+                className={styles.fieldInput}
+                type="text"
+                value={importAlt}
+                onChange={(e) => setImportAlt(e.target.value)}
+                placeholder="Describe the image…"
+                disabled={importLoading}
+              />
+
+              <label className={styles.fieldLabel}>Category</label>
+              <select
+                className={styles.fieldSelect}
+                value={importCategory}
+                onChange={(e) => setImportCategory(e.target.value)}
+                disabled={importLoading}
+              >
+                {CATEGORIES.filter((c) => c !== 'All').map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
+              </select>
+
+              {importError && <div className={styles.importErrorMsg}>{importError}</div>}
+
+              <div className={styles.modalActions}>
+                <button
+                  type="button"
+                  className={styles.cancelBtn}
+                  onClick={() => setShowImportModal(false)}
+                  disabled={importLoading}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className={styles.uploadBtn}
+                  disabled={importLoading || !importUrl.trim()}
+                >
+                  {importLoading ? 'Importing…' : 'Import Image'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
@@ -339,6 +451,13 @@ export default function MediaLibraryPage() {
         </div>
         <div className={styles.topBarRight}>
           {uploadError && <span className={styles.uploadError}>{uploadError}</span>}
+          <button
+            className={styles.importUrlBtn}
+            onClick={() => setShowImportModal(true)}
+            disabled={uploading || importLoading}
+          >
+            Import from URL
+          </button>
           <button
             className={styles.uploadBtn}
             onClick={() => fileInputRef.current?.click()}

@@ -10,6 +10,11 @@ import { processImage } from '../services/imageProcessor.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const optimizedDir = path.join(__dirname, '..', 'optimized');
+const uploadDir = path.join(__dirname, '..', 'uploads');
+
+const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
+const MAX_IMPORT_SIZE = 10 * 1024 * 1024; // 10 MB
+const IMPORT_TIMEOUT_MS = 30_000; // 30 seconds
 
 const router = Router();
 
@@ -95,6 +100,194 @@ router.post('/upload', verifyToken, upload.single('image'), async (req, res) => 
     res.status(500).json({ error: 'Image processing failed', details: err.message });
   }
 });
+
+// POST /import-url — Download image from URL and process it
+router.post('/import-url', verifyToken, async (req, res) => {
+  const { url, alt_text, category } = req.body;
+
+  if (!url || typeof url !== 'string') {
+    return res.status(400).json({ error: 'A valid URL is required' });
+  }
+
+  // Resolve cloud storage share links to direct download URLs
+  let downloadUrl = url.trim();
+  try {
+    downloadUrl = resolveShareUrl(downloadUrl);
+  } catch {
+    return res.status(400).json({ error: 'Invalid URL format' });
+  }
+
+  let parsedUrl;
+  try {
+    parsedUrl = new URL(downloadUrl);
+  } catch {
+    return res.status(400).json({ error: 'Invalid URL format' });
+  }
+
+  if (!['http:', 'https:'].includes(parsedUrl.protocol)) {
+    return res.status(400).json({ error: 'Only HTTP and HTTPS URLs are supported' });
+  }
+
+  const db = getDb();
+  let tempPath = null;
+  let mediaId = null;
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), IMPORT_TIMEOUT_MS);
+
+    let response;
+    try {
+      response = await fetch(downloadUrl, {
+        signal: controller.signal,
+        redirect: 'follow',
+        headers: { 'User-Agent': 'BERG-MediaImporter/1.0' },
+      });
+    } finally {
+      clearTimeout(timeout);
+    }
+
+    if (!response.ok) {
+      return res.status(422).json({ error: `Failed to download image (HTTP ${response.status})` });
+    }
+
+    // Validate content type
+    const contentType = (response.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
+    if (!ALLOWED_MIME_TYPES.includes(contentType)) {
+      return res.status(422).json({
+        error: `Unsupported content type: ${contentType || 'unknown'}. Allowed: JPG, PNG, WebP, HEIC`,
+      });
+    }
+
+    // Check content length if provided
+    const contentLength = parseInt(response.headers.get('content-length'), 10);
+    if (contentLength && contentLength > MAX_IMPORT_SIZE) {
+      return res.status(422).json({ error: `Image too large (${Math.round(contentLength / 1024 / 1024)}MB). Maximum is 10 MB` });
+    }
+
+    // Derive a filename from the URL
+    const urlPath = parsedUrl.pathname;
+    const ext = extFromMime(contentType);
+    let baseName = path.basename(urlPath).replace(/[^a-zA-Z0-9._-]/g, '_');
+    if (!baseName || baseName === '_' || !path.extname(baseName)) {
+      baseName = `imported-${Date.now()}${ext}`;
+    }
+
+    // Stream to temp file, enforcing size limit
+    const timestamp = Date.now();
+    const safeName = baseName.replace(/[^a-zA-Z0-9._-]/g, '_');
+    tempPath = path.join(uploadDir, `${timestamp}-${safeName}`);
+
+    const fileStream = fs.createWriteStream(tempPath);
+    let bytesWritten = 0;
+
+    const body = response.body;
+    const reader = body.getReader();
+    try {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        bytesWritten += value.length;
+        if (bytesWritten > MAX_IMPORT_SIZE) {
+          fileStream.destroy();
+          throw new Error('Image exceeds 10 MB size limit');
+        }
+        fileStream.write(value);
+      }
+    } finally {
+      reader.releaseLock();
+    }
+
+    await new Promise((resolve, reject) => {
+      fileStream.on('finish', resolve);
+      fileStream.on('error', reject);
+      fileStream.end();
+    });
+
+    // Insert placeholder row
+    const insert = db
+      .prepare('INSERT INTO media (filename, original_path, uploaded_by) VALUES (?, ?, ?)')
+      .run(baseName, tempPath, req.user.id);
+    mediaId = insert.lastInsertRowid;
+
+    // Process through Sharp pipeline
+    const processed = await processImage(tempPath, mediaId, baseName);
+
+    db.prepare(`
+      UPDATE media SET
+        webp_thumb = ?,
+        webp_medium = ?,
+        webp_full = ?,
+        jpg_fallback = ?,
+        width = ?,
+        height = ?,
+        size_bytes = ?,
+        webp_size_bytes = ?,
+        alt_text = ?,
+        category = ?
+      WHERE id = ?
+    `).run(
+      processed.webp_thumb,
+      processed.webp_medium,
+      processed.webp_full,
+      processed.jpg_fallback,
+      processed.width,
+      processed.height,
+      processed.size_bytes,
+      processed.webp_size_bytes,
+      alt_text || '',
+      category || null,
+      mediaId
+    );
+
+    const media = db.prepare('SELECT * FROM media WHERE id = ?').get(mediaId);
+    res.status(201).json({ media });
+  } catch (err) {
+    // Clean up on failure
+    if (mediaId) db.prepare('DELETE FROM media WHERE id = ?').run(mediaId);
+    if (tempPath) {
+      try { fs.unlinkSync(tempPath); } catch { /* ignore */ }
+    }
+    console.error('URL import error:', err);
+
+    if (err.name === 'AbortError') {
+      return res.status(422).json({ error: 'Download timed out (30s limit)' });
+    }
+    res.status(500).json({ error: 'Image import failed', details: err.message });
+  }
+});
+
+function resolveShareUrl(url) {
+  // Google Drive share links → direct download
+  // Format: https://drive.google.com/file/d/FILE_ID/view?...
+  const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+  if (driveMatch) {
+    return `https://drive.google.com/uc?export=download&id=${driveMatch[1]}`;
+  }
+  // Google Drive open links
+  const driveOpenMatch = url.match(/drive\.google\.com\/open\?id=([^&]+)/);
+  if (driveOpenMatch) {
+    return `https://drive.google.com/uc?export=download&id=${driveOpenMatch[1]}`;
+  }
+  // Dropbox share links: change dl=0 to dl=1
+  if (url.includes('dropbox.com')) {
+    const u = new URL(url);
+    u.searchParams.set('dl', '1');
+    return u.toString();
+  }
+  return url;
+}
+
+function extFromMime(mime) {
+  const map = {
+    'image/jpeg': '.jpg',
+    'image/png': '.png',
+    'image/webp': '.webp',
+    'image/heic': '.heic',
+    'image/heif': '.heif',
+  };
+  return map[mime] || '.jpg';
+}
 
 // PUT /:id — Update alt_text and category
 router.put('/:id', verifyToken, (req, res) => {
