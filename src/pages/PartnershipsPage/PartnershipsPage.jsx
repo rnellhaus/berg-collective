@@ -20,6 +20,7 @@ const PARTNERSHIPS = [
     description:
       "BERG's Los Angeles chapter partners with MOCA for First Friday activations, connecting Black creatives and professionals through art-centered programming. These events have become a cornerstone of LA's Black professional scene, blending creativity with meaningful connection.",
     highlights: ['First Fridays', 'Creative Workshops', 'LA Chapter', 'Monthly Events'],
+    imagePosition: 'top',
   },
   {
     image: '/images/photos/NBAF_AfroTech_Day3-2-172-2.jpg',
@@ -145,7 +146,7 @@ export default function PartnershipsPage() {
             {PARTNERSHIPS.map((p) => (
               <article key={p.title} className={styles.partnerCard}>
                 <div className={styles.partnerImage}>
-                  <img src={p.image} alt={p.alt} />
+                  <img src={p.image} alt={p.alt} style={p.imagePosition ? { objectPosition: p.imagePosition } : undefined} />
                 </div>
                 <div className={styles.partnerContent}>
                   <p className={styles.partnerSubtitle}>{p.subtitle}</p>
