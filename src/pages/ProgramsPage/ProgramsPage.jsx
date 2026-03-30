@@ -1,114 +1,127 @@
-import Button from '../../components/Button/Button';
 import styles from './ProgramsPage.module.css';
 import usePageMeta from '../../hooks/usePageMeta';
 
+const PILLARS = [
+  {
+    number: '01',
+    title: 'Financial Empowerment',
+    image: '/images/photos/group-photo-berg-panel-whitney.jpg',
+    alt: 'BERG financial empowerment session',
+    description:
+      'Building generational wealth starts with financial literacy. Through expert-led workshops and peer learning, we equip Black professionals with the tools to invest wisely, negotiate compensation, and create sustainable financial futures.',
+    highlights: [
+      'Investment strategy workshops',
+      'Compensation negotiation frameworks',
+      'Wealth-building masterclasses',
+      'Entrepreneurial finance fundamentals',
+    ],
+  },
+  {
+    number: '02',
+    title: 'Structured Networking',
+    image: '/images/photos/whitney-womens-panel.jpg',
+    alt: 'BERG structured networking event',
+    description:
+      'Meaningful connections don\u2019t happen by accident. Our curated networking experiences pair professionals across industries and career stages, creating relationships that open doors, spark collaborations, and build lasting community.',
+    highlights: [
+      'Curated industry mixers',
+      'Cross-chapter introductions',
+      'Executive roundtables',
+      'Peer accountability circles',
+    ],
+  },
+  {
+    number: '03',
+    title: 'Career Growth',
+    image: '/images/photos/whitney-art-activation.jpg',
+    alt: 'BERG career growth programming',
+    description:
+      'Advancing in your career requires more than hard work. We provide structured pathways, mentorship, and skill development designed to help mid-level professionals break into senior leadership and C-suite roles.',
+    highlights: [
+      'Leadership development tracks',
+      'Executive presence coaching',
+      'Skills workshops and certifications',
+      'Career transition support',
+    ],
+  },
+];
+
 export default function ProgramsPage() {
-  usePageMeta('Programs', 'Leadership development, career growth, and cultural impact programs.');
+  usePageMeta(
+    'Programs',
+    'Financial empowerment, structured networking, and career growth programs for Black professionals.'
+  );
+
   return (
     <main>
       {/* Hero */}
       <section className={styles.hero}>
         <div className={styles.heroInner}>
-          <p className={styles.heroLabel}>Programs</p>
-          <h1 className={styles.heroTitle}>Three Pillars of Excellence</h1>
+          <p className={styles.heroLabel}>Our Programs</p>
+          <h1 className={styles.heroTitle}>Three Pillars of Growth</h1>
           <p className={styles.heroSubtitle}>
-            BERG Collective offers transformative programs designed to elevate Black professionals
-            into positions of leadership, influence, and lasting impact.
+            BERG Collective builds programs around the areas that matter most to
+            Black professionals — financial knowledge, powerful networks, and
+            career advancement.
           </p>
         </div>
       </section>
 
-      {/* Leadership Development — flagship card */}
-      <section className={styles.flagship}>
-        <div className={styles.flagshipInner}>
-          <div className={styles.flagshipImageWrap}>
-            <img
-              src="/images/photos/group-photo-berg-panel-whitney.jpg"
-              alt="BERG panel discussion"
-              className={styles.flagshipImage}
-            />
-            <span className={styles.flagshipBadge}>Flagship Program</span>
+      {/* Pillars */}
+      <section className={styles.pillars}>
+        {PILLARS.map((pillar, i) => (
+          <div
+            key={pillar.number}
+            className={`${styles.pillar} ${i % 2 === 1 ? styles.pillarReversed : ''}`}
+          >
+            <div className={styles.pillarImageWrap}>
+              <img
+                src={pillar.image}
+                alt={pillar.alt}
+                className={styles.pillarImage}
+              />
+              <span className={styles.pillarNumber}>{pillar.number}</span>
+            </div>
+            <div className={styles.pillarContent}>
+              <p className={styles.eyebrow}>Pillar {pillar.number}</p>
+              <h2 className={styles.pillarTitle}>{pillar.title}</h2>
+              <p className={styles.pillarDesc}>{pillar.description}</p>
+              <ul className={styles.highlightList}>
+                {pillar.highlights.map((h) => (
+                  <li key={h} className={styles.highlightItem}>
+                    <span className={styles.highlightDot} aria-hidden="true" />
+                    {h}
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
-          <div className={styles.flagshipContent}>
-            <p className={styles.eyebrow}>Leadership Development</p>
-            <h2 className={styles.flagshipTitle}>Executive Leadership Cohort</h2>
-            <p className={styles.flagshipDesc}>
-              Our most intensive program, built for senior professionals ready to step into board seats,
-              C-suite roles, and executive leadership. Over 12 weeks you will work alongside peers and
-              seasoned mentors to sharpen your strategic vision and expand your influence.
-            </p>
-            <ul className={styles.checklist}>
-              <li className={styles.checkItem}>
-                <span className={styles.checkIcon}>✓</span>
-                C-Suite Mentorship
-              </li>
-              <li className={styles.checkItem}>
-                <span className={styles.checkIcon}>✓</span>
-                Board Readiness
-              </li>
-              <li className={styles.checkItem}>
-                <span className={styles.checkIcon}>✓</span>
-                Public Speaking
-              </li>
-            </ul>
-            <Button variant="primary" href="#">Apply for Cohort</Button>
-          </div>
-        </div>
+        ))}
       </section>
 
-      {/* Two secondary program cards */}
-      <section className={styles.secondary}>
-        <div className={styles.secondaryGrid}>
-          <div className={styles.programCard}>
-            <div className={styles.cardImageWrap}>
-              <img
-                src="/images/photos/whitney-womens-panel.jpg"
-                alt="Career Growth"
-                className={styles.cardImage}
-              />
-            </div>
-            <div className={styles.cardContent}>
-              <h3 className={styles.cardTitle}>Career Growth</h3>
-              <p className={styles.cardDesc}>
-                Structured pathways for mid-level professionals looking to break into senior roles.
-                Combines skills workshops, peer accountability groups, and one-on-one coaching.
-              </p>
-              <a className={styles.arrowLink} href="#">
-                Learn more <span aria-hidden="true">→</span>
-              </a>
-            </div>
-          </div>
-
-          <div className={styles.programCard}>
-            <div className={styles.cardImageWrap}>
-              <img
-                src="/images/photos/whitney-art-activation.jpg"
-                alt="Cultural Impact"
-                className={styles.cardImage}
-              />
-            </div>
-            <div className={styles.cardContent}>
-              <h3 className={styles.cardTitle}>Cultural Impact</h3>
-              <p className={styles.cardDesc}>
-                Amplify Black creative and entrepreneurial voices through art activations, community
-                partnerships, and curated experiences that celebrate and sustain our culture.
-              </p>
-              <a className={styles.arrowLink} href="#">
-                Learn more <span aria-hidden="true">→</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className={styles.cta}>
-        <div className={styles.ctaInner}>
-          <h2 className={styles.ctaTitle}>Ready to accelerate your journey?</h2>
-          <p className={styles.ctaSubtitle}>
-            Join hundreds of Black professionals who have transformed their careers through BERG programs.
+      {/* Mentorship coming soon */}
+      <section className={styles.mentorship}>
+        <div className={styles.mentorshipInner}>
+          <span className={styles.comingSoonBadge}>Coming 2026</span>
+          <h2 className={styles.mentorshipTitle}>Mentorship Program</h2>
+          <p className={styles.mentorshipDesc}>
+            We're building a dedicated mentorship program to pair emerging
+            professionals with experienced leaders across industries. More
+            details will be shared as we get closer to launch.
           </p>
-          <Button variant="gold" href="#">Join BERG Today</Button>
+        </div>
+      </section>
+
+      {/* Philosophy / closing section */}
+      <section className={styles.philosophy}>
+        <div className={styles.philosophyInner}>
+          <h2 className={styles.philosophyTitle}>Built for the Long Game</h2>
+          <p className={styles.philosophyDesc}>
+            Every BERG program is designed around one principle: sustainable
+            progress. We don't chase quick wins. We invest in the knowledge,
+            relationships, and skills that compound over a career and across a
+            community.
+          </p>
         </div>
       </section>
     </main>

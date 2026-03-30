@@ -41,51 +41,61 @@
   line-height: 1.7;
   color: var(--color-gray-400);
   margin: 0;
-  max-width: 560px;
+  max-width: 580px;
 }
 
-/* Flagship / Leadership Development */
-.flagship {
-  padding: var(--section-padding-y) 24px;
-  background: var(--color-white);
-}
-
-.flagshipInner {
+/* Pillar sections */
+.pillars {
   max-width: 1100px;
   margin: 0 auto;
+  padding: 0 24px;
+}
+
+.pillar {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 56px;
   align-items: center;
+  padding: var(--section-padding-y) 0;
+  border-bottom: 1px solid var(--color-gray-200);
 }
 
-.flagshipImageWrap {
+.pillar:last-child {
+  border-bottom: none;
+}
+
+.pillarReversed {
+  direction: rtl;
+}
+
+.pillarReversed > * {
+  direction: ltr;
+}
+
+.pillarImageWrap {
   position: relative;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
-.flagshipImage {
+.pillarImage {
   width: 100%;
-  height: 480px;
+  height: 420px;
   object-fit: cover;
   display: block;
 }
 
-.flagshipBadge {
+.pillarNumber {
   position: absolute;
-  top: 20px;
-  left: 20px;
-  background: var(--color-gold);
-  color: var(--color-black);
-  font-family: var(--font-body);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 6px 14px;
-  border-radius: 20px;
+  bottom: 20px;
+  right: 20px;
+  font-family: var(--font-heading);
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 1;
+  color: rgba(255, 255, 255, 0.2);
+  pointer-events: none;
 }
 
 .eyebrow {
@@ -98,7 +108,7 @@
   margin: 0 0 12px;
 }
 
-.flagshipTitle {
+.pillarTitle {
   font-family: var(--font-heading);
   font-size: 32px;
   font-weight: 800;
@@ -107,7 +117,7 @@
   line-height: 1.2;
 }
 
-.flagshipDesc {
+.pillarDesc {
   font-family: var(--font-body);
   font-size: 16px;
   color: var(--color-gray-600);
@@ -115,16 +125,16 @@
   margin: 0 0 28px;
 }
 
-.checklist {
+.highlightList {
   list-style: none;
   padding: 0;
-  margin: 0 0 36px;
+  margin: 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
-.checkItem {
+.highlightItem {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -134,109 +144,23 @@
   font-weight: 500;
 }
 
-.checkIcon {
-  width: 24px;
-  height: 24px;
-  background: var(--color-gold-dim);
-  color: var(--color-gold);
+.highlightDot {
+  width: 8px;
+  height: 8px;
+  background: var(--color-gold);
   border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 800;
   flex-shrink: 0;
 }
 
-/* Secondary program cards */
-.secondary {
-  padding: var(--section-padding-y) 24px;
+/* Mentorship teaser */
+.mentorship {
   background: var(--color-gray-100);
-}
-
-.secondaryGrid {
-  max-width: 1100px;
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 32px;
-}
-
-.programCard {
-  border-radius: 16px;
-  overflow: hidden;
-  border: 1px solid var(--color-gray-200);
-  border-top: 3px solid var(--color-gold);
-  background: var(--color-white);
-  transition: box-shadow 0.2s ease;
-}
-
-.programCard:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-}
-
-.cardImageWrap {
-  overflow: hidden;
-  height: 240px;
-}
-
-.cardImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.4s ease;
-}
-
-.programCard:hover .cardImage {
-  transform: scale(1.04);
-}
-
-.cardContent {
-  padding: 28px 28px 32px;
-}
-
-.cardTitle {
-  font-family: var(--font-heading);
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--color-black);
-  margin: 0 0 12px;
-}
-
-.cardDesc {
-  font-family: var(--font-body);
-  font-size: 15px;
-  color: var(--color-gray-600);
-  line-height: 1.65;
-  margin: 0 0 20px;
-}
-
-.arrowLink {
-  font-family: var(--font-body);
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--color-gold);
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  transition: gap 0.2s ease;
-}
-
-.arrowLink:hover {
-  gap: 10px;
-}
-
-/* CTA */
-.cta {
-  background-color: var(--color-black);
   padding: var(--section-padding-y) 24px;
   text-align: center;
 }
 
-.ctaInner {
-  max-width: 680px;
+.mentorshipInner {
+  max-width: 640px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -244,30 +168,85 @@
   gap: 20px;
 }
 
-.ctaTitle {
+.comingSoonBadge {
+  display: inline-block;
+  background: var(--color-gold);
+  color: var(--color-black);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 6px 16px;
+  border-radius: 20px;
+}
+
+.mentorshipTitle {
   font-family: var(--font-heading);
-  font-size: 36px;
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
   font-weight: 800;
-  color: var(--color-white);
+  color: var(--color-black);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.mentorshipDesc {
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: var(--color-gray-600);
+  line-height: 1.7;
   margin: 0;
 }
 
-.ctaSubtitle {
+/* Philosophy / closing */
+.philosophy {
+  background: var(--color-black);
+  padding: var(--section-padding-y) 24px;
+  text-align: center;
+}
+
+.philosophyInner {
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.philosophyTitle {
+  font-family: var(--font-heading);
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  font-weight: 800;
+  color: var(--color-white);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.philosophyDesc {
   font-family: var(--font-body);
   font-size: 17px;
   color: var(--color-gray-400);
+  line-height: 1.7;
   margin: 0;
-  line-height: 1.6;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .flagshipInner,
-  .secondaryGrid {
+  .pillar {
     grid-template-columns: 1fr;
+    gap: 32px;
   }
 
-  .flagshipImage {
+  .pillarReversed {
+    direction: ltr;
+  }
+
+  .pillarImage {
     height: 280px;
+  }
+
+  .pillarNumber {
+    font-size: 48px;
   }
 }
