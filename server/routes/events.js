@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getDb } from '../db/connection.js';
+import { getPool } from '../db/connection.js';
 import { verifyToken } from '../middleware/auth.js';
 import { requireRole } from '../middleware/roles.js';
 
@@ -39,8 +39,8 @@ function getRsvpStrategy(platform, rsvpUrl) {
 }
 
 // GET / — List events (public)
-router.get('/', (req, res) => {
-  const db = getDb();
+router.get('/', async (req, res) => {
+  const pool = getPool();
   const { status, chapter } = req.query;
 
   let query = `
@@ -51,16 +51,17 @@ router.get('/', (req, res) => {
     WHERE 1=1
   `;
   const params = [];
+  let paramIdx = 1;
 
   if (status) {
-    query += ' AND e.status = ?';
+    query += ` AND e.status = $${paramIdx++}`;
     params.push(status);
   } else {
     // By default, exclude drafts from public listings
     query += " AND e.status != 'draft'";
   }
   if (chapter) {
-    query += ' AND e.chapter = ?';
+    query += ` AND e.chapter = $${paramIdx++}`;
     params.push(chapter);
   }
 
@@ -71,7 +72,7 @@ router.get('/', (req, res) => {
     query += ' ORDER BY e.date DESC';
   }
 
-  const events = db.prepare(query).all(...params);
+  const { rows: events } = await pool.query(query, params);
 
   const enriched = events.map((event) => ({
     ...event,
@@ -82,34 +83,35 @@ router.get('/', (req, res) => {
 });
 
 // GET /:id — Get single event with photos (public)
-router.get('/:id', (req, res) => {
-  const db = getDb();
+router.get('/:id', async (req, res) => {
+  const pool = getPool();
 
-  const event = db.prepare(`
+  const { rows: eventRows } = await pool.query(`
     SELECT e.*, m.webp_medium as cover_image_url
     FROM events e
     LEFT JOIN media m ON e.cover_image_id = m.id
-    WHERE e.id = ?
-  `).get(req.params.id);
+    WHERE e.id = $1
+  `, [req.params.id]);
 
+  const event = eventRows[0];
   if (!event) return res.status(404).json({ error: 'Event not found' });
 
-  const photos = db.prepare(`
+  const { rows: photos } = await pool.query(`
     SELECT ep.id, ep.sort_order, ep.caption, m.id as media_id,
       m.filename, m.webp_thumb, m.webp_medium, m.webp_full,
       m.jpg_fallback, m.alt_text, m.width, m.height
     FROM event_photos ep
     JOIN media m ON ep.media_id = m.id
-    WHERE ep.event_id = ?
+    WHERE ep.event_id = $1
     ORDER BY ep.sort_order
-  `).all(req.params.id);
+  `, [req.params.id]);
 
   res.json({ event: { ...event, rsvp_strategy: getRsvpStrategy(event.rsvp_platform, event.rsvp_url), photos } });
 });
 
 // POST / — Create event (auth)
-router.post('/', verifyToken, (req, res) => {
-  const db = getDb();
+router.post('/', verifyToken, async (req, res) => {
+  const pool = getPool();
   const {
     title, date, time, location, description, category, chapter,
     rsvp_url, rsvp_platform, rsvp_event_id, cover_image_id, is_featured, status
@@ -118,12 +120,13 @@ router.post('/', verifyToken, (req, res) => {
   if (!title) return res.status(400).json({ error: 'title is required' });
   if (!date) return res.status(400).json({ error: 'date is required' });
 
-  const result = db.prepare(`
+  const { rows: insertRows } = await pool.query(`
     INSERT INTO events (
       title, date, time, location, description, category, chapter,
       rsvp_url, rsvp_platform, rsvp_event_id, cover_image_id, is_featured, status, updated_by
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+    RETURNING id
+  `, [
     title,
     date,
     time || '',
@@ -137,17 +140,20 @@ router.post('/', verifyToken, (req, res) => {
     cover_image_id || null,
     is_featured ? 1 : 0,
     status || 'upcoming',
-    req.user.id
-  );
+    req.user.id,
+  ]);
 
-  const event = db.prepare('SELECT * FROM events WHERE id = ?').get(result.lastInsertRowid);
+  const newId = insertRows[0].id;
+  const { rows: eventRows } = await pool.query('SELECT * FROM events WHERE id = $1', [newId]);
+  const event = eventRows[0];
   res.status(201).json({ event: { ...event, rsvp_strategy: getRsvpStrategy(event.rsvp_platform) } });
 });
 
 // PUT /:id — Update event (auth)
-router.put('/:id', verifyToken, (req, res) => {
-  const db = getDb();
-  const event = db.prepare('SELECT * FROM events WHERE id = ?').get(req.params.id);
+router.put('/:id', verifyToken, async (req, res) => {
+  const pool = getPool();
+  const { rows: existingRows } = await pool.query('SELECT * FROM events WHERE id = $1', [req.params.id]);
+  const event = existingRows[0];
   if (!event) return res.status(404).json({ error: 'Event not found' });
 
   const {
@@ -155,24 +161,24 @@ router.put('/:id', verifyToken, (req, res) => {
     rsvp_url, rsvp_platform, rsvp_event_id, cover_image_id, is_featured, status
   } = req.body;
 
-  db.prepare(`
+  await pool.query(`
     UPDATE events SET
-      title = ?,
-      date = ?,
-      time = ?,
-      location = ?,
-      description = ?,
-      category = ?,
-      chapter = ?,
-      rsvp_url = ?,
-      rsvp_platform = ?,
-      rsvp_event_id = ?,
-      cover_image_id = ?,
-      is_featured = ?,
-      status = ?,
-      updated_by = ?
-    WHERE id = ?
-  `).run(
+      title = $1,
+      date = $2,
+      time = $3,
+      location = $4,
+      description = $5,
+      category = $6,
+      chapter = $7,
+      rsvp_url = $8,
+      rsvp_platform = $9,
+      rsvp_event_id = $10,
+      cover_image_id = $11,
+      is_featured = $12,
+      status = $13,
+      updated_by = $14
+    WHERE id = $15
+  `, [
     title !== undefined ? title : event.title,
     date !== undefined ? date : event.date,
     time !== undefined ? time : event.time,
@@ -187,25 +193,28 @@ router.put('/:id', verifyToken, (req, res) => {
     is_featured !== undefined ? (is_featured ? 1 : 0) : event.is_featured,
     status !== undefined ? status : event.status,
     req.user.id,
-    req.params.id
-  );
+    req.params.id,
+  ]);
 
-  const updated = db.prepare('SELECT * FROM events WHERE id = ?').get(req.params.id);
+  const { rows: updatedRows } = await pool.query('SELECT * FROM events WHERE id = $1', [req.params.id]);
+  const updated = updatedRows[0];
   res.json({ event: { ...updated, rsvp_strategy: getRsvpStrategy(updated.rsvp_platform, updated.rsvp_url) } });
 });
 
 // POST /:id/duplicate — Duplicate event (auth)
-router.post('/:id/duplicate', verifyToken, (req, res) => {
-  const db = getDb();
-  const event = db.prepare('SELECT * FROM events WHERE id = ?').get(req.params.id);
+router.post('/:id/duplicate', verifyToken, async (req, res) => {
+  const pool = getPool();
+  const { rows: existingRows } = await pool.query('SELECT * FROM events WHERE id = $1', [req.params.id]);
+  const event = existingRows[0];
   if (!event) return res.status(404).json({ error: 'Event not found' });
 
-  const result = db.prepare(`
+  const { rows: insertRows } = await pool.query(`
     INSERT INTO events (
       title, date, time, location, description, category, chapter,
       rsvp_url, rsvp_platform, rsvp_event_id, cover_image_id, is_featured, status, updated_by
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+    RETURNING id
+  `, [
     `${event.title} (Copy)`,
     event.date,
     event.time,
@@ -219,123 +228,122 @@ router.post('/:id/duplicate', verifyToken, (req, res) => {
     event.cover_image_id,
     0, // not featured
     event.status,
-    req.user.id
-  );
+    req.user.id,
+  ]);
 
-  const newId = result.lastInsertRowid;
+  const newId = insertRows[0].id;
 
   // Copy photo associations
-  const photos = db.prepare('SELECT media_id, caption, sort_order FROM event_photos WHERE event_id = ?').all(req.params.id);
-  const insertPhoto = db.prepare('INSERT INTO event_photos (event_id, media_id, caption, sort_order) VALUES (?, ?, ?, ?)');
+  const { rows: photos } = await pool.query(
+    'SELECT media_id, caption, sort_order FROM event_photos WHERE event_id = $1',
+    [req.params.id]
+  );
   for (const photo of photos) {
-    insertPhoto.run(newId, photo.media_id, photo.caption, photo.sort_order);
+    await pool.query(
+      'INSERT INTO event_photos (event_id, media_id, caption, sort_order) VALUES ($1, $2, $3, $4)',
+      [newId, photo.media_id, photo.caption, photo.sort_order]
+    );
   }
 
-  const newEvent = db.prepare('SELECT * FROM events WHERE id = ?').get(newId);
+  const { rows: newEventRows } = await pool.query('SELECT * FROM events WHERE id = $1', [newId]);
+  const newEvent = newEventRows[0];
   res.status(201).json({ event: { ...newEvent, rsvp_strategy: getRsvpStrategy(newEvent.rsvp_platform, newEvent.rsvp_url) } });
 });
 
 // DELETE /:id — Delete event (admin only)
-router.delete('/:id', verifyToken, requireRole('admin'), (req, res) => {
-  const db = getDb();
-  const event = db.prepare('SELECT * FROM events WHERE id = ?').get(req.params.id);
+router.delete('/:id', verifyToken, requireRole('admin'), async (req, res) => {
+  const pool = getPool();
+  const { rows: existingRows } = await pool.query('SELECT * FROM events WHERE id = $1', [req.params.id]);
+  const event = existingRows[0];
   if (!event) return res.status(404).json({ error: 'Event not found' });
 
-  db.prepare('DELETE FROM event_photos WHERE event_id = ?').run(req.params.id);
-  db.prepare('DELETE FROM events WHERE id = ?').run(req.params.id);
+  await pool.query('DELETE FROM event_photos WHERE event_id = $1', [req.params.id]);
+  await pool.query('DELETE FROM events WHERE id = $1', [req.params.id]);
   res.json({ success: true });
 });
 
 // POST /:id/photos — Add photos to gallery (auth)
-router.post('/:id/photos', verifyToken, (req, res) => {
-  const db = getDb();
+router.post('/:id/photos', verifyToken, async (req, res) => {
+  const pool = getPool();
   const { media_ids } = req.body;
 
   if (!Array.isArray(media_ids) || media_ids.length === 0) {
     return res.status(400).json({ error: 'media_ids array is required' });
   }
 
-  const event = db.prepare('SELECT * FROM events WHERE id = ?').get(req.params.id);
-  if (!event) return res.status(404).json({ error: 'Event not found' });
+  const { rows: existingRows } = await pool.query('SELECT * FROM events WHERE id = $1', [req.params.id]);
+  if (!existingRows[0]) return res.status(404).json({ error: 'Event not found' });
 
-  const maxOrder = db
-    .prepare('SELECT MAX(sort_order) as maxOrder FROM event_photos WHERE event_id = ?')
-    .get(req.params.id);
-  let sortOrder = (maxOrder.maxOrder || 0) + 1;
-
-  const insertStmt = db.prepare(
-    'INSERT OR IGNORE INTO event_photos (event_id, media_id, sort_order) VALUES (?, ?, ?)'
+  const { rows: maxRows } = await pool.query(
+    'SELECT MAX(sort_order) as maxOrder FROM event_photos WHERE event_id = $1',
+    [req.params.id]
   );
+  let sortOrder = (maxRows[0].maxorder || 0) + 1;
 
-  const insertMany = db.transaction((ids) => {
-    for (const mediaId of ids) {
-      insertStmt.run(req.params.id, mediaId, sortOrder++);
-    }
-  });
+  for (const mediaId of media_ids) {
+    await pool.query(
+      'INSERT INTO event_photos (event_id, media_id, sort_order) VALUES ($1, $2, $3) ON CONFLICT DO NOTHING',
+      [req.params.id, mediaId, sortOrder++]
+    );
+  }
 
-  insertMany(media_ids);
-
-  const photos = db.prepare(`
+  const { rows: photos } = await pool.query(`
     SELECT ep.id, ep.sort_order, ep.caption, m.id as media_id,
       m.filename, m.webp_thumb, m.webp_medium, m.webp_full,
       m.jpg_fallback, m.alt_text
     FROM event_photos ep
     JOIN media m ON ep.media_id = m.id
-    WHERE ep.event_id = ?
+    WHERE ep.event_id = $1
     ORDER BY ep.sort_order
-  `).all(req.params.id);
+  `, [req.params.id]);
 
   res.status(201).json({ photos });
 });
 
 // PUT /:id/photos/reorder — Reorder gallery (auth)
-router.put('/:id/photos/reorder', verifyToken, (req, res) => {
-  const db = getDb();
+router.put('/:id/photos/reorder', verifyToken, async (req, res) => {
+  const pool = getPool();
   const { photo_ids } = req.body;
 
   if (!Array.isArray(photo_ids) || photo_ids.length === 0) {
     return res.status(400).json({ error: 'photo_ids array is required' });
   }
 
-  const event = db.prepare('SELECT * FROM events WHERE id = ?').get(req.params.id);
-  if (!event) return res.status(404).json({ error: 'Event not found' });
+  const { rows: existingRows } = await pool.query('SELECT * FROM events WHERE id = $1', [req.params.id]);
+  if (!existingRows[0]) return res.status(404).json({ error: 'Event not found' });
 
-  const updateStmt = db.prepare(
-    'UPDATE event_photos SET sort_order = ? WHERE id = ? AND event_id = ?'
-  );
+  for (let index = 0; index < photo_ids.length; index++) {
+    await pool.query(
+      'UPDATE event_photos SET sort_order = $1 WHERE id = $2 AND event_id = $3',
+      [index + 1, photo_ids[index], req.params.id]
+    );
+  }
 
-  const reorder = db.transaction((ids) => {
-    ids.forEach((photoId, index) => {
-      updateStmt.run(index + 1, photoId, req.params.id);
-    });
-  });
-
-  reorder(photo_ids);
-
-  const photos = db.prepare(`
+  const { rows: photos } = await pool.query(`
     SELECT ep.id, ep.sort_order, ep.caption, m.id as media_id,
       m.filename, m.webp_thumb, m.webp_medium, m.webp_full,
       m.jpg_fallback, m.alt_text
     FROM event_photos ep
     JOIN media m ON ep.media_id = m.id
-    WHERE ep.event_id = ?
+    WHERE ep.event_id = $1
     ORDER BY ep.sort_order
-  `).all(req.params.id);
+  `, [req.params.id]);
 
   res.json({ photos });
 });
 
 // DELETE /:id/photos/:photoId — Remove photo from gallery (auth)
-router.delete('/:id/photos/:photoId', verifyToken, (req, res) => {
-  const db = getDb();
+router.delete('/:id/photos/:photoId', verifyToken, async (req, res) => {
+  const pool = getPool();
 
-  const photo = db
-    .prepare('SELECT * FROM event_photos WHERE id = ? AND event_id = ?')
-    .get(req.params.photoId, req.params.id);
+  const { rows: photoRows } = await pool.query(
+    'SELECT * FROM event_photos WHERE id = $1 AND event_id = $2',
+    [req.params.photoId, req.params.id]
+  );
 
-  if (!photo) return res.status(404).json({ error: 'Photo not found in this event' });
+  if (!photoRows[0]) return res.status(404).json({ error: 'Photo not found in this event' });
 
-  db.prepare('DELETE FROM event_photos WHERE id = ?').run(req.params.photoId);
+  await pool.query('DELETE FROM event_photos WHERE id = $1', [req.params.photoId]);
   res.json({ success: true });
 });
 
