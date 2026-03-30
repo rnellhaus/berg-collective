@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
-import { getDb } from '../db/connection.js';
+import { getPool } from '../db/connection.js';
 import { verifyToken } from '../middleware/auth.js';
 import { requireRole } from '../middleware/roles.js';
 
@@ -10,48 +10,46 @@ const router = Router();
 router.use(verifyToken, requireRole('admin'));
 
 // GET / — List users
-router.get('/', (req, res) => {
-  const db = getDb();
-  const users = db
-    .prepare('SELECT id, email, name, role, created_at FROM users ORDER BY created_at DESC')
-    .all();
+router.get('/', async (req, res) => {
+  const pool = getPool();
+  const { rows: users } = await pool.query(
+    'SELECT id, email, name, role, created_at FROM users ORDER BY created_at DESC'
+  );
   res.json({ users });
 });
 
 // POST / — Create user
 router.post('/', async (req, res) => {
-  const db = getDb();
+  const pool = getPool();
   const { email, name, role, password } = req.body;
 
   if (!email || !password) {
     return res.status(400).json({ error: 'email and password are required' });
   }
 
-  const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
-  if (existing) {
+  const { rows: existing } = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
+  if (existing[0]) {
     return res.status(409).json({ error: 'Email already in use' });
   }
 
   const hashedPassword = await bcrypt.hash(password, 12);
 
-  const result = db
-    .prepare('INSERT INTO users (email, name, role, password_hash) VALUES (?, ?, ?, ?)')
-    .run(email, name || null, role || 'editor', hashedPassword);
+  const { rows } = await pool.query(
+    'INSERT INTO users (email, name, role, password_hash) VALUES ($1, $2, $3, $4) RETURNING id, email, name, role, created_at',
+    [email, name || null, role || 'editor', hashedPassword]
+  );
 
-  const user = db
-    .prepare('SELECT id, email, name, role, created_at FROM users WHERE id = ?')
-    .get(result.lastInsertRowid);
-
-  res.status(201).json({ user });
+  res.status(201).json({ user: rows[0] });
 });
 
 // PUT /:id — Update name, role, password
 router.put('/:id', async (req, res) => {
-  const db = getDb();
+  const pool = getPool();
   const { name, role, password } = req.body;
   const targetId = parseInt(req.params.id, 10);
 
-  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(targetId);
+  const { rows: existing } = await pool.query('SELECT * FROM users WHERE id = $1', [targetId]);
+  const user = existing[0];
   if (!user) return res.status(404).json({ error: 'User not found' });
 
   // Prevent changing own role
@@ -64,25 +62,22 @@ router.put('/:id', async (req, res) => {
     passwordHash = await bcrypt.hash(password, 12);
   }
 
-  db.prepare(
-    'UPDATE users SET name = ?, role = ?, password_hash = ? WHERE id = ?'
-  ).run(
-    name !== undefined ? name : user.name,
-    role !== undefined ? role : user.role,
-    passwordHash,
-    targetId
+  const { rows: updated } = await pool.query(
+    'UPDATE users SET name = $1, role = $2, password_hash = $3 WHERE id = $4 RETURNING id, email, name, role, created_at',
+    [
+      name !== undefined ? name : user.name,
+      role !== undefined ? role : user.role,
+      passwordHash,
+      targetId,
+    ]
   );
 
-  const updated = db
-    .prepare('SELECT id, email, name, role, created_at FROM users WHERE id = ?')
-    .get(targetId);
-
-  res.json({ user: updated });
+  res.json({ user: updated[0] });
 });
 
 // DELETE /:id — Delete user
-router.delete('/:id', (req, res) => {
-  const db = getDb();
+router.delete('/:id', async (req, res) => {
+  const pool = getPool();
   const targetId = parseInt(req.params.id, 10);
 
   // Prevent deleting self
@@ -90,10 +85,10 @@ router.delete('/:id', (req, res) => {
     return res.status(403).json({ error: 'You cannot delete your own account' });
   }
 
-  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(targetId);
-  if (!user) return res.status(404).json({ error: 'User not found' });
+  const { rows } = await pool.query('SELECT * FROM users WHERE id = $1', [targetId]);
+  if (!rows[0]) return res.status(404).json({ error: 'User not found' });
 
-  db.prepare('DELETE FROM users WHERE id = ?').run(targetId);
+  await pool.query('DELETE FROM users WHERE id = $1', [targetId]);
   res.json({ success: true });
 });
 

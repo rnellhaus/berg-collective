@@ -2,7 +2,7 @@ import { Router } from 'express';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import rateLimit from 'express-rate-limit';
-import { getDb } from '../db/connection.js';
+import { getPool } from '../db/connection.js';
 import { generateTokens, verifyRefreshToken, JWT_SECRET } from '../middleware/auth.js';
 
 const router = Router();
@@ -14,13 +14,14 @@ const loginLimiter = rateLimit({
 });
 
 // POST /api/auth/login
-router.post('/login', loginLimiter, (req, res) => {
+router.post('/login', loginLimiter, async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
 
-  const db = getDb();
-  const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
-  if (!user || !bcrypt.compareSync(password, user.password_hash)) {
+  const pool = getPool();
+  const { rows } = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+  const user = rows[0];
+  if (!user || !(await bcrypt.compare(password, user.password_hash))) {
     return res.status(401).json({ error: 'Invalid email or password' });
   }
 
@@ -31,13 +32,14 @@ router.post('/login', loginLimiter, (req, res) => {
 });
 
 // POST /api/auth/refresh
-router.post('/refresh', (req, res) => {
+router.post('/refresh', async (req, res) => {
   const token = req.cookies.refresh_token;
   if (!token) return res.status(401).json({ error: 'No refresh token' });
   try {
     const decoded = verifyRefreshToken(token);
-    const db = getDb();
-    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(decoded.id);
+    const pool = getPool();
+    const { rows } = await pool.query('SELECT * FROM users WHERE id = $1', [decoded.id]);
+    const user = rows[0];
     if (!user) return res.status(401).json({ error: 'User not found' });
 
     const { accessToken, refreshToken } = generateTokens(user);
@@ -57,13 +59,14 @@ router.post('/logout', (req, res) => {
 });
 
 // GET /api/auth/me
-router.get('/me', (req, res) => {
+router.get('/me', async (req, res) => {
   const token = req.cookies.access_token;
   if (!token) return res.status(401).json({ error: 'Not authenticated' });
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    const db = getDb();
-    const user = db.prepare('SELECT id, name, email, role FROM users WHERE id = ?').get(decoded.id);
+    const pool = getPool();
+    const { rows } = await pool.query('SELECT id, name, email, role FROM users WHERE id = $1', [decoded.id]);
+    const user = rows[0];
     if (!user) return res.status(401).json({ error: 'User not found' });
     res.json({ user });
   } catch {
