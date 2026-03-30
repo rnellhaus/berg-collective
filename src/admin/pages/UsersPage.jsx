@@ -17,6 +17,7 @@ function formatDate(iso) {
 }
 
 const EMPTY_FORM = { name: '', email: '', password: '', role: 'editor' };
+const EMPTY_INVITE = { email: '', role: 'editor' };
 
 export default function UsersPage() {
   const { apiFetch } = useApi();
@@ -32,6 +33,15 @@ export default function UsersPage() {
   const [addError, setAddError] = useState('');
   const [addSuccess, setAddSuccess] = useState('');
   const [addBusy, setAddBusy] = useState(false);
+
+  // Invite form
+  const [showInviteForm, setShowInviteForm] = useState(false);
+  const [inviteForm, setInviteForm] = useState(EMPTY_INVITE);
+  const [inviteError, setInviteError] = useState('');
+  const [inviteLink, setInviteLink] = useState('');
+  const [inviteEmailSent, setInviteEmailSent] = useState(false);
+  const [inviteBusy, setInviteBusy] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   // Edit state
   const [editId, setEditId] = useState(null);
@@ -100,6 +110,63 @@ export default function UsersPage() {
     } finally {
       setAddBusy(false);
     }
+  }
+
+  /* --- Invite user --- */
+  function handleInviteChange(e) {
+    const { name, value } = e.target;
+    setInviteForm((f) => ({ ...f, [name]: value }));
+    setInviteError('');
+  }
+
+  async function handleInviteSubmit(e) {
+    e.preventDefault();
+    if (!inviteForm.email) {
+      setInviteError('Email is required.');
+      return;
+    }
+    setInviteBusy(true);
+    setInviteError('');
+    setInviteLink('');
+    setInviteEmailSent(false);
+    setCopied(false);
+    try {
+      const res = await apiFetch('/api/users/invite', {
+        method: 'POST',
+        body: JSON.stringify(inviteForm),
+      });
+      if (res.status === 409) {
+        setInviteError('A user with that email already exists.');
+        return;
+      }
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || 'Failed to send invite');
+      }
+      const data = await res.json();
+      setInviteLink(data.link);
+      setInviteEmailSent(data.emailSent);
+    } catch (err) {
+      setInviteError(err.message || 'Failed to send invite');
+    } finally {
+      setInviteBusy(false);
+    }
+  }
+
+  function handleCopyLink() {
+    navigator.clipboard.writeText(inviteLink).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
+  function resetInvite() {
+    setShowInviteForm(false);
+    setInviteForm(EMPTY_INVITE);
+    setInviteLink('');
+    setInviteEmailSent(false);
+    setInviteError('');
+    setCopied(false);
   }
 
   /* --- Edit user --- */
@@ -174,22 +241,118 @@ export default function UsersPage() {
           <h1 className={styles.pageTitle}>Users</h1>
           <p className={styles.pageSubtitle}>Manage admin access and roles.</p>
         </div>
-        <button
-          className={styles.addBtn}
-          onClick={() => {
-            setShowAddForm((v) => !v);
-            setAddError('');
-            setAddSuccess('');
-            setAddForm(EMPTY_FORM);
-          }}
-        >
-          {showAddForm ? 'Cancel' : '+ Add User'}
-        </button>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <button
+            className={styles.addBtn}
+            style={{ background: '#D4AF37', color: '#000' }}
+            onClick={() => {
+              setShowInviteForm((v) => !v);
+              setShowAddForm(false);
+              setInviteError('');
+              setInviteLink('');
+              setInviteForm(EMPTY_INVITE);
+            }}
+          >
+            {showInviteForm ? 'Cancel' : 'Invite Team Member'}
+          </button>
+          <button
+            className={styles.addBtn}
+            onClick={() => {
+              setShowAddForm((v) => !v);
+              setShowInviteForm(false);
+              setAddError('');
+              setAddSuccess('');
+              setAddForm(EMPTY_FORM);
+            }}
+          >
+            {showAddForm ? 'Cancel' : '+ Add User'}
+          </button>
+        </div>
       </div>
 
       {/* Success message (persists after form closes) */}
       {addSuccess && (
         <div className={styles.successMsg}>{addSuccess}</div>
+      )}
+
+      {/* Invite form */}
+      {showInviteForm && (
+        <div className={styles.addForm}>
+          <div className={styles.formTitle}>Invite Team Member</div>
+
+          {inviteLink ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              <div className={styles.successMsg}>
+                {inviteEmailSent
+                  ? `Invitation email sent to ${inviteForm.email}!`
+                  : `Invite created for ${inviteForm.email} (email could not be sent — share the link below).`}
+              </div>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <input
+                  className={styles.fieldInput}
+                  style={{ flex: 1, fontSize: '0.8rem' }}
+                  type="text"
+                  value={inviteLink}
+                  readOnly
+                  onClick={(e) => e.target.select()}
+                />
+                <button
+                  className={styles.createBtn}
+                  style={{ background: copied ? '#1e6e1e' : '#8b3223', whiteSpace: 'nowrap' }}
+                  onClick={handleCopyLink}
+                  type="button"
+                >
+                  {copied ? 'Copied!' : 'Copy Link'}
+                </button>
+              </div>
+              <button
+                className={styles.cancelEditBtn}
+                onClick={resetInvite}
+                type="button"
+                style={{ alignSelf: 'flex-start' }}
+              >
+                Send Another Invite
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleInviteSubmit} noValidate>
+              <div className={styles.formGrid}>
+                <div className={styles.formField}>
+                  <label className={styles.fieldLabel}>Email <span className={styles.required}>*</span></label>
+                  <input
+                    className={styles.fieldInput}
+                    type="email"
+                    name="email"
+                    value={inviteForm.email}
+                    onChange={handleInviteChange}
+                    placeholder="teammate@company.com"
+                    autoComplete="off"
+                    required
+                  />
+                </div>
+                <div className={styles.formField}>
+                  <label className={styles.fieldLabel}>Role</label>
+                  <div className={styles.radioGroup}>
+                    <label className={styles.radioLabel}>
+                      <input type="radio" name="role" value="editor" checked={inviteForm.role === 'editor'} onChange={handleInviteChange} />
+                      Editor
+                    </label>
+                    <label className={styles.radioLabel}>
+                      <input type="radio" name="role" value="admin" checked={inviteForm.role === 'admin'} onChange={handleInviteChange} />
+                      Admin
+                    </label>
+                  </div>
+                </div>
+              </div>
+              {inviteError && <div className={styles.errorMsg} style={{ marginTop: '10px' }}>{inviteError}</div>}
+              <div className={styles.formActions} style={{ marginTop: '14px' }}>
+                <button type="submit" className={styles.createBtn} disabled={inviteBusy}>
+                  {inviteBusy ? 'Sending…' : 'Send Invite'}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
       )}
 
       {/* Add user form */}

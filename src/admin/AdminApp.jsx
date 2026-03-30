@@ -2,6 +2,7 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { useAuth } from './hooks/useAuth';
 import LoginPage from './pages/LoginPage';
+import AcceptInvitePage from './pages/AcceptInvitePage';
 import AdminLayout from './components/AdminLayout';
 import DashboardPage from './pages/DashboardPage';
 import PagesListPage from './pages/PagesListPage';
@@ -44,13 +45,14 @@ function AdminRoutes() {
     );
   }
 
-  if (!user && location.pathname !== '/admin/login') {
+  if (!user && location.pathname !== '/admin/login' && location.pathname !== '/admin/accept-invite') {
     return <Navigate to="/admin/login" replace state={{ from: location }} />;
   }
 
   return (
     <Routes>
       <Route path="login" element={<LoginPage />} />
+      <Route path="accept-invite" element={<AcceptInvitePage />} />
       <Route element={<AdminLayout />}>
         <Route index element={<DashboardPage />} />
         <Route path="pages" element={<PagesListPage />} />
