@@ -14,8 +14,9 @@
   },
   "dependencies": {
     "@fontsource/epilogue": "^5.2.8",
+    "@neondatabase/serverless": "^1.0.2",
+    "@vercel/blob": "^2.3.2",
     "bcryptjs": "^3.0.3",
-    "better-sqlite3": "^12.8.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "express": "^5.2.1",
