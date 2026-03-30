@@ -263,7 +263,7 @@ export default function ImpactPage() {
             <div className={styles.gateSuccess}>
               <p className={styles.gateSuccessMsg}>Thank you! Your report is ready.</p>
               <a
-                href="/api/documents/file/impact-report-2025"
+                href="/api/documents/file/berg-collective-2025-impact-report"
                 className={styles.downloadBtn}
                 download
               >
