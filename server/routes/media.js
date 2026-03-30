@@ -1,17 +1,11 @@
 import { Router } from 'express';
-import path from 'path';
-import fs from 'fs';
 import dns from 'dns/promises';
-import { fileURLToPath } from 'url';
-import { getDb } from '../db/connection.js';
+import { getPool } from '../db/connection.js';
 import { verifyToken } from '../middleware/auth.js';
 import { requireRole } from '../middleware/roles.js';
 import { upload } from '../middleware/upload.js';
 import { processImage } from '../services/imageProcessor.js';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const optimizedDir = path.join(__dirname, '..', 'optimized');
-const uploadDir = path.join(__dirname, '..', 'uploads');
+import { del } from '@vercel/blob';
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
 const MAX_IMPORT_SIZE = 10 * 1024 * 1024; // 10 MB
@@ -34,34 +28,67 @@ function isPrivateIP(ip) {
   return false;
 }
 
+function resolveShareUrl(url) {
+  // Google Drive share links → direct download
+  // Format: https://drive.google.com/file/d/FILE_ID/view?...
+  const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+  if (driveMatch) {
+    return `https://drive.google.com/uc?export=download&id=${driveMatch[1]}`;
+  }
+  // Google Drive open links
+  const driveOpenMatch = url.match(/drive\.google\.com\/open\?id=([^&]+)/);
+  if (driveOpenMatch) {
+    return `https://drive.google.com/uc?export=download&id=${driveOpenMatch[1]}`;
+  }
+  // Dropbox share links: change dl=0 to dl=1
+  if (url.includes('dropbox.com')) {
+    const u = new URL(url);
+    u.searchParams.set('dl', '1');
+    return u.toString();
+  }
+  return url;
+}
+
+function extFromMime(mime) {
+  const map = {
+    'image/jpeg': '.jpg',
+    'image/png': '.png',
+    'image/webp': '.webp',
+    'image/heic': '.heic',
+    'image/heif': '.heif',
+  };
+  return map[mime] || '.jpg';
+}
+
 const router = Router();
 
 // GET / — List all media
-router.get('/', verifyToken, (req, res) => {
-  const db = getDb();
+router.get('/', verifyToken, async (req, res) => {
+  const pool = getPool();
   const { search, category } = req.query;
 
   let query = 'SELECT * FROM media WHERE 1=1';
   const params = [];
+  let paramIndex = 1;
 
   if (search) {
-    query += ' AND filename LIKE ?';
+    query += ` AND filename LIKE $${paramIndex++}`;
     params.push(`%${search}%`);
   }
   if (category) {
-    query += ' AND category = ?';
+    query += ` AND category = $${paramIndex++}`;
     params.push(category);
   }
 
   query += ' ORDER BY uploaded_at DESC';
 
-  const media = db.prepare(query).all(...params);
+  const { rows: media } = await pool.query(query, params);
 
-  const savingsRow = db
-    .prepare('SELECT SUM(size_bytes - webp_size_bytes) as totalSavings FROM media WHERE size_bytes IS NOT NULL AND webp_size_bytes IS NOT NULL')
-    .get();
+  const { rows: savingsRows } = await pool.query(
+    'SELECT SUM(size_bytes - webp_size_bytes) as totalSavings FROM media WHERE size_bytes IS NOT NULL AND webp_size_bytes IS NOT NULL'
+  );
 
-  res.json({ media, totalSavings: savingsRow.totalSavings || 0 });
+  res.json({ media, totalSavings: savingsRows[0].totalsavings || 0 });
 });
 
 // POST /upload — Upload and process image
@@ -70,50 +97,51 @@ router.post('/upload', verifyToken, upload.single('image'), async (req, res) => 
     return res.status(400).json({ error: 'No image file provided' });
   }
 
-  const db = getDb();
+  const pool = getPool();
 
   // Insert placeholder row to get ID
-  const insert = db
-    .prepare('INSERT INTO media (filename, original_path, uploaded_by) VALUES (?, ?, ?)')
-    .run(req.file.originalname, req.file.path, req.user.id);
-
-  const mediaId = insert.lastInsertRowid;
+  const { rows: insertRows } = await pool.query(
+    'INSERT INTO media (filename, original_path, uploaded_by) VALUES ($1, $2, $3) RETURNING id',
+    [req.file.originalname, 'blob', req.user.id]
+  );
+  const mediaId = insertRows[0].id;
 
   try {
-    const processed = await processImage(req.file.path, mediaId, req.file.originalname);
+    const processed = await processImage(req.file.buffer, mediaId, req.file.originalname);
 
-    db.prepare(`
-      UPDATE media SET
-        webp_thumb = ?,
-        webp_medium = ?,
-        webp_full = ?,
-        jpg_fallback = ?,
-        width = ?,
-        height = ?,
-        size_bytes = ?,
-        webp_size_bytes = ?,
-        alt_text = ?,
-        category = ?
-      WHERE id = ?
-    `).run(
-      processed.webp_thumb,
-      processed.webp_medium,
-      processed.webp_full,
-      processed.jpg_fallback,
-      processed.width,
-      processed.height,
-      processed.size_bytes,
-      processed.webp_size_bytes,
-      req.body.alt_text || '',
-      req.body.category || null,
-      mediaId
+    await pool.query(
+      `UPDATE media SET
+        webp_thumb = $1,
+        webp_medium = $2,
+        webp_full = $3,
+        jpg_fallback = $4,
+        width = $5,
+        height = $6,
+        size_bytes = $7,
+        webp_size_bytes = $8,
+        alt_text = $9,
+        category = $10
+      WHERE id = $11`,
+      [
+        processed.webp_thumb,
+        processed.webp_medium,
+        processed.webp_full,
+        processed.jpg_fallback,
+        processed.width,
+        processed.height,
+        processed.size_bytes,
+        processed.webp_size_bytes,
+        req.body.alt_text || '',
+        req.body.category || null,
+        mediaId,
+      ]
     );
 
-    const media = db.prepare('SELECT * FROM media WHERE id = ?').get(mediaId);
-    res.status(201).json({ media });
+    const { rows } = await pool.query('SELECT * FROM media WHERE id = $1', [mediaId]);
+    res.status(201).json({ media: rows[0] });
   } catch (err) {
     // Clean up placeholder on failure
-    db.prepare('DELETE FROM media WHERE id = ?').run(mediaId);
+    await pool.query('DELETE FROM media WHERE id = $1', [mediaId]);
     console.error('Image processing error:', err);
     res.status(500).json({ error: 'Image processing failed' });
   }
@@ -156,8 +184,7 @@ router.post('/import-url', verifyToken, requireRole('admin'), async (req, res) =
     return res.status(400).json({ error: 'Could not resolve hostname' });
   }
 
-  const db = getDb();
-  let tempPath = null;
+  const pool = getPool();
   let mediaId = null;
 
   try {
@@ -199,19 +226,14 @@ router.post('/import-url', verifyToken, requireRole('admin'), async (req, res) =
     // Derive a filename from the URL
     const urlPath = parsedUrl.pathname;
     const ext = extFromMime(contentType);
-    let baseName = path.basename(urlPath).replace(/[^a-zA-Z0-9._-]/g, '_');
-    if (!baseName || baseName === '_' || !path.extname(baseName)) {
+    let baseName = urlPath.split('/').pop().replace(/[^a-zA-Z0-9._-]/g, '_');
+    if (!baseName || baseName === '_' || !/\.[^.]+$/.test(baseName)) {
       baseName = `imported-${Date.now()}${ext}`;
     }
 
-    // Stream to temp file, enforcing size limit
-    const timestamp = Date.now();
-    const safeName = baseName.replace(/[^a-zA-Z0-9._-]/g, '_');
-    tempPath = path.join(uploadDir, `${timestamp}-${safeName}`);
-
-    const fileStream = fs.createWriteStream(tempPath);
+    // Collect response into a Buffer, enforcing size limit
+    const chunks = [];
     let bytesWritten = 0;
-
     const body = response.body;
     const reader = body.getReader();
     try {
@@ -219,66 +241,57 @@ router.post('/import-url', verifyToken, requireRole('admin'), async (req, res) =
         const { done, value } = await reader.read();
         if (done) break;
         bytesWritten += value.length;
-        if (bytesWritten > MAX_IMPORT_SIZE) {
-          fileStream.destroy();
-          throw new Error('Image exceeds 10 MB size limit');
-        }
-        fileStream.write(value);
+        if (bytesWritten > MAX_IMPORT_SIZE) throw new Error('Image exceeds 10 MB size limit');
+        chunks.push(value);
       }
     } finally {
       reader.releaseLock();
     }
-
-    await new Promise((resolve, reject) => {
-      fileStream.on('finish', resolve);
-      fileStream.on('error', reject);
-      fileStream.end();
-    });
+    const buffer = Buffer.concat(chunks);
 
     // Insert placeholder row
-    const insert = db
-      .prepare('INSERT INTO media (filename, original_path, uploaded_by) VALUES (?, ?, ?)')
-      .run(baseName, tempPath, req.user.id);
-    mediaId = insert.lastInsertRowid;
+    const { rows: insertRows } = await pool.query(
+      'INSERT INTO media (filename, original_path, uploaded_by) VALUES ($1, $2, $3) RETURNING id',
+      [baseName, 'blob', req.user.id]
+    );
+    mediaId = insertRows[0].id;
 
     // Process through Sharp pipeline
-    const processed = await processImage(tempPath, mediaId, baseName);
+    const processed = await processImage(buffer, mediaId, baseName);
 
-    db.prepare(`
-      UPDATE media SET
-        webp_thumb = ?,
-        webp_medium = ?,
-        webp_full = ?,
-        jpg_fallback = ?,
-        width = ?,
-        height = ?,
-        size_bytes = ?,
-        webp_size_bytes = ?,
-        alt_text = ?,
-        category = ?
-      WHERE id = ?
-    `).run(
-      processed.webp_thumb,
-      processed.webp_medium,
-      processed.webp_full,
-      processed.jpg_fallback,
-      processed.width,
-      processed.height,
-      processed.size_bytes,
-      processed.webp_size_bytes,
-      alt_text || '',
-      category || null,
-      mediaId
+    await pool.query(
+      `UPDATE media SET
+        webp_thumb = $1,
+        webp_medium = $2,
+        webp_full = $3,
+        jpg_fallback = $4,
+        width = $5,
+        height = $6,
+        size_bytes = $7,
+        webp_size_bytes = $8,
+        alt_text = $9,
+        category = $10
+      WHERE id = $11`,
+      [
+        processed.webp_thumb,
+        processed.webp_medium,
+        processed.webp_full,
+        processed.jpg_fallback,
+        processed.width,
+        processed.height,
+        processed.size_bytes,
+        processed.webp_size_bytes,
+        alt_text || '',
+        category || null,
+        mediaId,
+      ]
     );
 
-    const media = db.prepare('SELECT * FROM media WHERE id = ?').get(mediaId);
-    res.status(201).json({ media });
+    const { rows } = await pool.query('SELECT * FROM media WHERE id = $1', [mediaId]);
+    res.status(201).json({ media: rows[0] });
   } catch (err) {
     // Clean up on failure
-    if (mediaId) db.prepare('DELETE FROM media WHERE id = ?').run(mediaId);
-    if (tempPath) {
-      try { fs.unlinkSync(tempPath); } catch { /* ignore */ }
-    }
+    if (mediaId) await pool.query('DELETE FROM media WHERE id = $1', [mediaId]);
     console.error('URL import error:', err);
 
     if (err.name === 'AbortError') {
@@ -288,109 +301,62 @@ router.post('/import-url', verifyToken, requireRole('admin'), async (req, res) =
   }
 });
 
-function resolveShareUrl(url) {
-  // Google Drive share links → direct download
-  // Format: https://drive.google.com/file/d/FILE_ID/view?...
-  const driveMatch = url.match(/drive\.google\.com\/file\/d\/([^/]+)/);
-  if (driveMatch) {
-    return `https://drive.google.com/uc?export=download&id=${driveMatch[1]}`;
-  }
-  // Google Drive open links
-  const driveOpenMatch = url.match(/drive\.google\.com\/open\?id=([^&]+)/);
-  if (driveOpenMatch) {
-    return `https://drive.google.com/uc?export=download&id=${driveOpenMatch[1]}`;
-  }
-  // Dropbox share links: change dl=0 to dl=1
-  if (url.includes('dropbox.com')) {
-    const u = new URL(url);
-    u.searchParams.set('dl', '1');
-    return u.toString();
-  }
-  return url;
-}
-
-function extFromMime(mime) {
-  const map = {
-    'image/jpeg': '.jpg',
-    'image/png': '.png',
-    'image/webp': '.webp',
-    'image/heic': '.heic',
-    'image/heif': '.heif',
-  };
-  return map[mime] || '.jpg';
-}
-
 // PUT /:id — Update alt_text and category
-router.put('/:id', verifyToken, (req, res) => {
-  const db = getDb();
+router.put('/:id', verifyToken, async (req, res) => {
+  const pool = getPool();
   const { alt_text, category } = req.body;
 
-  const media = db.prepare('SELECT * FROM media WHERE id = ?').get(req.params.id);
+  const { rows } = await pool.query('SELECT * FROM media WHERE id = $1', [req.params.id]);
+  const media = rows[0];
   if (!media) return res.status(404).json({ error: 'Media not found' });
 
-  db.prepare('UPDATE media SET alt_text = ?, category = ? WHERE id = ?').run(
+  await pool.query('UPDATE media SET alt_text = $1, category = $2 WHERE id = $3', [
     alt_text !== undefined ? alt_text : media.alt_text,
     category !== undefined ? category : media.category,
-    req.params.id
-  );
+    req.params.id,
+  ]);
 
-  const updated = db.prepare('SELECT * FROM media WHERE id = ?').get(req.params.id);
-  res.json({ media: updated });
+  const { rows: updatedRows } = await pool.query('SELECT * FROM media WHERE id = $1', [req.params.id]);
+  res.json({ media: updatedRows[0] });
 });
 
-// DELETE /:id — Delete image and all file variants (admin only)
-router.delete('/:id', verifyToken, requireRole('admin'), (req, res) => {
-  const db = getDb();
-  const media = db.prepare('SELECT * FROM media WHERE id = ?').get(req.params.id);
+// DELETE /:id — Delete image and all Blob variants (admin only)
+router.delete('/:id', verifyToken, requireRole('admin'), async (req, res) => {
+  const pool = getPool();
+  const { rows } = await pool.query('SELECT * FROM media WHERE id = $1', [req.params.id]);
+  const media = rows[0];
   if (!media) return res.status(404).json({ error: 'Media not found' });
 
-  // Delete file variants
-  const variants = [media.webp_thumb, media.webp_medium, media.webp_full, media.jpg_fallback];
-  for (const variant of variants) {
-    if (variant) {
-      const filePath = path.join(optimizedDir, variant);
-      try {
-        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-      } catch (e) {
-        // ignore individual file deletion errors
-      }
-    }
-  }
+  // Delete Blob variants
+  const urls = [media.webp_thumb, media.webp_medium, media.webp_full, media.jpg_fallback].filter(Boolean);
+  if (urls.length > 0) await del(urls);
 
-  // Delete original upload
-  if (media.original_path) {
-    try {
-      if (fs.existsSync(media.original_path)) fs.unlinkSync(media.original_path);
-    } catch (e) {
-      // ignore
-    }
-  }
-
-  db.prepare('DELETE FROM media WHERE id = ?').run(req.params.id);
+  await pool.query('DELETE FROM media WHERE id = $1', [req.params.id]);
   res.json({ success: true });
 });
 
-// GET /file/:size/:filename — Serve optimized image (public)
-router.get('/file/:size/:filename', (req, res) => {
+// GET /file/:size/:filename — Serve optimized image (compatibility endpoint, redirects to Blob URL)
+router.get('/file/:size/:filename', async (req, res) => {
   const { size, filename } = req.params;
   const validSizes = ['thumb', 'medium', 'full', 'fallback'];
-
   if (!validSizes.includes(size)) {
-    return res.status(400).json({ error: 'Invalid size. Must be: thumb, medium, full, fallback' });
+    return res.status(400).json({ error: 'Invalid size' });
   }
 
-  const filePath = path.join(optimizedDir, size, filename);
+  const pool = getPool();
+  const column = size === 'fallback' ? 'jpg_fallback' : `webp_${size}`;
 
-  if (!fs.existsSync(filePath)) {
+  // Search for media whose blob URL ends with this filename
+  const { rows } = await pool.query(
+    `SELECT ${column} as url FROM media WHERE ${column} LIKE $1 LIMIT 1`,
+    [`%${filename}`]
+  );
+
+  if (!rows[0]?.url) {
     return res.status(404).json({ error: 'File not found' });
   }
 
-  const ext = path.extname(filename).toLowerCase();
-  const contentType = ext === '.webp' ? 'image/webp' : 'image/jpeg';
-
-  res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-  res.setHeader('Content-Type', contentType);
-  res.sendFile(filePath);
+  res.redirect(rows[0].url);
 });
 
 export default router;
