@@ -12,16 +12,19 @@ import documentsRoutes from './routes/documents.js';
 
 const app = express();
 
-// Initialize database (async — resolves on first request in serverless)
-let dbError = null;
-const dbReady = initDatabase().catch(err => {
-  console.error('Database init failed:', err);
-  dbError = err;
-});
+// Initialize database (lazy — retries on each request until success)
+let dbInitialized = false;
 
 app.use(async (req, res, next) => {
-  await dbReady;
-  if (dbError) return res.status(503).json({ error: 'Database unavailable' });
+  if (!dbInitialized) {
+    try {
+      await initDatabase();
+      dbInitialized = true;
+    } catch (err) {
+      console.error('Database init failed:', err);
+      return res.status(503).json({ error: 'Database unavailable' });
+    }
+  }
   next();
 });
 
@@ -35,8 +38,9 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow same-origin requests (no origin header) and whitelisted origins
-    if (!origin || allowedOrigins.includes(origin)) {
+    // Allow same-origin requests (no origin header), whitelisted origins,
+    // and Vercel preview/deployment URLs
+    if (!origin || allowedOrigins.includes(origin) || (origin && origin.includes('vercel.app'))) {
       callback(null, true);
     } else {
       callback(null, false);
