@@ -7,18 +7,18 @@ const chapters = {
   nyc: {
     name: 'New York City',
     focus: 'Finance & Media',
-    members: '3,457',
-    leaders: 'Evol G. & Michael R.',
-    event: 'Finance Leaders Summit',
-    eventDate: 'Mar 18',
+    members: '9,294',
+    leaders: 'Evol G.',
+    event: 'The Oxtail Off Tour 2026 - NYC',
+    eventDate: 'Jun 7',
   },
   la: {
     name: 'Los Angeles, CA',
     focus: 'Creative & Tech Hub',
     members: '2,100',
-    leaders: 'Richard N. & Tanya M.',
-    event: 'Tech & Entertainment Mixer',
-    eventDate: 'Mar 25',
+    leaders: 'Rich N.',
+    event: 'First Fridays - MOCA Museum',
+    eventDate: 'Apr 3',
   },
 };
 
