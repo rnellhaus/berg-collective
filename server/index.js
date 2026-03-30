@@ -13,12 +13,15 @@ import documentsRoutes from './routes/documents.js';
 const app = express();
 
 // Initialize database (async — resolves on first request in serverless)
+let dbError = null;
 const dbReady = initDatabase().catch(err => {
   console.error('Database init failed:', err);
+  dbError = err;
 });
 
 app.use(async (req, res, next) => {
   await dbReady;
+  if (dbError) return res.status(503).json({ error: 'Database unavailable' });
   next();
 });
 
@@ -32,11 +35,11 @@ const allowedOrigins = [
 
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (same-origin, server-to-server)
+    // Allow same-origin requests (no origin header) and whitelisted origins
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(null, true); // Allow all in production since API and frontend share domain
+      callback(null, false);
     }
   },
   credentials: true,

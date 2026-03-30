@@ -1,3 +1,7 @@
+-- LEGACY: This schema is SQLite syntax for local development reference only.
+-- The production database (Neon PostgreSQL) schema is managed separately.
+-- Do NOT execute this file against PostgreSQL.
+
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   email TEXT UNIQUE NOT NULL,

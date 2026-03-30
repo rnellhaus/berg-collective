@@ -72,7 +72,7 @@ router.get('/', verifyToken, async (req, res) => {
   let paramIndex = 1;
 
   if (search) {
-    query += ` AND filename LIKE $${paramIndex++}`;
+    query += ` AND filename ILIKE $${paramIndex++}`;
     params.push(`%${search}%`);
   }
   if (category) {
@@ -338,17 +338,16 @@ router.delete('/:id', verifyToken, requireRole('admin'), async (req, res) => {
 // GET /file/:size/:filename — Serve optimized image (compatibility endpoint, redirects to Blob URL)
 router.get('/file/:size/:filename', async (req, res) => {
   const { size, filename } = req.params;
-  const validSizes = ['thumb', 'medium', 'full', 'fallback'];
-  if (!validSizes.includes(size)) {
-    return res.status(400).json({ error: 'Invalid size' });
-  }
+
+  const COLUMN_MAP = { thumb: 'webp_thumb', medium: 'webp_medium', full: 'webp_full', fallback: 'jpg_fallback' };
+  const column = COLUMN_MAP[size];
+  if (!column) return res.status(400).json({ error: 'Invalid size' });
 
   const pool = getPool();
-  const column = size === 'fallback' ? 'jpg_fallback' : `webp_${size}`;
 
   // Search for media whose blob URL ends with this filename
   const { rows } = await pool.query(
-    `SELECT ${column} as url FROM media WHERE ${column} LIKE $1 LIMIT 1`,
+    `SELECT ${column} as url FROM media WHERE ${column} ILIKE $1 LIMIT 1`,
     [`%${filename}`]
   );
 
