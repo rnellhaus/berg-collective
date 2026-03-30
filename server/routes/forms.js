@@ -1,13 +1,10 @@
 import { Router } from 'express';
 import { Resend } from 'resend';
 import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
-import { getDb } from '../db/connection.js';
+import { put } from '@vercel/blob';
+import { getPool } from '../db/connection.js';
 import { verifyToken } from '../middleware/auth.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const router = Router();
 
 // Resend client — set RESEND_API_KEY env var to enable email sending
@@ -19,19 +16,9 @@ const FROM_EMAIL = 'BERG Collective <info@bergcollective.org>';
 const TO_EMAIL = 'rich@bergcollective.org';
 const CC_EMAIL = 'jazmine@bergcollective.org';
 
-// File upload for application attachments
-const uploadDir = path.join(__dirname, '..', 'uploads', 'applications');
-fs.mkdirSync(uploadDir, { recursive: true });
-
+// File upload for application attachments (memory storage → Vercel Blob)
 const appUpload = multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => cb(null, uploadDir),
-    filename: (req, file, cb) => {
-      const timestamp = Date.now();
-      const safeName = file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_');
-      cb(null, `${timestamp}-${safeName}`);
-    },
-  }),
+  storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
 });
 
@@ -86,16 +73,31 @@ function formatEmailHtml(title, fields) {
 router.post('/membership', appUpload.single('application_file'), async (req, res) => {
   try {
     const data = req.body;
-    const db = getDb();
+    const pool = getPool();
+
+    let fileUrl = null;
+    if (req.file) {
+      const blob = await put(
+        `applications/${Date.now()}-${req.file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_')}`,
+        req.file.buffer,
+        {
+          access: 'public',
+          contentType: req.file.mimetype,
+        }
+      );
+      fileUrl = blob.url;
+    }
 
     const submission = {
       ...data,
-      application_file: req.file ? req.file.filename : null,
+      application_file: req.file ? req.file.originalname : null,
     };
 
-    const result = db.prepare(
-      'INSERT INTO form_submissions (form_type, data, file_path) VALUES (?, ?, ?)'
-    ).run('membership', JSON.stringify(submission), req.file ? req.file.path : null);
+    const { rows } = await pool.query(
+      'INSERT INTO form_submissions (form_type, data, file_path) VALUES ($1, $2, $3) RETURNING id',
+      ['membership', JSON.stringify(submission), fileUrl]
+    );
+    const insertedId = rows[0].id;
 
     const emailFields = [
       ['First Name', data.first_name],
@@ -122,9 +124,9 @@ router.post('/membership', appUpload.single('application_file'), async (req, res
       data.email
     );
 
-    db.prepare('UPDATE form_submissions SET email_sent = ? WHERE id = ?').run(sent ? 1 : 0, result.lastInsertRowid);
+    await pool.query('UPDATE form_submissions SET email_sent = $1 WHERE id = $2', [sent ? 1 : 0, insertedId]);
 
-    res.status(201).json({ message: 'Application submitted successfully', id: result.lastInsertRowid });
+    res.status(201).json({ message: 'Application submitted successfully', id: insertedId });
   } catch (err) {
     console.error('Membership form error:', err);
     res.status(500).json({ error: 'Failed to submit application' });
@@ -140,12 +142,14 @@ router.post('/individual-waitlist', async (req, res) => {
       return res.status(400).json({ error: 'Name and email are required' });
     }
 
-    const db = getDb();
+    const pool = getPool();
     const data = { name, email, company, title: jobTitle, linkedin, reason };
 
-    const result = db.prepare(
-      'INSERT INTO form_submissions (form_type, data) VALUES (?, ?)'
-    ).run('individual_waitlist', JSON.stringify(data));
+    const { rows } = await pool.query(
+      'INSERT INTO form_submissions (form_type, data) VALUES ($1, $2) RETURNING id',
+      ['individual_waitlist', JSON.stringify(data)]
+    );
+    const insertedId = rows[0].id;
 
     const emailFields = [
       ['Name', name],
@@ -162,7 +166,7 @@ router.post('/individual-waitlist', async (req, res) => {
       email
     );
 
-    db.prepare('UPDATE form_submissions SET email_sent = ? WHERE id = ?').run(sent ? 1 : 0, result.lastInsertRowid);
+    await pool.query('UPDATE form_submissions SET email_sent = $1 WHERE id = $2', [sent ? 1 : 0, insertedId]);
 
     res.status(201).json({ message: 'Successfully joined the waitlist!' });
   } catch (err) {
@@ -180,12 +184,14 @@ router.post('/impact-download', async (req, res) => {
       return res.status(400).json({ error: 'Name and email are required' });
     }
 
-    const db = getDb();
+    const pool = getPool();
     const data = { name, email, company, title: jobTitle, linkedin };
 
-    const result = db.prepare(
-      'INSERT INTO form_submissions (form_type, data) VALUES (?, ?)'
-    ).run('impact_download', JSON.stringify(data));
+    const { rows } = await pool.query(
+      'INSERT INTO form_submissions (form_type, data) VALUES ($1, $2) RETURNING id',
+      ['impact_download', JSON.stringify(data)]
+    );
+    const insertedId = rows[0].id;
 
     const emailFields = [
       ['Name', name],
@@ -201,9 +207,9 @@ router.post('/impact-download', async (req, res) => {
       email
     );
 
-    db.prepare('UPDATE form_submissions SET email_sent = ? WHERE id = ?').run(sent ? 1 : 0, result.lastInsertRowid);
+    await pool.query('UPDATE form_submissions SET email_sent = $1 WHERE id = $2', [sent ? 1 : 0, insertedId]);
 
-    res.status(201).json({ message: 'Thank you! Your download will begin shortly.', id: result.lastInsertRowid });
+    res.status(201).json({ message: 'Thank you! Your download will begin shortly.', id: insertedId });
   } catch (err) {
     console.error('Impact download form error:', err);
     res.status(500).json({ error: 'Failed to process request' });
@@ -216,15 +222,18 @@ router.post('/newsletter', async (req, res) => {
     const { email } = req.body;
     if (!email) return res.status(400).json({ error: 'Email is required' });
 
-    const db = getDb();
+    const pool = getPool();
 
     // Check if already subscribed
-    const existing = db.prepare('SELECT id FROM newsletter_subscribers WHERE email = ?').get(email);
-    if (existing) {
+    const { rows: existing } = await pool.query(
+      'SELECT id FROM newsletter_subscribers WHERE email = $1',
+      [email]
+    );
+    if (existing.length > 0) {
       return res.json({ message: 'You\'re already subscribed!' });
     }
 
-    db.prepare('INSERT INTO newsletter_subscribers (email) VALUES (?)').run(email);
+    await pool.query('INSERT INTO newsletter_subscribers (email) VALUES ($1)', [email]);
 
     // TODO: Add Mailchimp API integration here when API key is provided
     // const mailchimp = require('@mailchimp/mailchimp_marketing');
@@ -250,12 +259,14 @@ router.post('/contact', async (req, res) => {
       return res.status(400).json({ error: 'Email and message are required' });
     }
 
-    const db = getDb();
+    const pool = getPool();
     const data = { first_name, last_name, email, subject, message };
 
-    const result = db.prepare(
-      'INSERT INTO form_submissions (form_type, data) VALUES (?, ?)'
-    ).run('contact', JSON.stringify(data));
+    const { rows } = await pool.query(
+      'INSERT INTO form_submissions (form_type, data) VALUES ($1, $2) RETURNING id',
+      ['contact', JSON.stringify(data)]
+    );
+    const insertedId = rows[0].id;
 
     const emailFields = [
       ['Name', `${first_name || ''} ${last_name || ''}`.trim()],
@@ -270,7 +281,7 @@ router.post('/contact', async (req, res) => {
       email
     );
 
-    db.prepare('UPDATE form_submissions SET email_sent = ? WHERE id = ?').run(sent ? 1 : 0, result.lastInsertRowid);
+    await pool.query('UPDATE form_submissions SET email_sent = $1 WHERE id = $2', [sent ? 1 : 0, insertedId]);
 
     res.status(201).json({ message: 'Message sent successfully!' });
   } catch (err) {
@@ -288,12 +299,14 @@ router.post('/volunteer', async (req, res) => {
       return res.status(400).json({ error: 'First name, last name, and email are required' });
     }
 
-    const db = getDb();
+    const pool = getPool();
     const data = { first_name, last_name, email, phone, company, area_of_interest, availability, message };
 
-    const result = db.prepare(
-      'INSERT INTO form_submissions (form_type, data) VALUES (?, ?)'
-    ).run('volunteer', JSON.stringify(data));
+    const { rows } = await pool.query(
+      'INSERT INTO form_submissions (form_type, data) VALUES ($1, $2) RETURNING id',
+      ['volunteer', JSON.stringify(data)]
+    );
+    const insertedId = rows[0].id;
 
     const emailFields = [
       ['Name', `${first_name} ${last_name}`],
@@ -324,7 +337,7 @@ router.post('/volunteer', async (req, res) => {
       console.log('[Resend] No API key — volunteer email not sent.');
     }
 
-    db.prepare('UPDATE form_submissions SET email_sent = ? WHERE id = ?').run(sent ? 1 : 0, result.lastInsertRowid);
+    await pool.query('UPDATE form_submissions SET email_sent = $1 WHERE id = $2', [sent ? 1 : 0, insertedId]);
 
     res.status(201).json({ message: 'Thank you for signing up to volunteer! We\'ll be in touch soon.' });
   } catch (err) {
@@ -336,83 +349,118 @@ router.post('/volunteer', async (req, res) => {
 // ─── Auth-protected admin endpoints ───
 
 // ─── GET /api/forms/submissions — Admin: list submissions with filtering & pagination ───
-router.get('/submissions', verifyToken, (req, res) => {
-  const db = getDb();
-  const { type, reviewed, sort = 'newest', page = '1', limit = '25' } = req.query;
+router.get('/submissions', verifyToken, async (req, res) => {
+  try {
+    const pool = getPool();
+    const { type, reviewed, sort = 'newest', page = '1', limit = '25' } = req.query;
 
-  const conditions = [];
-  const params = [];
+    const conditions = [];
+    const params = [];
+    let paramIdx = 1;
 
-  if (type) {
-    conditions.push('form_type = ?');
-    params.push(type);
+    if (type) {
+      conditions.push(`form_type = $${paramIdx++}`);
+      params.push(type);
+    }
+    if (reviewed === '1' || reviewed === '0') {
+      conditions.push(`reviewed = $${paramIdx++}`);
+      params.push(Number(reviewed));
+    }
+
+    const where = conditions.length > 0 ? ` WHERE ${conditions.join(' AND ')}` : '';
+    const orderBy = sort === 'oldest' ? ' ORDER BY created_at ASC' : ' ORDER BY created_at DESC';
+
+    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 25));
+    const offset = (pageNum - 1) * limitNum;
+
+    const { rows: countRows } = await pool.query(
+      `SELECT COUNT(*) as total FROM form_submissions${where}`,
+      params
+    );
+    const total = Number(countRows[0].total);
+
+    const { rows: submissions } = await pool.query(
+      `SELECT * FROM form_submissions${where}${orderBy} LIMIT $${paramIdx++} OFFSET $${paramIdx++}`,
+      [...params, limitNum, offset]
+    );
+
+    const parsed = submissions.map(s => ({
+      ...s,
+      data: JSON.parse(s.data),
+    }));
+
+    res.json({
+      submissions: parsed,
+      pagination: { page: pageNum, limit: limitNum, total, totalPages: Math.ceil(total / limitNum) },
+    });
+  } catch (err) {
+    console.error('Submissions list error:', err);
+    res.status(500).json({ error: 'Failed to fetch submissions' });
   }
-  if (reviewed === '1' || reviewed === '0') {
-    conditions.push('reviewed = ?');
-    params.push(Number(reviewed));
-  }
-
-  const where = conditions.length > 0 ? ` WHERE ${conditions.join(' AND ')}` : '';
-  const orderBy = sort === 'oldest' ? ' ORDER BY created_at ASC' : ' ORDER BY created_at DESC';
-
-  const pageNum = Math.max(1, parseInt(page, 10) || 1);
-  const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 25));
-  const offset = (pageNum - 1) * limitNum;
-
-  const countRow = db.prepare(`SELECT COUNT(*) as total FROM form_submissions${where}`).get(...params);
-  const total = countRow.total;
-
-  const submissions = db.prepare(
-    `SELECT * FROM form_submissions${where}${orderBy} LIMIT ? OFFSET ?`
-  ).all(...params, limitNum, offset);
-
-  const parsed = submissions.map(s => ({
-    ...s,
-    data: JSON.parse(s.data),
-  }));
-
-  res.json({
-    submissions: parsed,
-    pagination: { page: pageNum, limit: limitNum, total, totalPages: Math.ceil(total / limitNum) },
-  });
 });
 
 // ─── GET /api/forms/submissions/stats — Admin: submission counts ───
-router.get('/submissions/stats', verifyToken, (req, res) => {
-  const db = getDb();
-  const rows = db.prepare(
-    `SELECT form_type, COUNT(*) as count, SUM(CASE WHEN reviewed = 0 THEN 1 ELSE 0 END) as unreviewed
-     FROM form_submissions GROUP BY form_type`
-  ).all();
+router.get('/submissions/stats', verifyToken, async (req, res) => {
+  try {
+    const pool = getPool();
+    const { rows } = await pool.query(
+      `SELECT form_type, COUNT(*) as count, SUM(CASE WHEN reviewed = 0 THEN 1 ELSE 0 END) as unreviewed
+       FROM form_submissions GROUP BY form_type`
+    );
 
-  const total = rows.reduce((sum, r) => sum + r.count, 0);
-  const totalUnreviewed = rows.reduce((sum, r) => sum + r.unreviewed, 0);
+    const total = rows.reduce((sum, r) => sum + Number(r.count), 0);
+    const totalUnreviewed = rows.reduce((sum, r) => sum + Number(r.unreviewed), 0);
 
-  res.json({ total, totalUnreviewed, byType: rows });
+    res.json({ total, totalUnreviewed, byType: rows });
+  } catch (err) {
+    console.error('Submissions stats error:', err);
+    res.status(500).json({ error: 'Failed to fetch stats' });
+  }
 });
 
 // ─── GET /api/forms/submissions/:id — Admin: single submission ───
-router.get('/submissions/:id', verifyToken, (req, res) => {
-  const db = getDb();
-  const submission = db.prepare('SELECT * FROM form_submissions WHERE id = ?').get(req.params.id);
-  if (!submission) return res.status(404).json({ error: 'Submission not found' });
+router.get('/submissions/:id', verifyToken, async (req, res) => {
+  try {
+    const pool = getPool();
+    const { rows } = await pool.query(
+      'SELECT * FROM form_submissions WHERE id = $1',
+      [req.params.id]
+    );
+    if (rows.length === 0) return res.status(404).json({ error: 'Submission not found' });
 
-  res.json({ ...submission, data: JSON.parse(submission.data) });
+    const submission = rows[0];
+    res.json({ ...submission, data: JSON.parse(submission.data) });
+  } catch (err) {
+    console.error('Submission fetch error:', err);
+    res.status(500).json({ error: 'Failed to fetch submission' });
+  }
 });
 
 // ─── PATCH /api/forms/submissions/:id/review — Admin: toggle reviewed status ───
-router.patch('/submissions/:id/review', verifyToken, (req, res) => {
-  const db = getDb();
-  const submission = db.prepare('SELECT * FROM form_submissions WHERE id = ?').get(req.params.id);
-  if (!submission) return res.status(404).json({ error: 'Submission not found' });
+router.patch('/submissions/:id/review', verifyToken, async (req, res) => {
+  try {
+    const pool = getPool();
+    const { rows } = await pool.query(
+      'SELECT * FROM form_submissions WHERE id = $1',
+      [req.params.id]
+    );
+    if (rows.length === 0) return res.status(404).json({ error: 'Submission not found' });
 
-  const newReviewed = submission.reviewed ? 0 : 1;
-  const reviewedAt = newReviewed ? new Date().toISOString() : null;
+    const submission = rows[0];
+    const newReviewed = submission.reviewed ? 0 : 1;
+    const reviewedAt = newReviewed ? new Date().toISOString() : null;
 
-  db.prepare('UPDATE form_submissions SET reviewed = ?, reviewed_at = ? WHERE id = ?')
-    .run(newReviewed, reviewedAt, req.params.id);
+    await pool.query(
+      'UPDATE form_submissions SET reviewed = $1, reviewed_at = $2 WHERE id = $3',
+      [newReviewed, reviewedAt, req.params.id]
+    );
 
-  res.json({ id: submission.id, reviewed: newReviewed, reviewed_at: reviewedAt });
+    res.json({ id: submission.id, reviewed: newReviewed, reviewed_at: reviewedAt });
+  } catch (err) {
+    console.error('Submission review toggle error:', err);
+    res.status(500).json({ error: 'Failed to update review status' });
+  }
 });
 
 export default router;
