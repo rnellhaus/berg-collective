@@ -13,7 +13,7 @@ const PARTNERSHIPS = [
     highlights: ['After-Hours Events', 'Artist Talks', 'Private Viewings', '500+ Attendees'],
   },
   {
-    image: '/images/photos/BERG-1562-scaled.jpg',
+    image: '/images/photos/20251020_MOCA_Mons_C1_101.jpg',
     alt: 'BERG Collective members at MOCA Los Angeles',
     title: 'Museum of Contemporary Art (MOCA)',
     subtitle: 'First Fridays & Creative Programming',
@@ -22,7 +22,7 @@ const PARTNERSHIPS = [
     highlights: ['First Fridays', 'Creative Workshops', 'LA Chapter', 'Monthly Events'],
   },
   {
-    image: '/images/photos/BERG-1616-scaled.jpg',
+    image: '/images/photos/NBAF_AfroTech_Day3-2-172-2.jpg',
     alt: 'BERG Collective NBA Foundation partnership event',
     title: 'NBA Foundation',
     subtitle: 'Economic Empowerment & Youth Development',
@@ -38,7 +38,10 @@ const GALLERY_PHOTOS = [
   { src: '/images/photos/lobby-whitney-people-dancing.jpg',  alt: 'Guests dancing in the Whitney lobby' },
   { src: '/images/photos/outdoor-whitney-muesuem.jpg',       alt: 'Outdoor event at the Whitney Museum' },
   { src: '/images/photos/amysherald-whitney-photo.jpg',      alt: 'Amy Sherald Whitney photo' },
-  { src: '/images/photos/BERG-1616-scaled.jpg',              alt: 'BERG Collective branded event' },
+  { src: '/images/photos/GHMP3820.jpg',                      alt: 'BERG Collective in action' },
+  { src: '/images/photos/BERG-1719.jpg',                     alt: 'BERG Collective event' },
+  { src: '/images/photos/NBAF_AfroTech_Day2-253-2.jpg',     alt: 'BERG at NBA Foundation AfroTech' },
+  { src: '/images/photos/Berg_Collective_7th_Annual_Toy_Drive_Holiday_Mixer-1026.jpg', alt: 'BERG 7th Annual Toy Drive & Holiday Mixer' },
 ];
 
 const WHAT_WE_OFFER = [
