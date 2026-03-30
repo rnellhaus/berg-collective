@@ -263,7 +263,7 @@ export default function ImpactPage() {
             <div className={styles.gateSuccess}>
               <p className={styles.gateSuccessMsg}>Thank you! Your report is ready.</p>
               <a
-                href="/impact-report-2025.pdf"
+                href="/api/documents/file/impact-report-2025"
                 className={styles.downloadBtn}
                 download
               >

@@ -19,6 +19,7 @@ export function initDatabase() {
     path.join(serverDir, 'optimized', 'medium'),
     path.join(serverDir, 'optimized', 'full'),
     path.join(serverDir, 'optimized', 'fallback'),
+    path.join(serverDir, 'uploads', 'documents'),
   ];
   for (const dir of dirs) {
     fs.mkdirSync(dir, { recursive: true });
@@ -66,6 +67,18 @@ export function initDatabase() {
       ALTER TABLE events_new RENAME TO events;
     `);
     console.log('Events table migrated.');
+  }
+
+  // Migration: add reviewed/reviewed_at columns to form_submissions
+  const formCols = db.prepare("PRAGMA table_info(form_submissions)").all();
+  const hasReviewed = formCols.some(c => c.name === 'reviewed');
+  if (!hasReviewed) {
+    console.log('Migrating form_submissions: adding reviewed + reviewed_at columns...');
+    db.exec(`
+      ALTER TABLE form_submissions ADD COLUMN reviewed INTEGER NOT NULL DEFAULT 0;
+      ALTER TABLE form_submissions ADD COLUMN reviewed_at TEXT;
+    `);
+    console.log('form_submissions migration complete.');
   }
 
   console.log('Database initialized');

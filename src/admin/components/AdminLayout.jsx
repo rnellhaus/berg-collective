@@ -1,4 +1,5 @@
-import { NavLink, Outlet, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { NavLink, Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import styles from './AdminLayout.module.css';
 
@@ -15,14 +16,29 @@ function getInitials(user) {
 
 export default function AdminLayout() {
   const { user, logout } = useAuth();
+  const location = useLocation();
   const initials = getInitials(user);
   const displayName = user?.name || user?.email || '';
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  // Close mobile menu on navigation
+  useEffect(() => {
+    setMenuOpen(false);
+  }, [location.pathname]);
 
   return (
     <div className={styles.shell}>
       {/* Top Bar */}
       <header className={styles.topbar}>
         <div className={styles.topbarLeft}>
+          <button
+            className={styles.menuToggle}
+            onClick={() => setMenuOpen((o) => !o)}
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={menuOpen}
+          >
+            <span className={`${styles.hamburger} ${menuOpen ? styles.hamburgerOpen : ''}`} />
+          </button>
           <span className={styles.brandName}>BERG</span>
           <span className={styles.cmsBadge}>CMS</span>
         </div>
@@ -48,7 +64,10 @@ export default function AdminLayout() {
       {/* Body */}
       <div className={styles.body}>
         {/* Sidebar */}
-        <nav className={styles.sidebar} aria-label="Admin navigation">
+        <nav
+          className={`${styles.sidebar} ${menuOpen ? styles.sidebarOpen : ''}`}
+          aria-label="Admin navigation"
+        >
           <div className={styles.sidebarSection}>
             <div className={styles.sectionLabel}>Content</div>
             <NavLink
@@ -77,12 +96,28 @@ export default function AdminLayout() {
               Events
             </NavLink>
             <NavLink
+              to="/admin/forms"
+              className={({ isActive }) =>
+                `${styles.navLink}${isActive ? ` ${styles.active}` : ''}`
+              }
+            >
+              Forms
+            </NavLink>
+            <NavLink
               to="/admin/media"
               className={({ isActive }) =>
                 `${styles.navLink}${isActive ? ` ${styles.active}` : ''}`
               }
             >
               Media Library
+            </NavLink>
+            <NavLink
+              to="/admin/documents"
+              className={({ isActive }) =>
+                `${styles.navLink}${isActive ? ` ${styles.active}` : ''}`
+              }
+            >
+              Documents
             </NavLink>
           </div>
 
@@ -108,6 +143,14 @@ export default function AdminLayout() {
             </div>
           )}
         </nav>
+
+        {/* Overlay for mobile menu */}
+        {menuOpen && (
+          <div
+            className={styles.sidebarOverlay}
+            onClick={() => setMenuOpen(false)}
+          />
+        )}
 
         {/* Main Content */}
         <main className={styles.main}>

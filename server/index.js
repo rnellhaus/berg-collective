@@ -10,6 +10,7 @@ import pagesRoutes from './routes/pages.js';
 import eventsRoutes from './routes/events.js';
 import usersRoutes from './routes/users.js';
 import formsRoutes from './routes/forms.js';
+import documentsRoutes from './routes/documents.js';
 initDatabase();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -27,6 +28,7 @@ app.use('/api/pages', pagesRoutes);
 app.use('/api/events', eventsRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/forms', formsRoutes);
+app.use('/api/documents', documentsRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {

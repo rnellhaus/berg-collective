@@ -84,3 +84,17 @@ CREATE TABLE IF NOT EXISTS event_photos (
   caption TEXT DEFAULT '',
   sort_order INTEGER NOT NULL DEFAULT 0
 );
+
+CREATE TABLE IF NOT EXISTS documents (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  filename TEXT NOT NULL,
+  original_name TEXT NOT NULL,
+  file_path TEXT NOT NULL,
+  mime_type TEXT NOT NULL,
+  size_bytes INTEGER,
+  slug TEXT UNIQUE NOT NULL,
+  title TEXT NOT NULL DEFAULT '',
+  category TEXT DEFAULT 'general',
+  uploaded_at TEXT NOT NULL DEFAULT (datetime('now')),
+  uploaded_by INTEGER REFERENCES users(id)
+);

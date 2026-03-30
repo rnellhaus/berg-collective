@@ -10,6 +10,9 @@ import MediaLibraryPage from './pages/MediaLibraryPage';
 import UsersPage from './pages/UsersPage';
 import EventsListPage from './pages/EventsListPage';
 import EventEditorPage from './pages/EventEditorPage';
+import FormSubmissionsPage from './pages/FormSubmissionsPage';
+import FormSubmissionDetailPage from './pages/FormSubmissionDetailPage';
+import DocumentsPage from './pages/DocumentsPage';
 
 function ComingSoon({ label }) {
   return (
@@ -55,7 +58,10 @@ function AdminRoutes() {
         <Route path="events" element={<EventsListPage />} />
         <Route path="events/new" element={<EventEditorPage />} />
         <Route path="events/:id" element={<EventEditorPage />} />
+        <Route path="forms" element={<FormSubmissionsPage />} />
+        <Route path="forms/:id" element={<FormSubmissionDetailPage />} />
         <Route path="media" element={<MediaLibraryPage />} />
+        <Route path="documents" element={<DocumentsPage />} />
         <Route path="users" element={<UsersPage />} />
         <Route path="settings" element={<ComingSoon label="Settings" />} />
       </Route>
