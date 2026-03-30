@@ -5,7 +5,7 @@ const PILLARS = [
   {
     number: '01',
     title: 'Financial Empowerment',
-    image: '/images/photos/group-photo-berg-panel-whitney.jpg',
+    image: '/images/photos/i-QdZRfh3-X5.jpg',
     alt: 'BERG financial empowerment session',
     description:
       'Building generational wealth starts with financial literacy. Through expert-led workshops and peer learning, we equip Black professionals with the tools to invest wisely, negotiate compensation, and create sustainable financial futures.',
@@ -19,7 +19,7 @@ const PILLARS = [
   {
     number: '02',
     title: 'Structured Networking',
-    image: '/images/photos/whitney-womens-panel.jpg',
+    image: '/images/photos/R5TF1211.jpg',
     alt: 'BERG structured networking event',
     description:
       'Meaningful connections don\u2019t happen by accident. Our curated networking experiences pair professionals across industries and career stages, creating relationships that open doors, spark collaborations, and build lasting community.',
@@ -33,7 +33,7 @@ const PILLARS = [
   {
     number: '03',
     title: 'Career Growth',
-    image: '/images/photos/whitney-art-activation.jpg',
+    image: '/images/photos/whitney-womens-panel.jpg',
     alt: 'BERG career growth programming',
     description:
       'Advancing in your career requires more than hard work. We provide structured pathways, mentorship, and skill development designed to help mid-level professionals break into senior leadership and C-suite roles.',
