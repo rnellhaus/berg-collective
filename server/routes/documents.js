@@ -1,27 +1,14 @@
 import { Router } from 'express';
 import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
-import { getDb } from '../db/connection.js';
+import { getPool } from '../db/connection.js';
 import { verifyToken } from '../middleware/auth.js';
 import { requireRole } from '../middleware/roles.js';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const docDir = path.join(__dirname, '..', 'uploads', 'documents');
-fs.mkdirSync(docDir, { recursive: true });
+import { put, del } from '@vercel/blob';
 
 const router = Router();
 
-// Multer config for document uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, docDir),
-  filename: (req, file, cb) => {
-    const timestamp = Date.now();
-    const safeName = file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_');
-    cb(null, `${timestamp}-${safeName}`);
-  },
-});
+// Multer config for document uploads — memory storage for Vercel Blob
+const storage = multer.memoryStorage();
 
 const ALLOWED_TYPES = [
   'application/pdf',
@@ -59,31 +46,40 @@ function slugify(str) {
 }
 
 // GET / — List all documents (authenticated)
-router.get('/', verifyToken, (req, res) => {
-  const db = getDb();
+router.get('/', verifyToken, async (req, res) => {
+  const pool = getPool();
   const { search, category } = req.query;
 
   let query = 'SELECT * FROM documents WHERE 1=1';
   const params = [];
+  let paramIdx = 1;
 
   if (search) {
-    query += ' AND (title LIKE ? OR original_name LIKE ? OR slug LIKE ?)';
+    query += ` AND (title ILIKE $${paramIdx} OR original_name ILIKE $${paramIdx + 1} OR slug ILIKE $${paramIdx + 2})`;
     const term = `%${search}%`;
     params.push(term, term, term);
+    paramIdx += 3;
   }
   if (category && category !== 'all') {
-    query += ' AND category = ?';
+    query += ` AND category = $${paramIdx}`;
     params.push(category);
+    paramIdx += 1;
   }
 
   query += ' ORDER BY uploaded_at DESC';
-  const docs = db.prepare(query).all(...params);
-  res.json(docs);
+
+  try {
+    const { rows } = await pool.query(query, params);
+    res.json(rows);
+  } catch (err) {
+    console.error('Error listing documents:', err.message);
+    res.status(500).json({ error: 'Failed to list documents' });
+  }
 });
 
 // POST /upload — Upload a document (admin only)
 router.post('/upload', verifyToken, requireRole('admin'), (req, res) => {
-  upload.single('file')(req, res, (err) => {
+  upload.single('file')(req, res, async (err) => {
     if (err) {
       return res.status(400).json({ error: err.message });
     }
@@ -91,99 +87,122 @@ router.post('/upload', verifyToken, requireRole('admin'), (req, res) => {
       return res.status(400).json({ error: 'No file provided' });
     }
 
-    const db = getDb();
+    const pool = getPool();
     const { title, category, slug: customSlug } = req.body;
     const displayTitle = title || req.file.originalname.replace(/\.[^.]+$/, '');
     const baseSlug = customSlug || slugify(displayTitle);
 
-    // Ensure unique slug
+    // Ensure unique slug (async loop)
     let slug = baseSlug;
     let counter = 1;
-    while (db.prepare('SELECT id FROM documents WHERE slug = ?').get(slug)) {
+    while (true) {
+      const { rows } = await pool.query('SELECT id FROM documents WHERE slug = $1', [slug]);
+      if (rows.length === 0) break;
       slug = `${baseSlug}-${counter++}`;
     }
 
-    const result = db.prepare(
-      `INSERT INTO documents (filename, original_name, file_path, mime_type, size_bytes, slug, title, category, uploaded_by)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    ).run(
-      req.file.filename,
-      req.file.originalname,
-      req.file.path,
-      req.file.mimetype,
-      req.file.size,
-      slug,
-      displayTitle,
-      category || 'general',
-      req.user.id
-    );
+    try {
+      // Upload file buffer to Vercel Blob
+      const safeName = req.file.originalname.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const blob = await put(`documents/${Date.now()}-${safeName}`, req.file.buffer, {
+        access: 'public',
+        contentType: req.file.mimetype,
+      });
 
-    const doc = db.prepare('SELECT * FROM documents WHERE id = ?').get(result.lastInsertRowid);
-    res.status(201).json(doc);
+      const { rows } = await pool.query(
+        `INSERT INTO documents (filename, original_name, file_path, mime_type, size_bytes, slug, title, category, uploaded_by)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+         RETURNING *`,
+        [
+          req.file.originalname,
+          req.file.originalname,
+          blob.url,
+          req.file.mimetype,
+          req.file.size,
+          slug,
+          displayTitle,
+          category || 'general',
+          req.user.id,
+        ]
+      );
+
+      res.status(201).json(rows[0]);
+    } catch (uploadErr) {
+      console.error('Error uploading document:', uploadErr.message);
+      res.status(500).json({ error: 'Failed to upload document' });
+    }
   });
 });
 
 // PUT /:id — Update document metadata (admin only)
-router.put('/:id', verifyToken, requireRole('admin'), (req, res) => {
-  const db = getDb();
+router.put('/:id', verifyToken, requireRole('admin'), async (req, res) => {
+  const pool = getPool();
   const { title, slug, category } = req.body;
-  const doc = db.prepare('SELECT * FROM documents WHERE id = ?').get(req.params.id);
 
-  if (!doc) return res.status(404).json({ error: 'Document not found' });
+  try {
+    const { rows: docRows } = await pool.query('SELECT * FROM documents WHERE id = $1', [req.params.id]);
+    const doc = docRows[0];
+    if (!doc) return res.status(404).json({ error: 'Document not found' });
 
-  // If slug is changing, check uniqueness
-  if (slug && slug !== doc.slug) {
-    const existing = db.prepare('SELECT id FROM documents WHERE slug = ? AND id != ?').get(slug, doc.id);
-    if (existing) return res.status(409).json({ error: 'Slug already in use' });
+    // If slug is changing, check uniqueness
+    if (slug && slug !== doc.slug) {
+      const { rows: existing } = await pool.query(
+        'SELECT id FROM documents WHERE slug = $1 AND id != $2',
+        [slug, doc.id]
+      );
+      if (existing.length > 0) return res.status(409).json({ error: 'Slug already in use' });
+    }
+
+    const { rows: updated } = await pool.query(
+      'UPDATE documents SET title = $1, slug = $2, category = $3 WHERE id = $4 RETURNING *',
+      [title ?? doc.title, slug ?? doc.slug, category ?? doc.category, doc.id]
+    );
+
+    res.json(updated[0]);
+  } catch (err) {
+    console.error('Error updating document:', err.message);
+    res.status(500).json({ error: 'Failed to update document' });
   }
-
-  db.prepare(
-    'UPDATE documents SET title = ?, slug = ?, category = ? WHERE id = ?'
-  ).run(
-    title ?? doc.title,
-    slug ?? doc.slug,
-    category ?? doc.category,
-    doc.id
-  );
-
-  const updated = db.prepare('SELECT * FROM documents WHERE id = ?').get(doc.id);
-  res.json(updated);
 });
 
 // DELETE /:id — Delete document (admin only)
-router.delete('/:id', verifyToken, requireRole('admin'), (req, res) => {
-  const db = getDb();
-  const doc = db.prepare('SELECT * FROM documents WHERE id = ?').get(req.params.id);
-  if (!doc) return res.status(404).json({ error: 'Document not found' });
+router.delete('/:id', verifyToken, requireRole('admin'), async (req, res) => {
+  const pool = getPool();
 
-  // Delete file from disk
   try {
-    if (fs.existsSync(doc.file_path)) {
-      fs.unlinkSync(doc.file_path);
-    }
-  } catch (e) {
-    console.error('Failed to delete document file:', e.message);
-  }
+    const { rows } = await pool.query('SELECT * FROM documents WHERE id = $1', [req.params.id]);
+    const doc = rows[0];
+    if (!doc) return res.status(404).json({ error: 'Document not found' });
 
-  db.prepare('DELETE FROM documents WHERE id = ?').run(doc.id);
-  res.json({ success: true });
+    // Delete blob from Vercel Blob storage
+    try {
+      await del(doc.file_path);
+    } catch (blobErr) {
+      console.error('Failed to delete document blob:', blobErr.message);
+    }
+
+    await pool.query('DELETE FROM documents WHERE id = $1', [doc.id]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error deleting document:', err.message);
+    res.status(500).json({ error: 'Failed to delete document' });
+  }
 });
 
 // GET /file/:slug — Public download endpoint (no auth required)
-router.get('/file/:slug', (req, res) => {
-  const db = getDb();
-  const doc = db.prepare('SELECT * FROM documents WHERE slug = ?').get(req.params.slug);
-  if (!doc) return res.status(404).json({ error: 'Document not found' });
+router.get('/file/:slug', async (req, res) => {
+  const pool = getPool();
 
-  const filePath = doc.file_path;
-  if (!fs.existsSync(filePath)) {
-    return res.status(404).json({ error: 'File not found on disk' });
+  try {
+    const { rows } = await pool.query('SELECT * FROM documents WHERE slug = $1', [req.params.slug]);
+    const doc = rows[0];
+    if (!doc) return res.status(404).json({ error: 'Document not found' });
+
+    res.redirect(doc.file_path);
+  } catch (err) {
+    console.error('Error fetching document:', err.message);
+    res.status(500).json({ error: 'Failed to fetch document' });
   }
-
-  res.set('Content-Type', doc.mime_type);
-  res.set('Content-Disposition', `inline; filename="${doc.original_name}"`);
-  res.set('Cache-Control', 'public, max-age=86400');
-  res.sendFile(filePath);
 });
 
 export default router;
