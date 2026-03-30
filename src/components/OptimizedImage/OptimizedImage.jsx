@@ -2,13 +2,22 @@ export default function OptimizedImage({ media, size = 'medium', alt, width, hei
   if (!media) return null;
 
   const webpKey = `webp_${size}`;
-  const webpFile = media[webpKey] ? media[webpKey].split('/').pop() : null;
-  const fallbackFile = media.jpg_fallback ? media.jpg_fallback.split('/').pop() : null;
+  const webpValue = media[webpKey];
+  const fallbackValue = media.jpg_fallback;
 
-  if (!webpFile && !fallbackFile) return null;
+  if (!webpValue && !fallbackValue) return null;
 
-  const webpSrc = webpFile ? `/api/media/file/${size}/${webpFile}` : null;
-  const fallbackSrc = fallbackFile ? `/api/media/file/fallback/${fallbackFile}` : null;
+  // If the value is already a full URL (Blob storage), use it directly
+  // Otherwise, construct the /api/media/file/ path (legacy compatibility)
+  function resolveUrl(value, sizeKey) {
+    if (!value) return null;
+    if (value.startsWith('http')) return value;
+    const filename = value.split('/').pop();
+    return `/api/media/file/${sizeKey}/${filename}`;
+  }
+
+  const webpSrc = resolveUrl(webpValue, size);
+  const fallbackSrc = resolveUrl(fallbackValue, 'fallback');
 
   return (
     <picture>
