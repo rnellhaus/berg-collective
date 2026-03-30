@@ -1,53 +1,55 @@
 import sharp from 'sharp';
-import path from 'path';
-import fs from 'fs';
-import { fileURLToPath } from 'url';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const optimizedDir = path.join(__dirname, '..', 'optimized');
+import { put } from '@vercel/blob';
 
 const SIZES = {
-  thumb: { width: 200, quality: 80 },
-  medium: { width: 800, quality: 82 },
-  full: { width: 1600, quality: 85 },
+  thumb:  { width: 200,  quality: 80 },
+  medium: { width: 800,  quality: 82 },
+  full:   { width: 1600, quality: 85 },
 };
 
-export async function processImage(originalPath, mediaId, filename) {
-  const baseName = path.parse(filename).name.replace(/[^a-zA-Z0-9._-]/g, '_');
-  const metadata = await sharp(originalPath).metadata();
+export async function processImage(buffer, mediaId, filename) {
+  const baseName = filename.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9._-]/g, '_');
+  const metadata = await sharp(buffer).metadata();
   const results = {};
 
   for (const [size, config] of Object.entries(SIZES)) {
-    const outName = `${mediaId}-${baseName}.webp`;
-    const outPath = path.join(optimizedDir, size, outName);
-
-    await sharp(originalPath)
+    const webpBuffer = await sharp(buffer)
       .resize({ width: config.width, withoutEnlargement: true })
       .webp({ quality: config.quality })
-      .toFile(outPath);
+      .toBuffer();
 
-    results[`webp_${size}`] = `${size}/${outName}`;
+    const blobName = `media/${size}/${mediaId}-${baseName}.webp`;
+    const blob = await put(blobName, webpBuffer, {
+      access: 'public',
+      contentType: 'image/webp',
+    });
+    results[`webp_${size}`] = blob.url;
   }
 
-  const fallbackName = `${mediaId}-${baseName}.jpg`;
-  const fallbackPath = path.join(optimizedDir, 'fallback', fallbackName);
-
-  await sharp(originalPath)
+  // JPEG fallback
+  const jpgBuffer = await sharp(buffer)
     .resize({ width: 1600, withoutEnlargement: true })
     .jpeg({ quality: 80 })
-    .toFile(fallbackPath);
+    .toBuffer();
 
-  results.jpg_fallback = `fallback/${fallbackName}`;
+  const fallbackBlob = await put(
+    `media/fallback/${mediaId}-${baseName}.jpg`,
+    jpgBuffer,
+    { access: 'public', contentType: 'image/jpeg' }
+  );
+  results.jpg_fallback = fallbackBlob.url;
 
-  const fullWebpPath = path.join(optimizedDir, results.webp_full);
-  const webpStats = fs.statSync(fullWebpPath);
-  const originalStats = fs.statSync(originalPath);
+  // Get webp size for stats
+  const fullWebpBuffer = await sharp(buffer)
+    .resize({ width: 1600, withoutEnlargement: true })
+    .webp({ quality: 85 })
+    .toBuffer();
 
   return {
     ...results,
     width: metadata.width,
     height: metadata.height,
-    size_bytes: originalStats.size,
-    webp_size_bytes: webpStats.size,
+    size_bytes: buffer.length,
+    webp_size_bytes: fullWebpBuffer.length,
   };
 }
