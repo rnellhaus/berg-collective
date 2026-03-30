@@ -5,6 +5,7 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { getDb } from '../db/connection.js';
+import { verifyToken } from '../middleware/auth.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const router = Router();
@@ -278,27 +279,140 @@ router.post('/contact', async (req, res) => {
   }
 });
 
-// ─── GET /api/forms/submissions — Admin: list all submissions ───
-router.get('/submissions', (req, res) => {
-  // This should be behind auth middleware in production
-  const db = getDb();
-  const { type } = req.query;
+// ─── POST /api/forms/volunteer — Volunteer Signup ───
+router.post('/volunteer', async (req, res) => {
+  try {
+    const { first_name, last_name, email, phone, company, area_of_interest, availability, message } = req.body;
 
-  let query = 'SELECT * FROM form_submissions';
+    if (!first_name || !last_name || !email) {
+      return res.status(400).json({ error: 'First name, last name, and email are required' });
+    }
+
+    const db = getDb();
+    const data = { first_name, last_name, email, phone, company, area_of_interest, availability, message };
+
+    const result = db.prepare(
+      'INSERT INTO form_submissions (form_type, data) VALUES (?, ?)'
+    ).run('volunteer', JSON.stringify(data));
+
+    const emailFields = [
+      ['Name', `${first_name} ${last_name}`],
+      ['Email', email],
+      ['Phone', phone],
+      ['Company / Organization', company],
+      ['Area of Interest', area_of_interest],
+      ['Availability', availability],
+      ['Message', message],
+    ];
+
+    // Send to volunteer coordinators
+    let sent = false;
+    if (resend) {
+      try {
+        await resend.emails.send({
+          from: FROM_EMAIL,
+          to: ['elena@bergcollective.org', 'jazmine@bergcollective.org'],
+          replyTo: email,
+          subject: `New Volunteer Signup: ${first_name} ${last_name}${company ? ` (${company})` : ''}`,
+          html: formatEmailHtml('New Volunteer Signup', emailFields),
+        });
+        sent = true;
+      } catch (err) {
+        console.error('[Resend] Failed to send volunteer email:', err);
+      }
+    } else {
+      console.log('[Resend] No API key — volunteer email not sent.');
+    }
+
+    db.prepare('UPDATE form_submissions SET email_sent = ? WHERE id = ?').run(sent ? 1 : 0, result.lastInsertRowid);
+
+    res.status(201).json({ message: 'Thank you for signing up to volunteer! We\'ll be in touch soon.' });
+  } catch (err) {
+    console.error('Volunteer form error:', err);
+    res.status(500).json({ error: 'Failed to submit volunteer signup' });
+  }
+});
+
+// ─── Auth-protected admin endpoints ───
+
+// ─── GET /api/forms/submissions — Admin: list submissions with filtering & pagination ───
+router.get('/submissions', verifyToken, (req, res) => {
+  const db = getDb();
+  const { type, reviewed, sort = 'newest', page = '1', limit = '25' } = req.query;
+
+  const conditions = [];
   const params = [];
+
   if (type) {
-    query += ' WHERE form_type = ?';
+    conditions.push('form_type = ?');
     params.push(type);
   }
-  query += ' ORDER BY created_at DESC';
+  if (reviewed === '1' || reviewed === '0') {
+    conditions.push('reviewed = ?');
+    params.push(Number(reviewed));
+  }
 
-  const submissions = db.prepare(query).all(...params);
+  const where = conditions.length > 0 ? ` WHERE ${conditions.join(' AND ')}` : '';
+  const orderBy = sort === 'oldest' ? ' ORDER BY created_at ASC' : ' ORDER BY created_at DESC';
+
+  const pageNum = Math.max(1, parseInt(page, 10) || 1);
+  const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 25));
+  const offset = (pageNum - 1) * limitNum;
+
+  const countRow = db.prepare(`SELECT COUNT(*) as total FROM form_submissions${where}`).get(...params);
+  const total = countRow.total;
+
+  const submissions = db.prepare(
+    `SELECT * FROM form_submissions${where}${orderBy} LIMIT ? OFFSET ?`
+  ).all(...params, limitNum, offset);
+
   const parsed = submissions.map(s => ({
     ...s,
     data: JSON.parse(s.data),
   }));
 
-  res.json({ submissions: parsed });
+  res.json({
+    submissions: parsed,
+    pagination: { page: pageNum, limit: limitNum, total, totalPages: Math.ceil(total / limitNum) },
+  });
+});
+
+// ─── GET /api/forms/submissions/stats — Admin: submission counts ───
+router.get('/submissions/stats', verifyToken, (req, res) => {
+  const db = getDb();
+  const rows = db.prepare(
+    `SELECT form_type, COUNT(*) as count, SUM(CASE WHEN reviewed = 0 THEN 1 ELSE 0 END) as unreviewed
+     FROM form_submissions GROUP BY form_type`
+  ).all();
+
+  const total = rows.reduce((sum, r) => sum + r.count, 0);
+  const totalUnreviewed = rows.reduce((sum, r) => sum + r.unreviewed, 0);
+
+  res.json({ total, totalUnreviewed, byType: rows });
+});
+
+// ─── GET /api/forms/submissions/:id — Admin: single submission ───
+router.get('/submissions/:id', verifyToken, (req, res) => {
+  const db = getDb();
+  const submission = db.prepare('SELECT * FROM form_submissions WHERE id = ?').get(req.params.id);
+  if (!submission) return res.status(404).json({ error: 'Submission not found' });
+
+  res.json({ ...submission, data: JSON.parse(submission.data) });
+});
+
+// ─── PATCH /api/forms/submissions/:id/review — Admin: toggle reviewed status ───
+router.patch('/submissions/:id/review', verifyToken, (req, res) => {
+  const db = getDb();
+  const submission = db.prepare('SELECT * FROM form_submissions WHERE id = ?').get(req.params.id);
+  if (!submission) return res.status(404).json({ error: 'Submission not found' });
+
+  const newReviewed = submission.reviewed ? 0 : 1;
+  const reviewedAt = newReviewed ? new Date().toISOString() : null;
+
+  db.prepare('UPDATE form_submissions SET reviewed = ?, reviewed_at = ? WHERE id = ?')
+    .run(newReviewed, reviewedAt, req.params.id);
+
+  res.json({ id: submission.id, reviewed: newReviewed, reviewed_at: reviewedAt });
 });
 
 export default router;

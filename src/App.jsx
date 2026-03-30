@@ -23,6 +23,7 @@ const ContactPage = lazy(() => import('./pages/ContactPage/ContactPage'));
 const NewsletterPage = lazy(() => import('./pages/NewsletterPage/NewsletterPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage/NotFoundPage'));
 const PartnershipsPage = lazy(() => import('./pages/PartnershipsPage/PartnershipsPage'));
+const VolunteerPage = lazy(() => import('./pages/VolunteerPage/VolunteerPage'));
 const AdminApp = lazy(() => import('./admin/AdminApp'));
 
 function Loading() {
@@ -48,6 +49,7 @@ function PublicLayout() {
             <Route path="/membership" element={<JoinPage />} />
             <Route path="/join" element={<JoinPage />} />
             <Route path="/contact" element={<ContactPage />} />
+            <Route path="/volunteer" element={<VolunteerPage />} />
             <Route path="/newsletter" element={<NewsletterPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
