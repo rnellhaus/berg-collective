@@ -26,6 +26,7 @@ const FOOTER_COLS = [
     heading: 'Connect',
     links: [
       { label: 'Donate',                   to: '/donate' },
+      { label: 'Volunteer',              to: '/volunteer' },
       { label: 'Contact Us',              to: '/contact' },
     ],
   },

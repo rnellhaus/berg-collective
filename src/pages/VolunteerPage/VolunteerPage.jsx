@@ -56,19 +56,6 @@ const whyVolunteer = [
   },
 ];
 
-const coordinators = [
-  {
-    name: 'Elena',
-    role: 'Volunteer Coordinator',
-    email: 'elena@bergcollective.org',
-  },
-  {
-    name: 'Jazmine',
-    role: 'Volunteer Coordinator',
-    email: 'jazmine@bergcollective.org',
-  },
-];
-
 export default function VolunteerPage() {
   usePageMeta('Volunteer', 'Lend a hand and support BERG Collective events and programs.');
   const [formData, setFormData] = useState({
@@ -299,36 +286,13 @@ export default function VolunteerPage() {
 
           {/* Sidebar */}
           <aside className={styles.sidebar}>
-            {/* Coordinator Contacts */}
-            <div className={styles.sideCard}>
-              <h3 className={styles.sideCardTitle}>Volunteer Coordinators</h3>
-              <p className={styles.sideCardText}>
-                Questions about volunteering? Reach out to our coordinators directly.
-              </p>
-              <div className={styles.coordinatorList}>
-                {coordinators.map((c) => (
-                  <div key={c.name} className={styles.coordinatorItem}>
-                    <div className={styles.coordinatorAvatar}>
-                      {c.name.charAt(0)}
-                    </div>
-                    <div className={styles.coordinatorInfo}>
-                      <p className={styles.coordinatorName}>{c.name}</p>
-                      <p className={styles.coordinatorRole}>{c.role}</p>
-                      <a href={`mailto:${c.email}`} className={styles.coordinatorEmail}>{c.email}</a>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
             {/* Quick Info */}
             <div className={styles.sideCard}>
               <h3 className={styles.sideCardTitle}>What to Expect</h3>
               <ul className={styles.expectList}>
-                <li>A coordinator will contact you within 48 hours</li>
                 <li>We match your skills and availability to upcoming events</li>
                 <li>No minimum time commitment required</li>
-                <li>All volunteers receive event access and BERG swag</li>
+                <li>All volunteers receive event access</li>
               </ul>
             </div>
 
