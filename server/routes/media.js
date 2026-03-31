@@ -5,7 +5,8 @@ import { verifyToken } from '../middleware/auth.js';
 import { requireRole } from '../middleware/roles.js';
 import { upload } from '../middleware/upload.js';
 import { processImage } from '../services/imageProcessor.js';
-import { del, handleUpload } from '@vercel/blob';
+import { del } from '@vercel/blob';
+import { handleUpload } from '@vercel/blob/client';
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
 const MAX_IMPORT_SIZE = 10 * 1024 * 1024; // 10 MB
