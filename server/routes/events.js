@@ -40,81 +40,89 @@ function getRsvpStrategy(platform, rsvpUrl) {
 
 // GET / — List events (public)
 router.get('/', async (req, res) => {
-  const pool = getPool();
-
-  // Auto-move past-due upcoming events to 'past'
   try {
-    await pool.query(
-      `UPDATE events SET status = 'past' WHERE status = 'upcoming' AND date::date < CURRENT_DATE`
-    );
-  } catch { /* ignore if date format is unexpected */ }
+    const pool = getPool();
 
-  const { status, chapter } = req.query;
+    // Auto-move past-due upcoming events to 'past'
+    try {
+      await pool.query(
+        `UPDATE events SET status = 'past' WHERE status = 'upcoming' AND date::date < CURRENT_DATE`
+      );
+    } catch { /* ignore if date format is unexpected */ }
 
-  let query = `
-    SELECT e.*, m.webp_medium as cover_image_url,
-      (SELECT COUNT(*) FROM event_photos ep WHERE ep.event_id = e.id) as photo_count
-    FROM events e
-    LEFT JOIN media m ON e.cover_image_id = m.id
-    WHERE 1=1
-  `;
-  const params = [];
-  let paramIdx = 1;
+    const { status, chapter } = req.query;
 
-  if (status) {
-    query += ` AND e.status = $${paramIdx++}`;
-    params.push(status);
-  } else {
-    // By default, exclude drafts from public listings
-    query += " AND e.status != 'draft'";
+    let query = `
+      SELECT e.*, m.webp_medium as cover_image_url,
+        (SELECT COUNT(*) FROM event_photos ep WHERE ep.event_id = e.id) as photo_count
+      FROM events e
+      LEFT JOIN media m ON e.cover_image_id = m.id
+      WHERE 1=1
+    `;
+    const params = [];
+    let paramIdx = 1;
+
+    if (status) {
+      query += ` AND e.status = $${paramIdx++}`;
+      params.push(status);
+    } else {
+      query += " AND e.status != 'draft'";
+    }
+    if (chapter) {
+      query += ` AND e.chapter = $${paramIdx++}`;
+      params.push(chapter);
+    }
+
+    if (status === 'upcoming' || status === 'draft') {
+      query += ' ORDER BY e.date ASC';
+    } else {
+      query += ' ORDER BY e.date DESC';
+    }
+
+    const { rows: events } = await pool.query(query, params);
+
+    const enriched = events.map((event) => ({
+      ...event,
+      rsvp_strategy: getRsvpStrategy(event.rsvp_platform, event.rsvp_url),
+    }));
+
+    res.json({ events: enriched });
+  } catch (err) {
+    console.error('List events error:', err);
+    res.status(500).json({ error: 'Failed to load events' });
   }
-  if (chapter) {
-    query += ` AND e.chapter = $${paramIdx++}`;
-    params.push(chapter);
-  }
-
-  // Upcoming/draft events: soonest first (ASC). Past events: most recent first (DESC).
-  if (status === 'upcoming' || status === 'draft') {
-    query += ' ORDER BY e.date ASC';
-  } else {
-    query += ' ORDER BY e.date DESC';
-  }
-
-  const { rows: events } = await pool.query(query, params);
-
-  const enriched = events.map((event) => ({
-    ...event,
-    rsvp_strategy: getRsvpStrategy(event.rsvp_platform, event.rsvp_url),
-  }));
-
-  res.json({ events: enriched });
 });
 
 // GET /:id — Get single event with photos (public)
 router.get('/:id', async (req, res) => {
-  const pool = getPool();
+  try {
+    const pool = getPool();
 
-  const { rows: eventRows } = await pool.query(`
-    SELECT e.*, m.webp_medium as cover_image_url
-    FROM events e
-    LEFT JOIN media m ON e.cover_image_id = m.id
-    WHERE e.id = $1
-  `, [req.params.id]);
+    const { rows: eventRows } = await pool.query(`
+      SELECT e.*, m.webp_medium as cover_image_url
+      FROM events e
+      LEFT JOIN media m ON e.cover_image_id = m.id
+      WHERE e.id = $1
+    `, [req.params.id]);
 
-  const event = eventRows[0];
-  if (!event) return res.status(404).json({ error: 'Event not found' });
+    const event = eventRows[0];
+    if (!event) return res.status(404).json({ error: 'Event not found' });
 
-  const { rows: photos } = await pool.query(`
-    SELECT ep.id, ep.sort_order, ep.caption, m.id as media_id,
-      m.filename, m.webp_thumb, m.webp_medium, m.webp_full,
-      m.jpg_fallback, m.alt_text, m.width, m.height
-    FROM event_photos ep
-    JOIN media m ON ep.media_id = m.id
-    WHERE ep.event_id = $1
-    ORDER BY ep.sort_order
-  `, [req.params.id]);
+    const { rows: photos } = await pool.query(`
+      SELECT ep.id, ep.sort_order, ep.caption, m.id as media_id,
+        m.filename, m.webp_thumb, m.webp_medium, m.webp_full,
+        m.jpg_fallback, m.alt_text, m.width, m.height
+      FROM event_photos ep
+      JOIN media m ON ep.media_id = m.id
+      WHERE ep.event_id = $1
+      ORDER BY ep.sort_order
+    `, [req.params.id]);
 
-  res.json({ event: { ...event, rsvp_strategy: getRsvpStrategy(event.rsvp_platform, event.rsvp_url), photos } });
+    res.json({ event: { ...event, rsvp_strategy: getRsvpStrategy(event.rsvp_platform, event.rsvp_url), photos } });
+  } catch (err) {
+    console.error('Get event error:', err);
+    res.status(500).json({ error: 'Failed to load event' });
+  }
 });
 
 // POST / — Create event (auth)

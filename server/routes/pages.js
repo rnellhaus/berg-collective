@@ -13,7 +13,8 @@ router.get('/', async (req, res) => {
     );
     res.json({ pages: rows });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Pages error:', err);
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
@@ -47,7 +48,8 @@ router.get('/:slug', async (req, res) => {
 
     res.json({ page: { ...page, sections: parsedSections } });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Pages error:', err);
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
@@ -104,7 +106,8 @@ router.put('/:slug/sections/:key', verifyToken, async (req, res) => {
 
     res.json({ section: { ...section, fields: parsedFields } });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Pages error:', err);
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
@@ -135,7 +138,8 @@ router.put('/:slug/meta', verifyToken, async (req, res) => {
 
     res.json({ page: updatedRows[0] });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error('Pages error:', err);
+    res.status(500).json({ error: 'Server error' });
   }
 });
 

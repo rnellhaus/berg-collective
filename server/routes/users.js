@@ -188,8 +188,9 @@ router.post('/accept-invite', async (req, res) => {
     // Log them in
     const user = newUser[0];
     const { accessToken, refreshToken } = generateTokens(user);
-    res.cookie('access_token', accessToken, { httpOnly: true, sameSite: 'strict', maxAge: 15 * 60 * 1000 });
-    res.cookie('refresh_token', refreshToken, { httpOnly: true, sameSite: 'strict', maxAge: 7 * 24 * 60 * 60 * 1000 });
+    const cookieOpts = { httpOnly: true, sameSite: 'lax', secure: !!process.env.VERCEL };
+    res.cookie('access_token', accessToken, { ...cookieOpts, maxAge: 15 * 60 * 1000 });
+    res.cookie('refresh_token', refreshToken, { ...cookieOpts, maxAge: 7 * 24 * 60 * 60 * 1000 });
 
     res.status(201).json({ user });
   } catch (err) {

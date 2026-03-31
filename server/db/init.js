@@ -13,7 +13,11 @@ export async function initDatabase() {
     ['rich@bergcollective.org']
   );
   if (rows.length === 0) {
-    const hash = await bcrypt.hash('admin123', 12);
+    const seedPassword = process.env.ADMIN_SEED_PASSWORD || 'admin123';
+    if (process.env.VERCEL && !process.env.ADMIN_SEED_PASSWORD) {
+      console.warn('WARNING: Seeding admin with default password. Set ADMIN_SEED_PASSWORD env var.');
+    }
+    const hash = await bcrypt.hash(seedPassword, 12);
     await pool.query(
       'INSERT INTO users (email, password_hash, name, role) VALUES ($1, $2, $3, $4)',
       ['rich@bergcollective.org', hash, 'Rich Nellhaus', 'admin']
