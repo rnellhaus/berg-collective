@@ -43,9 +43,11 @@ router.get('/', async (req, res) => {
   const pool = getPool();
 
   // Auto-move past-due upcoming events to 'past'
-  await pool.query(
-    `UPDATE events SET status = 'past' WHERE status = 'upcoming' AND date < CURRENT_DATE`
-  );
+  try {
+    await pool.query(
+      `UPDATE events SET status = 'past' WHERE status = 'upcoming' AND date::date < CURRENT_DATE`
+    );
+  } catch { /* ignore if date format is unexpected */ }
 
   const { status, chapter } = req.query;
 
