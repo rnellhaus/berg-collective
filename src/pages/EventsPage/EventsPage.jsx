@@ -431,7 +431,7 @@ export default function EventsPage() {
           ) : pastEvents.length === 0 ? (
             <div className={styles.emptyState}>No past events to display.</div>
           ) : (
-            <div className={styles.pastGrid}>
+            <div className={`${styles.pastGrid} ${pastEvents.length >= 6 ? styles.pastGridScroll : ''}`}>
               {pastEvents.map((event) => {
                 const isExpanded = expandedId === event.id;
                 const details = expandedData[event.id];

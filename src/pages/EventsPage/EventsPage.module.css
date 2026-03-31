@@ -632,6 +632,36 @@
   gap: 24px;
 }
 
+.pastGridScroll {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  gap: 20px;
+  padding-bottom: 12px;
+}
+
+.pastGridScroll::-webkit-scrollbar {
+  height: 6px;
+}
+
+.pastGridScroll::-webkit-scrollbar-track {
+  background: #f0ebe6;
+  border-radius: 3px;
+}
+
+.pastGridScroll::-webkit-scrollbar-thumb {
+  background: #ccc5c2;
+  border-radius: 3px;
+}
+
+.pastGridScroll .pastCard {
+  min-width: 320px;
+  max-width: 360px;
+  flex-shrink: 0;
+  scroll-snap-align: start;
+}
+
 .pastCard {
   background: var(--color-white);
   border: 1px solid var(--color-gray-200);
@@ -839,8 +869,12 @@
     grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
   }
 
-  .pastGrid {
+  .pastGrid:not(.pastGridScroll) {
     grid-template-columns: 1fr;
+  }
+
+  .pastGridScroll .pastCard {
+    min-width: 280px;
   }
 
   .ctaTitle {
