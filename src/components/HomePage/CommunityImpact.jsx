@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import styles from './CommunityImpact.module.css';
 
-const imgMain    = '/images/photos/berg members-whitney.jpg';
+const imgMain    = '/images/photos/NBAF_AfroTech_Day3-2-172-2.jpg';
 const imgToys    = '/images/photos/holiday-toy-drive-genisha-jordan.jpg';
 const imgLeaders = '/images/photos/rich-ty-michelle-whitney.jpg';
 
@@ -27,7 +27,7 @@ export default function CommunityImpact() {
 
         {/* ── Image mosaic ── */}
         <div className={styles.mosaic} aria-hidden="true">
-          <img src={imgMain}    alt="BERG members at the Whitney Museum" className={styles.imgMain}    loading="lazy" />
+          <img src={imgMain}    alt="BERG members at AfroTech" className={styles.imgMain}    loading="lazy" />
           <img src={imgToys}    alt="Holiday toy drive"                  className={styles.imgSecond}  loading="lazy" />
           <img src={imgLeaders} alt="BERG leadership team"               className={styles.imgThird}   loading="lazy" />
         </div>
