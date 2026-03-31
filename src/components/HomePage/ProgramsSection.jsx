@@ -1,34 +1,34 @@
 import { Link } from 'react-router-dom';
 import styles from './ProgramsSection.module.css';
 
-const imgLeadership = '/images/photos/berg-summer mixer.jpg';
-const imgCareer     = '/images/photos/whitney-womens-panel.jpg';
-const imgCulture    = '/images/photos/amy-sherald-exhibit.jpg';
+const imgFinancial   = '/images/photos/i-QdZRfh3-X5.jpg';
+const imgNetworking  = '/images/photos/R5TF1211.jpg';
+const imgCareer      = '/images/photos/whitney-womens-panel.jpg';
 
 const PROGRAMS = [
   {
-    tag:   'Leadership',
-    title: 'Leadership Development',
-    body:  'Executive coaching, board placement initiatives, and C-suite access programs connecting Black professionals with industry veterans.',
-    to:    '/programs#leadership',
-    img:   imgLeadership,
-    alt:   'BERG leadership development event',
+    tag:   'Financial Empowerment',
+    title: 'Financial Empowerment',
+    body:  'Building generational wealth starts with financial literacy. Expert-led workshops on investment strategy, compensation negotiation, and wealth-building.',
+    to:    '/programs',
+    img:   imgFinancial,
+    alt:   'BERG financial empowerment session',
+  },
+  {
+    tag:   'Structured Networking',
+    title: 'Structured Networking',
+    body:  'Curated networking experiences that pair professionals across industries and career stages, creating relationships that open doors and spark collaborations.',
+    to:    '/programs',
+    img:   imgNetworking,
+    alt:   'BERG structured networking event',
   },
   {
     tag:   'Career Growth',
     title: 'Career Growth',
-    body:  'Mentorship matching, skill-building workshops, and financial empowerment series — from salary negotiation to AI upskilling.',
-    to:    '/programs#career',
+    body:  'Structured pathways, mentorship, and skill development designed to help mid-level professionals break into senior leadership and C-suite roles.',
+    to:    '/programs',
     img:   imgCareer,
-    alt:   'BERG women\'s panel discussion',
-  },
-  {
-    tag:   'Cultural Impact',
-    title: 'Cultural Impact',
-    body:  'Preserving heritage and fostering community dialogue through art activations, cultural events, and community giving initiatives.',
-    to:    '/programs#culture',
-    img:   imgCulture,
-    alt:   'Amy Sherald exhibition at the Whitney Museum',
+    alt:   'BERG career growth programming',
   },
 ];
 
