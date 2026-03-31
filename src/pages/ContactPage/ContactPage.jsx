@@ -14,10 +14,9 @@ const subjects = [
 ];
 
 const socials = [
-  { name: 'Instagram', href: 'https://instagram.com', handle: '@bergcollective' },
-  { name: 'LinkedIn', href: 'https://linkedin.com', handle: 'BERG Collective' },
-  { name: 'Twitter / X', href: 'https://twitter.com', handle: '@bergcollective' },
-  { name: 'Facebook', href: 'https://facebook.com', handle: 'BERG Collective' },
+  { name: 'Instagram', href: 'https://www.instagram.com/bergcollective', handle: '@bergcollective' },
+  { name: 'LinkedIn', href: 'https://www.linkedin.com/company/berg-collective2', handle: 'BERG Collective' },
+  { name: 'TikTok', href: 'https://www.tiktok.com/@berg.collective', handle: '@berg.collective' },
 ];
 
 const chapters = [
@@ -50,10 +49,33 @@ export default function ContactPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const [submitting, setSubmitting] = useState(false);
+  const [submitResult, setSubmitResult] = useState(null);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Form submission placeholder
-    alert('Thank you for reaching out! We will get back to you shortly.');
+    setSubmitting(true);
+    setSubmitResult(null);
+    try {
+      const res = await fetch('/api/forms/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          email: formData.email,
+          subject: formData.subject,
+          message: formData.message,
+        }),
+      });
+      if (!res.ok) throw new Error('Failed to send');
+      setSubmitResult({ success: true, message: 'Thank you for reaching out! We will get back to you shortly.' });
+      setFormData({ firstName: '', lastName: '', email: '', subject: '', message: '' });
+    } catch {
+      setSubmitResult({ success: false, message: 'Something went wrong. Please try again or email us directly.' });
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -187,11 +209,27 @@ export default function ContactPage() {
                   required
                 />
               </div>
-              <button type="submit" className={styles.submitBtn}>
-                Send Message
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12H19M19 12L12 5M19 12L12 19" />
-                </svg>
+              {submitResult && (
+                <div
+                  style={{
+                    padding: '12px 16px',
+                    borderRadius: '8px',
+                    fontSize: '0.9rem',
+                    background: submitResult.success ? '#f0fdf4' : '#fef3f2',
+                    color: submitResult.success ? '#166534' : '#991b1b',
+                    border: `1px solid ${submitResult.success ? '#bbf7d0' : '#fecaca'}`,
+                  }}
+                >
+                  {submitResult.message}
+                </div>
+              )}
+              <button type="submit" className={styles.submitBtn} disabled={submitting}>
+                {submitting ? 'Sending...' : 'Send Message'}
+                {!submitting && (
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M5 12H19M19 12L12 5M19 12L12 19" />
+                  </svg>
+                )}
               </button>
             </form>
           </div>
