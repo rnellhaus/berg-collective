@@ -28,42 +28,37 @@ function savingsPct(original, webp) {
   return Math.round(((original - webp) / original) * 100);
 }
 
-function uploadFileWithProgress(file, onProgress) {
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    const formData = new FormData();
-    formData.append('image', file);
+async function uploadFileWithProgress(file, onProgress) {
+  // Step 1: Upload directly to Vercel Blob (bypasses 4.5MB serverless limit)
+  onProgress(10);
 
-    xhr.upload.addEventListener('progress', (e) => {
-      if (e.lengthComputable) {
-        onProgress(Math.round((e.loaded / e.total) * 100));
-      }
-    });
-
-    xhr.addEventListener('load', () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        try {
-          resolve(JSON.parse(xhr.responseText));
-        } catch {
-          resolve({});
-        }
-      } else {
-        try {
-          const body = JSON.parse(xhr.responseText);
-          reject(new Error(body.error || `Upload failed (${xhr.status})`));
-        } catch {
-          reject(new Error(`Upload failed (${xhr.status})`));
-        }
-      }
-    });
-
-    xhr.addEventListener('error', () => reject(new Error('Network error')));
-    xhr.addEventListener('abort', () => reject(new Error('Upload cancelled')));
-
-    xhr.open('POST', '/api/media/upload');
-    xhr.withCredentials = true;
-    xhr.send(formData);
+  const { upload } = await import('@vercel/blob/client');
+  const blob = await upload(file.name, file, {
+    access: 'public',
+    handleUploadUrl: '/api/media/upload/token',
   });
+
+  onProgress(70);
+
+  // Step 2: Tell backend to process the uploaded blob into optimized variants
+  const res = await fetch('/api/media/process', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({
+      blobUrl: blob.url,
+      filename: file.name,
+    }),
+  });
+
+  onProgress(100);
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || `Processing failed (${res.status})`);
+  }
+
+  return res.json();
 }
 
 export default function MediaLibraryPage() {

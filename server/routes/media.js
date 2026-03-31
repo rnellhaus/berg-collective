@@ -5,7 +5,7 @@ import { verifyToken } from '../middleware/auth.js';
 import { requireRole } from '../middleware/roles.js';
 import { upload } from '../middleware/upload.js';
 import { processImage } from '../services/imageProcessor.js';
-import { del } from '@vercel/blob';
+import { del, handleUpload } from '@vercel/blob';
 
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/heic', 'image/heif'];
 const MAX_IMPORT_SIZE = 10 * 1024 * 1024; // 10 MB
@@ -91,7 +91,81 @@ router.get('/', verifyToken, async (req, res) => {
   res.json({ media, totalSavings: savingsRows[0].totalsavings || 0 });
 });
 
-// POST /upload — Upload and process image
+// POST /upload/token — Generate client upload token for direct-to-blob upload
+router.post('/upload/token', verifyToken, async (req, res) => {
+  try {
+    const body = req.body;
+    const jsonResponse = await handleUpload({
+      body,
+      request: req,
+      onBeforeGenerateToken: async (pathname) => {
+        return {
+          allowedContentTypes: ALLOWED_MIME_TYPES,
+          maximumSizeInBytes: MAX_IMPORT_SIZE,
+        };
+      },
+      onUploadCompleted: async ({ blob }) => {
+        // no-op — processing happens in the next step
+      },
+    });
+    res.json(jsonResponse);
+  } catch (err) {
+    console.error('Upload token error:', err);
+    res.status(500).json({ error: 'Failed to generate upload token' });
+  }
+});
+
+// POST /process — Process an already-uploaded blob URL into optimized variants
+router.post('/process', verifyToken, async (req, res) => {
+  const { blobUrl, filename, alt_text, category } = req.body;
+
+  if (!blobUrl || !filename) {
+    return res.status(400).json({ error: 'blobUrl and filename are required' });
+  }
+
+  const pool = getPool();
+
+  // Insert placeholder
+  const { rows: insertRows } = await pool.query(
+    'INSERT INTO media (filename, original_path, uploaded_by) VALUES ($1, $2, $3) RETURNING id',
+    [filename, blobUrl, req.user.id]
+  );
+  const mediaId = insertRows[0].id;
+
+  try {
+    // Download the blob
+    const response = await fetch(blobUrl);
+    if (!response.ok) throw new Error(`Failed to fetch blob: ${response.status}`);
+    const buffer = Buffer.from(await response.arrayBuffer());
+
+    const processed = await processImage(buffer, mediaId, filename);
+
+    await pool.query(
+      `UPDATE media SET
+        webp_thumb = $1, webp_medium = $2, webp_full = $3, jpg_fallback = $4,
+        width = $5, height = $6, size_bytes = $7, webp_size_bytes = $8,
+        alt_text = $9, category = $10
+      WHERE id = $11`,
+      [
+        processed.webp_thumb, processed.webp_medium, processed.webp_full, processed.jpg_fallback,
+        processed.width, processed.height, processed.size_bytes, processed.webp_size_bytes,
+        alt_text || '', category || null, mediaId,
+      ]
+    );
+
+    // Delete the original raw blob (we have optimized versions now)
+    try { await del(blobUrl); } catch { /* ignore */ }
+
+    const { rows } = await pool.query('SELECT * FROM media WHERE id = $1', [mediaId]);
+    res.status(201).json({ media: rows[0] });
+  } catch (err) {
+    await pool.query('DELETE FROM media WHERE id = $1', [mediaId]);
+    console.error('Image processing error:', err);
+    res.status(500).json({ error: 'Image processing failed' });
+  }
+});
+
+// POST /upload — Upload and process image (legacy — works for small files < 4.5MB)
 router.post('/upload', verifyToken, upload.single('image'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: 'No image file provided' });
