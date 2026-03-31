@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import styles from './MissionSection.module.css';
 
-const missionImage = '/images/photos/group-rich-rene-evol.jpg';
+const missionImage = 'https://qpbzvbrlnfxyvhnw.public.blob.vercel-storage.com/media/medium/31-i-4fznBWM-X5.webp';
 
 export default function MissionSection() {
   return (
