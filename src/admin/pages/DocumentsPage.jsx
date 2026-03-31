@@ -3,6 +3,27 @@ import { useApi } from '../hooks/useApi';
 import { useAuth } from '../hooks/useAuth';
 import styles from './DocumentsPage.module.css';
 
+function CopyLinkButton({ slug }) {
+  const [copied, setCopied] = useState(false);
+  function handleCopy(e) {
+    e.stopPropagation();
+    const url = `${window.location.origin}/api/documents/file/${slug}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
+  return (
+    <button
+      className={styles.copyBtn}
+      onClick={handleCopy}
+      title="Copy public link"
+    >
+      {copied ? 'Copied!' : 'Copy Link'}
+    </button>
+  );
+}
+
 const CATEGORIES = ['All', 'Reports', 'Marketing', 'Legal', 'General'];
 const ALLOWED_EXTENSIONS = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.txt', '.csv'];
 const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
@@ -227,7 +248,7 @@ export default function DocumentsPage() {
                       {doc.original_name} &middot; {formatBytes(doc.size_bytes)} &middot; {doc.category}
                     </span>
                   </div>
-                  <span className={styles.docSlug}>/api/documents/file/{doc.slug}</span>
+                  <CopyLinkButton slug={doc.slug} />
                 </button>
               ))}
             </div>

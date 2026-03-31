@@ -189,6 +189,26 @@
   text-overflow: ellipsis;
 }
 
+.copyBtn {
+  padding: 5px 12px;
+  background: none;
+  border: 1px solid #e8e1da;
+  color: #8e5f57;
+  border-radius: 5px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+}
+
+.copyBtn:hover {
+  border-color: #8b3223;
+  color: #8b3223;
+  background: rgba(139, 50, 35, 0.05);
+}
+
 .docSlug {
   font-size: 0.68rem;
   color: #8e5f57;
