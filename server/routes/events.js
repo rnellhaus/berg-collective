@@ -41,6 +41,12 @@ function getRsvpStrategy(platform, rsvpUrl) {
 // GET / — List events (public)
 router.get('/', async (req, res) => {
   const pool = getPool();
+
+  // Auto-move past-due upcoming events to 'past'
+  await pool.query(
+    `UPDATE events SET status = 'past' WHERE status = 'upcoming' AND date < CURRENT_DATE`
+  );
+
   const { status, chapter } = req.query;
 
   let query = `
