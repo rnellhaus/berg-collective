@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import styles from './MissionSection.module.css';
 
-const missionImage = 'https://qpbzvbrlnfxyvhnw.public.blob.vercel-storage.com/media/medium/31-i-4fznBWM-X5.webp';
+const missionImage = 'https://qpbzvbrlnfxyvhnw.public.blob.vercel-storage.com/media/full/31-i-4fznBWM-X5.webp';
 
 export default function MissionSection() {
   return (
