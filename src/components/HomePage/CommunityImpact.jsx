@@ -3,7 +3,7 @@ import styles from './CommunityImpact.module.css';
 
 const imgMain    = '/images/photos/NBAF_AfroTech_Day3-2-172-2.jpg';
 const imgToys    = '/images/photos/holiday-toy-drive-genisha-jordan.jpg';
-const imgLeaders = '/images/photos/rich-ty-michelle-whitney.jpg';
+const imgLeaders = 'https://qpbzvbrlnfxyvhnw.public.blob.vercel-storage.com/media/medium/37-GHMP3556.webp';
 
 const HIGHLIGHTS = [
   {
