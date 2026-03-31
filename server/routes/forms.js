@@ -387,7 +387,7 @@ router.get('/submissions', verifyToken, async (req, res) => {
 
     const parsed = submissions.map(s => ({
       ...s,
-      data: JSON.parse(s.data),
+      data: typeof s.data === 'string' ? JSON.parse(s.data) : s.data,
     }));
 
     res.json({
@@ -430,7 +430,7 @@ router.get('/submissions/:id', verifyToken, async (req, res) => {
     if (rows.length === 0) return res.status(404).json({ error: 'Submission not found' });
 
     const submission = rows[0];
-    res.json({ ...submission, data: JSON.parse(submission.data) });
+    res.json({ ...submission, data: typeof submission.data === 'string' ? JSON.parse(submission.data) : submission.data });
   } catch (err) {
     console.error('Submission fetch error:', err);
     res.status(500).json({ error: 'Failed to fetch submission' });
