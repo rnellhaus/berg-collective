@@ -22,6 +22,15 @@ const appUpload = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
 });
 
+// Honeypot bot protection — silently accept but discard bot submissions
+function rejectBot(req, res, next) {
+  if (req.body?.company_url) {
+    // Bot detected — return fake success
+    return res.status(201).json({ message: 'Thank you!' });
+  }
+  next();
+}
+
 // Helper: send email via Resend
 async function sendFormEmail(subject, htmlBody, replyTo) {
   if (!resend) {
@@ -70,7 +79,7 @@ function formatEmailHtml(title, fields) {
 }
 
 // ─── POST /api/forms/membership — Membership Application ───
-router.post('/membership', appUpload.single('application_file'), async (req, res) => {
+router.post('/membership', appUpload.single('application_file'), rejectBot, async (req, res) => {
   try {
     const data = req.body;
     const pool = getPool();
@@ -134,7 +143,7 @@ router.post('/membership', appUpload.single('application_file'), async (req, res
 });
 
 // ─── POST /api/forms/individual-waitlist — Individual Membership Waitlist ───
-router.post('/individual-waitlist', async (req, res) => {
+router.post('/individual-waitlist', rejectBot, async (req, res) => {
   try {
     const { name, email, company, title: jobTitle, linkedin, reason } = req.body;
 
@@ -176,7 +185,7 @@ router.post('/individual-waitlist', async (req, res) => {
 });
 
 // ─── POST /api/forms/impact-download — Impact Report Download Gate ───
-router.post('/impact-download', async (req, res) => {
+router.post('/impact-download', rejectBot, async (req, res) => {
   try {
     const { name, email, company, title: jobTitle, linkedin } = req.body;
 
@@ -217,7 +226,7 @@ router.post('/impact-download', async (req, res) => {
 });
 
 // ─── POST /api/forms/newsletter — Newsletter Signup ───
-router.post('/newsletter', async (req, res) => {
+router.post('/newsletter', rejectBot, async (req, res) => {
   try {
     const { email } = req.body;
     if (!email) return res.status(400).json({ error: 'Email is required' });
@@ -251,7 +260,7 @@ router.post('/newsletter', async (req, res) => {
 });
 
 // ─── POST /api/forms/contact — Contact Form ───
-router.post('/contact', async (req, res) => {
+router.post('/contact', rejectBot, async (req, res) => {
   try {
     const { first_name, last_name, email, subject, message } = req.body;
 
@@ -291,7 +300,7 @@ router.post('/contact', async (req, res) => {
 });
 
 // ─── POST /api/forms/volunteer — Volunteer Signup ───
-router.post('/volunteer', async (req, res) => {
+router.post('/volunteer', rejectBot, async (req, res) => {
   try {
     const { first_name, last_name, email, phone, company, area_of_interest, availability, message } = req.body;
 
