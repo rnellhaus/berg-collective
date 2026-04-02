@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import styles from './PartnershipsPage.module.css';
 import usePageMeta from '../../hooks/usePageMeta';
+import { useFormProtection } from '../../hooks/useFormProtection';
 
 const PARTNERSHIPS = [
   {
@@ -63,6 +64,7 @@ const PARTNERSHIP_TYPES = [
 
 export default function PartnershipsPage() {
   usePageMeta('Partnerships', 'BERG Collective partners with world-class institutions to create transformative experiences for Black professionals.');
+  const { honeypotProps, isBot } = useFormProtection();
 
   const [form, setForm] = useState({
     first_name: '',
@@ -80,6 +82,11 @@ export default function PartnershipsPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (isBot()) {
+      setStatus('success');
+      setForm({ first_name: '', last_name: '', email: '', organization: '', partnershipType: '', message: '' });
+      return;
+    }
     setStatus('submitting');
     try {
       const res = await fetch('/api/forms/contact', {
@@ -200,6 +207,7 @@ export default function PartnershipsPage() {
                 </div>
               ) : (
                 <form className={styles.form} onSubmit={handleSubmit} noValidate>
+                  <input {...honeypotProps} />
                   <div className={styles.formRow}>
                     <div className={styles.formGroup}>
                       <label htmlFor="first_name" className={styles.formLabel}>First Name</label>

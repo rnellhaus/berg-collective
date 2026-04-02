@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './FooterNew.module.css';
+import { useFormProtection } from '../../hooks/useFormProtection';
 
 const FOOTER_COLS = [
   {
@@ -33,12 +34,17 @@ const FOOTER_COLS = [
 ];
 
 export default function FooterNew() {
+  const { honeypotProps, isBot } = useFormProtection();
   const [nlEmail, setNlEmail] = useState('');
   const [nlStatus, setNlStatus] = useState('idle');
 
   async function handleNewsletter(e) {
     e.preventDefault();
     if (!nlEmail) return;
+    if (isBot()) {
+      setNlStatus('success');
+      return;
+    }
     setNlStatus('submitting');
     try {
       await fetch('/api/forms/newsletter', {
@@ -87,6 +93,7 @@ export default function FooterNew() {
               <p className={styles.nlSuccess}>You're in! Check the tab that opened to confirm.</p>
             ) : (
               <form className={styles.nlForm} onSubmit={handleNewsletter}>
+                <input {...honeypotProps} />
                 <input
                   type="email"
                   className={styles.nlInput}

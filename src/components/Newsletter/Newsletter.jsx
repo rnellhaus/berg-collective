@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import styles from './Newsletter.module.css';
+import { useFormProtection } from '../../hooks/useFormProtection';
 
 const LISTS = [
   { id: 'la', label: 'Los Angeles', url: 'http://eepurl.com/iFBGps' },
@@ -7,6 +8,7 @@ const LISTS = [
 ];
 
 export default function Newsletter() {
+  const { honeypotProps, isBot } = useFormProtection();
   const [email, setEmail] = useState('');
   const [selectedList, setSelectedList] = useState('nyc');
   const [status, setStatus] = useState('idle');
@@ -34,6 +36,10 @@ export default function Newsletter() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email) return;
+    if (isBot()) {
+      setStatus('success');
+      return;
+    }
     setStatus('submitting');
     setErrorMsg('');
 
@@ -77,6 +83,7 @@ export default function Newsletter() {
             </div>
           ) : (
             <form className={styles.form} onSubmit={handleSubmit} noValidate>
+              <input {...honeypotProps} />
               <div className={styles.listSelector}>
                 {LISTS.map(l => (
                   <button

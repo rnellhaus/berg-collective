@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Button from '../../components/Button/Button';
 import styles from './VolunteerPage.module.css';
 import usePageMeta from '../../hooks/usePageMeta';
+import { useFormProtection } from '../../hooks/useFormProtection';
 
 const interests = [
   'Event Setup & Logistics',
@@ -58,6 +59,7 @@ const whyVolunteer = [
 
 export default function VolunteerPage() {
   usePageMeta('Volunteer', 'Lend a hand and support BERG Collective events and programs.');
+  const { honeypotProps, isBot } = useFormProtection();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -79,6 +81,11 @@ export default function VolunteerPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isBot()) {
+      setSubmitResult({ success: true, message: 'Thank you for signing up to volunteer! We\'ll be in touch soon.' });
+      setFormData({ firstName: '', lastName: '', email: '', phone: '', company: '', areaOfInterest: '', availability: '', message: '' });
+      return;
+    }
     setSubmitting(true);
     setSubmitResult(null);
     try {
@@ -146,6 +153,7 @@ export default function VolunteerPage() {
               Fill out the form below and a coordinator will reach out with upcoming opportunities.
             </p>
             <form className={styles.form} onSubmit={handleSubmit}>
+              <input {...honeypotProps} />
               <div className={styles.nameRow}>
                 <div className={styles.fieldGroup}>
                   <label htmlFor="firstName" className={styles.label}>First Name</label>

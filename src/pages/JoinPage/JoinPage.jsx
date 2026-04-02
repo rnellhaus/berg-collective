@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Button from '../../components/Button/Button';
 import styles from './JoinPage.module.css';
 import usePageMeta from '../../hooks/usePageMeta';
+import { useFormProtection } from '../../hooks/useFormProtection';
 
 const TIERS = [
   {
@@ -90,6 +91,9 @@ export default function JoinPage() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
 
+  const { honeypotProps: honeypotPropsMain, isBot: isBotMain } = useFormProtection();
+  const { honeypotProps: honeypotPropsInd, isBot: isBotInd } = useFormProtection();
+
   // Individual waitlist form
   const [indForm, setIndForm] = useState({ name: '', email: '', linkedin: '', company: '', title: '', reason: '' });
   const [indLoading, setIndLoading] = useState(false);
@@ -106,6 +110,13 @@ export default function JoinPage() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (isBotMain()) {
+      setSuccess(true);
+      setFields(initialFields);
+      setFile(null);
+      e.target.reset();
+      return;
+    }
     setLoading(true);
     setError('');
     setSuccess(false);
@@ -136,6 +147,10 @@ export default function JoinPage() {
   async function handleIndividualSubmit(e) {
     e.preventDefault();
     if (!indForm.name || !indForm.email) return;
+    if (isBotInd()) {
+      setIndStatus('success');
+      return;
+    }
     setIndLoading(true);
     setIndStatus('idle');
     try {
@@ -281,6 +296,7 @@ export default function JoinPage() {
               </div>
 
               <form className={styles.form} onSubmit={handleSubmit} encType="multipart/form-data">
+                <input {...honeypotPropsMain} />
 
                 {/* Step 1: Contact Info */}
                 {wizardStep === 1 && (
@@ -461,6 +477,7 @@ export default function JoinPage() {
                   <h3 className={styles.waitlistTitle}>Join the Waitlist</h3>
                   <p className={styles.waitlistSubtitle}>Be the first to know when individual membership launches.</p>
                   <form className={styles.waitlistForm} onSubmit={handleIndividualSubmit}>
+                    <input {...honeypotPropsInd} />
                     <div className={styles.formRow}>
                       <div className={styles.formGroup}>
                         <label className={styles.formLabel}>Full Name *</label>

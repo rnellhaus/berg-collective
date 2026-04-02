@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import styles from './ImpactPage.module.css';
 import usePageMeta from '../../hooks/usePageMeta';
+import { useFormProtection } from '../../hooks/useFormProtection';
 
 const stats = [
   { number: '12K+', label: 'Professionals Connected' },
@@ -51,6 +52,7 @@ const emptyForm = { name: '', email: '', company: '', title: '', linkedin: '' };
 export default function ImpactPage() {
   usePageMeta('Impact', 'See the 2025 impact BERG Collective is making for Black professionals and ERGs.');
 
+  const { honeypotProps, isBot } = useFormProtection();
   const [showForm, setShowForm] = useState(false);
   const [formData, setFormData] = useState(emptyForm);
   const [status, setStatus] = useState('idle'); // idle | submitting | success | error
@@ -63,6 +65,10 @@ export default function ImpactPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isBot()) {
+      setStatus('success');
+      return;
+    }
     setStatus('submitting');
     setErrorMsg('');
     try {
@@ -172,6 +178,7 @@ export default function ImpactPage() {
 
           {showForm && status !== 'success' && (
             <form className={styles.gateForm} onSubmit={handleSubmit} noValidate>
+              <input {...honeypotProps} />
               <p className={styles.gateFormIntro}>
                 Fill in your info to access the full report.
               </p>

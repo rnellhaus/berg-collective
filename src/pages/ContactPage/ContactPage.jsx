@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Button from '../../components/Button/Button';
 import styles from './ContactPage.module.css';
 import usePageMeta from '../../hooks/usePageMeta';
+import { useFormProtection } from '../../hooks/useFormProtection';
 
 const subjects = [
   'General Inquiry',
@@ -36,6 +37,7 @@ const chapters = [
 
 export default function ContactPage() {
   usePageMeta('Contact', 'Get in touch with the BERG Collective team.');
+  const { honeypotProps, isBot } = useFormProtection();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -54,6 +56,11 @@ export default function ContactPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isBot()) {
+      setSubmitResult({ success: true, message: 'Thank you for reaching out! We will get back to you shortly.' });
+      setFormData({ firstName: '', lastName: '', email: '', subject: '', message: '' });
+      return;
+    }
     setSubmitting(true);
     setSubmitResult(null);
     try {
@@ -139,6 +146,7 @@ export default function ContactPage() {
           <div className={styles.formArea}>
             <h2 className={styles.formTitle}>Send Us a Message</h2>
             <form className={styles.form} onSubmit={handleSubmit}>
+              <input {...honeypotProps} />
               <div className={styles.nameRow}>
                 <div className={styles.fieldGroup}>
                   <label htmlFor="firstName" className={styles.label}>First Name</label>
