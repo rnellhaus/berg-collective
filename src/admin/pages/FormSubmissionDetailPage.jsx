@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useApi } from '../hooks/useApi';
 
 const TYPE_LABELS = {
@@ -51,11 +51,13 @@ function formatDate(dateStr) {
 
 export default function FormSubmissionDetailPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { apiFetch } = useApi();
   const [submission, setSubmission] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [toggling, setToggling] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -84,6 +86,19 @@ export default function FormSubmissionDetailPage() {
       setError('Failed to update: ' + err.message);
     } finally {
       setToggling(false);
+    }
+  }
+
+  async function handleDelete() {
+    if (!window.confirm('Delete this submission? This cannot be undone.')) return;
+    setDeleting(true);
+    try {
+      const res = await apiFetch(`/api/forms/submissions/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      navigate('/admin/forms');
+    } catch (err) {
+      setError('Failed to delete: ' + err.message);
+      setDeleting(false);
     }
   }
 
@@ -122,22 +137,40 @@ export default function FormSubmissionDetailPage() {
         <h1 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#191110', margin: 0 }}>
           {TYPE_LABELS[submission.form_type] || submission.form_type}
         </h1>
-        <button
-          onClick={handleToggleReview}
-          disabled={toggling}
-          style={{
-            padding: '8px 18px',
-            border: 'none',
-            borderRadius: '7px',
-            background: submission.reviewed ? '#e8e1da' : '#8b3223',
-            color: submission.reviewed ? '#6b5752' : '#ffffff',
-            fontSize: '0.875rem',
-            fontWeight: '600',
-            cursor: 'pointer',
-          }}
-        >
-          {toggling ? '...' : submission.reviewed ? 'Mark as Unreviewed' : 'Mark as Reviewed'}
-        </button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button
+            onClick={handleToggleReview}
+            disabled={toggling}
+            style={{
+              padding: '8px 18px',
+              border: 'none',
+              borderRadius: '7px',
+              background: submission.reviewed ? '#e8e1da' : '#8b3223',
+              color: submission.reviewed ? '#6b5752' : '#ffffff',
+              fontSize: '0.875rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+            }}
+          >
+            {toggling ? '...' : submission.reviewed ? 'Mark as Unreviewed' : 'Mark as Reviewed'}
+          </button>
+          <button
+            onClick={handleDelete}
+            disabled={deleting}
+            style={{
+              padding: '8px 18px',
+              border: '1px solid #fecaca',
+              borderRadius: '7px',
+              background: '#fff',
+              color: '#991b1b',
+              fontSize: '0.875rem',
+              fontWeight: '600',
+              cursor: 'pointer',
+            }}
+          >
+            {deleting ? 'Deleting…' : 'Delete'}
+          </button>
+        </div>
       </div>
 
       {/* Meta info */}

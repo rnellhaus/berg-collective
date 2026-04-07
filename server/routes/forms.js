@@ -429,6 +429,72 @@ router.get('/submissions/stats', verifyToken, async (req, res) => {
   }
 });
 
+// ─── GET /api/forms/submissions/export — Admin: export submissions as CSV ───
+// Must be defined BEFORE /:id so it isn't matched as id="export".
+router.get('/submissions/export', verifyToken, async (req, res) => {
+  try {
+    const pool = getPool();
+    const { type, reviewed } = req.query;
+
+    const conditions = [];
+    const params = [];
+    let paramIdx = 1;
+
+    if (type) {
+      conditions.push(`form_type = $${paramIdx++}`);
+      params.push(type);
+    }
+    if (reviewed === '1' || reviewed === '0') {
+      conditions.push(`reviewed = $${paramIdx++}`);
+      params.push(Number(reviewed));
+    }
+
+    const where = conditions.length > 0 ? ` WHERE ${conditions.join(' AND ')}` : '';
+    const { rows } = await pool.query(
+      `SELECT * FROM form_submissions${where} ORDER BY created_at DESC`,
+      params
+    );
+
+    // CSV escaper: wrap in quotes, double internal quotes
+    const esc = (v) => {
+      if (v == null) return '';
+      const s = String(v);
+      return `"${s.replace(/"/g, '""')}"`;
+    };
+
+    const headers = [
+      'id', 'form_type', 'first_name', 'last_name', 'name', 'email',
+      'phone', 'company', 'title', 'created_at', 'reviewed',
+    ];
+    const lines = [headers.join(',')];
+
+    for (const row of rows) {
+      const data = typeof row.data === 'string' ? JSON.parse(row.data) : (row.data || {});
+      lines.push([
+        esc(row.id),
+        esc(row.form_type),
+        esc(data.first_name),
+        esc(data.last_name),
+        esc(data.name),
+        esc(data.email),
+        esc(data.phone),
+        esc(data.company),
+        esc(data.title),
+        esc(row.created_at),
+        esc(row.reviewed ? 'yes' : 'no'),
+      ].join(','));
+    }
+
+    const filename = `berg-submissions-${type || 'all'}-${new Date().toISOString().slice(0, 10)}.csv`;
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.send(lines.join('\n'));
+  } catch (err) {
+    console.error('Submissions export error:', err);
+    res.status(500).json({ error: 'Failed to export submissions' });
+  }
+});
+
 // ─── GET /api/forms/submissions/:id — Admin: single submission ───
 router.get('/submissions/:id', verifyToken, async (req, res) => {
   try {
@@ -470,6 +536,22 @@ router.patch('/submissions/:id/review', verifyToken, async (req, res) => {
   } catch (err) {
     console.error('Submission review toggle error:', err);
     res.status(500).json({ error: 'Failed to update review status' });
+  }
+});
+
+// ─── DELETE /api/forms/submissions/:id — Admin: delete a submission ───
+router.delete('/submissions/:id', verifyToken, async (req, res) => {
+  try {
+    const pool = getPool();
+    const { rowCount } = await pool.query(
+      'DELETE FROM form_submissions WHERE id = $1',
+      [req.params.id]
+    );
+    if (rowCount === 0) return res.status(404).json({ error: 'Submission not found' });
+    res.json({ id: req.params.id, deleted: true });
+  } catch (err) {
+    console.error('Submission delete error:', err);
+    res.status(500).json({ error: 'Failed to delete submission' });
   }
 });
 

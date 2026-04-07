@@ -59,6 +59,8 @@ export default function FormSubmissionsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [togglingId, setTogglingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
+  const [exporting, setExporting] = useState(false);
 
   const loadSubmissions = useCallback(async () => {
     setLoading(true);
@@ -100,6 +102,48 @@ export default function FormSubmissionsPage() {
     }
   }
 
+  async function handleDelete(id) {
+    if (!window.confirm('Delete this submission? This cannot be undone.')) return;
+    setDeletingId(id);
+    try {
+      const res = await apiFetch(`/api/forms/submissions/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      setSubmissions(prev => prev.filter(s => s.id !== id));
+      setPagination(p => ({ ...p, total: Math.max(0, p.total - 1) }));
+    } catch (err) {
+      setError('Failed to delete: ' + err.message);
+    } finally {
+      setDeletingId(null);
+    }
+  }
+
+  async function handleExport() {
+    setExporting(true);
+    setError(null);
+    try {
+      const params = new URLSearchParams();
+      if (typeFilter) params.set('type', typeFilter);
+      if (reviewedFilter) params.set('reviewed', reviewedFilter);
+      const qs = params.toString();
+      const res = await apiFetch(`/api/forms/submissions/export${qs ? '?' + qs : ''}`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `berg-submissions-${typeFilter || 'all'}-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setError('Failed to export: ' + err.message);
+    } finally {
+      setExporting(false);
+    }
+  }
+
   function handleFilterChange(setter) {
     return (e) => {
       setter(e.target.value);
@@ -114,8 +158,27 @@ export default function FormSubmissionsPage() {
         <h1 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#191110', margin: 0 }}>
           Form Submissions
         </h1>
-        <div style={{ fontSize: '0.8rem', color: '#6b5752' }}>
-          {pagination.total} total submission{pagination.total !== 1 ? 's' : ''}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <div style={{ fontSize: '0.8rem', color: '#6b5752' }}>
+            {pagination.total} total submission{pagination.total !== 1 ? 's' : ''}
+          </div>
+          <button
+            onClick={handleExport}
+            disabled={exporting || pagination.total === 0}
+            style={{
+              padding: '7px 14px',
+              border: '1px solid #8b3223',
+              borderRadius: '6px',
+              background: '#8b3223',
+              color: '#fff',
+              fontSize: '0.82rem',
+              fontWeight: '600',
+              cursor: exporting || pagination.total === 0 ? 'default' : 'pointer',
+              opacity: exporting || pagination.total === 0 ? 0.5 : 1,
+            }}
+          >
+            {exporting ? 'Exporting…' : 'Export CSV'}
+          </button>
         </div>
       </div>
 
@@ -250,6 +313,23 @@ export default function FormSubmissionsPage() {
                     }}
                   >
                     {togglingId === sub.id ? '...' : sub.reviewed ? 'Undo Review' : 'Mark Reviewed'}
+                  </button>
+                  <button
+                    onClick={() => handleDelete(sub.id)}
+                    disabled={deletingId === sub.id}
+                    title="Delete submission"
+                    style={{
+                      padding: '4px 10px',
+                      border: '1px solid #fecaca',
+                      borderRadius: '6px',
+                      background: '#fff',
+                      color: '#991b1b',
+                      fontSize: '0.78rem',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    {deletingId === sub.id ? '...' : 'Delete'}
                   </button>
                   <Link
                     to={`/admin/forms/${sub.id}`}
