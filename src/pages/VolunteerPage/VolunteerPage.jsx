@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Button from '../../components/Button/Button';
+import Turnstile from '../../components/Turnstile/Turnstile';
 import styles from './VolunteerPage.module.css';
 import usePageMeta from '../../hooks/usePageMeta';
 import { useFormProtection } from '../../hooks/useFormProtection';
@@ -73,6 +74,7 @@ export default function VolunteerPage() {
 
   const [submitting, setSubmitting] = useState(false);
   const [submitResult, setSubmitResult] = useState(null);
+  const [captchaToken, setCaptchaToken] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -84,6 +86,10 @@ export default function VolunteerPage() {
     if (isBot()) {
       setSubmitResult({ success: true, message: 'Thank you for signing up to volunteer! We\'ll be in touch soon.' });
       setFormData({ firstName: '', lastName: '', email: '', phone: '', company: '', areaOfInterest: '', availability: '', message: '' });
+      return;
+    }
+    if (!captchaToken) {
+      setSubmitResult({ success: false, message: 'Please complete the captcha before submitting.' });
       return;
     }
     setSubmitting(true);
@@ -101,6 +107,7 @@ export default function VolunteerPage() {
           area_of_interest: formData.areaOfInterest,
           availability: formData.availability,
           message: formData.message,
+          cf_turnstile_token: captchaToken,
         }),
       });
       if (!res.ok) throw new Error('Failed to submit');
@@ -267,6 +274,7 @@ export default function VolunteerPage() {
                   onChange={handleChange}
                 />
               </div>
+              <Turnstile onVerify={setCaptchaToken} />
               {submitResult && (
                 <div
                   style={{

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Turnstile from '../../components/Turnstile/Turnstile';
 import styles from './PartnershipsPage.module.css';
 import usePageMeta from '../../hooks/usePageMeta';
 import { useFormProtection } from '../../hooks/useFormProtection';
@@ -75,6 +76,7 @@ export default function PartnershipsPage() {
     message: '',
   });
   const [status, setStatus] = useState('idle'); // idle | submitting | success | error
+  const [captchaToken, setCaptchaToken] = useState('');
 
   function handleChange(e) {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -85,6 +87,10 @@ export default function PartnershipsPage() {
     if (isBot()) {
       setStatus('success');
       setForm({ first_name: '', last_name: '', email: '', organization: '', partnershipType: '', message: '' });
+      return;
+    }
+    if (!captchaToken) {
+      setStatus('error');
       return;
     }
     setStatus('submitting');
@@ -98,6 +104,7 @@ export default function PartnershipsPage() {
           email: form.email,
           subject: `Partnership Inquiry: ${form.organization}`,
           message: `Partnership Type: ${form.partnershipType}\nOrganization: ${form.organization}\n\n${form.message}`,
+          cf_turnstile_token: captchaToken,
         }),
       });
       if (!res.ok) throw new Error('Request failed');
@@ -288,8 +295,10 @@ export default function PartnershipsPage() {
                     />
                   </div>
 
+                  <Turnstile onVerify={setCaptchaToken} />
+
                   {status === 'error' && (
-                    <p className={styles.errorMsg}>Something went wrong. Please try again.</p>
+                    <p className={styles.errorMsg}>Something went wrong. Please complete the captcha and try again.</p>
                   )}
 
                   <button

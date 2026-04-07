@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Button from '../../components/Button/Button';
+import Turnstile from '../../components/Turnstile/Turnstile';
 import styles from './ContactPage.module.css';
 import usePageMeta from '../../hooks/usePageMeta';
 import { useFormProtection } from '../../hooks/useFormProtection';
@@ -53,12 +54,17 @@ export default function ContactPage() {
 
   const [submitting, setSubmitting] = useState(false);
   const [submitResult, setSubmitResult] = useState(null);
+  const [captchaToken, setCaptchaToken] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isBot()) {
       setSubmitResult({ success: true, message: 'Thank you for reaching out! We will get back to you shortly.' });
       setFormData({ firstName: '', lastName: '', email: '', subject: '', message: '' });
+      return;
+    }
+    if (!captchaToken) {
+      setSubmitResult({ success: false, message: 'Please complete the captcha before sending.' });
       return;
     }
     setSubmitting(true);
@@ -73,6 +79,7 @@ export default function ContactPage() {
           email: formData.email,
           subject: formData.subject,
           message: formData.message,
+          cf_turnstile_token: captchaToken,
         }),
       });
       if (!res.ok) throw new Error('Failed to send');
@@ -217,6 +224,7 @@ export default function ContactPage() {
                   required
                 />
               </div>
+              <Turnstile onVerify={setCaptchaToken} />
               {submitResult && (
                 <div
                   style={{

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Turnstile from '../../components/Turnstile/Turnstile';
 import styles from './ImpactPage.module.css';
 import usePageMeta from '../../hooks/usePageMeta';
 import { useFormProtection } from '../../hooks/useFormProtection';
@@ -57,6 +58,7 @@ export default function ImpactPage() {
   const [formData, setFormData] = useState(emptyForm);
   const [status, setStatus] = useState('idle'); // idle | submitting | success | error
   const [errorMsg, setErrorMsg] = useState('');
+  const [captchaToken, setCaptchaToken] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -69,13 +71,18 @@ export default function ImpactPage() {
       setStatus('success');
       return;
     }
+    if (!captchaToken) {
+      setStatus('error');
+      setErrorMsg('Please complete the captcha before submitting.');
+      return;
+    }
     setStatus('submitting');
     setErrorMsg('');
     try {
       const res = await fetch('/api/forms/impact-download', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, cf_turnstile_token: captchaToken }),
       });
       if (!res.ok) throw new Error('Submission failed. Please try again.');
       setStatus('success');
@@ -251,6 +258,8 @@ export default function ImpactPage() {
                   onChange={handleChange}
                 />
               </div>
+
+              <Turnstile onVerify={setCaptchaToken} />
 
               {status === 'error' && (
                 <p className={styles.gateError}>{errorMsg}</p>

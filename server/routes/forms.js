@@ -4,6 +4,7 @@ import multer from 'multer';
 import { put } from '@vercel/blob';
 import { getPool } from '../db/connection.js';
 import { verifyToken } from '../middleware/auth.js';
+import { verifyTurnstile } from '../middleware/turnstile.js';
 
 const router = Router();
 
@@ -79,7 +80,7 @@ function formatEmailHtml(title, fields) {
 }
 
 // ─── POST /api/forms/membership — Membership Application ───
-router.post('/membership', appUpload.single('application_file'), rejectBot, async (req, res) => {
+router.post('/membership', appUpload.single('application_file'), rejectBot, verifyTurnstile, async (req, res) => {
   try {
     const data = req.body;
     const pool = getPool();
@@ -143,7 +144,7 @@ router.post('/membership', appUpload.single('application_file'), rejectBot, asyn
 });
 
 // ─── POST /api/forms/individual-waitlist — Individual Membership Waitlist ───
-router.post('/individual-waitlist', rejectBot, async (req, res) => {
+router.post('/individual-waitlist', rejectBot, verifyTurnstile, async (req, res) => {
   try {
     const { name, email, company, title: jobTitle, linkedin, reason } = req.body;
 
@@ -185,7 +186,7 @@ router.post('/individual-waitlist', rejectBot, async (req, res) => {
 });
 
 // ─── POST /api/forms/impact-download — Impact Report Download Gate ───
-router.post('/impact-download', rejectBot, async (req, res) => {
+router.post('/impact-download', rejectBot, verifyTurnstile, async (req, res) => {
   try {
     const { name, email, company, title: jobTitle, linkedin } = req.body;
 
@@ -260,7 +261,7 @@ router.post('/newsletter', rejectBot, async (req, res) => {
 });
 
 // ─── POST /api/forms/contact — Contact Form ───
-router.post('/contact', rejectBot, async (req, res) => {
+router.post('/contact', rejectBot, verifyTurnstile, async (req, res) => {
   try {
     const { first_name, last_name, email, subject, message } = req.body;
 
@@ -300,7 +301,7 @@ router.post('/contact', rejectBot, async (req, res) => {
 });
 
 // ─── POST /api/forms/volunteer — Volunteer Signup ───
-router.post('/volunteer', rejectBot, async (req, res) => {
+router.post('/volunteer', rejectBot, verifyTurnstile, async (req, res) => {
   try {
     const { first_name, last_name, email, phone, company, area_of_interest, availability, message } = req.body;
 

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Button from '../../components/Button/Button';
+import Turnstile from '../../components/Turnstile/Turnstile';
 import styles from './JoinPage.module.css';
 import usePageMeta from '../../hooks/usePageMeta';
 import { useFormProtection } from '../../hooks/useFormProtection';
@@ -94,10 +95,14 @@ export default function JoinPage() {
   const { honeypotProps: honeypotPropsMain, isBot: isBotMain } = useFormProtection();
   const { honeypotProps: honeypotPropsInd, isBot: isBotInd } = useFormProtection();
 
+  // Captcha for membership application
+  const [appCaptchaToken, setAppCaptchaToken] = useState('');
+
   // Individual waitlist form
   const [indForm, setIndForm] = useState({ name: '', email: '', linkedin: '', company: '', title: '', reason: '' });
   const [indLoading, setIndLoading] = useState(false);
   const [indStatus, setIndStatus] = useState('idle'); // idle | success | error
+  const [indCaptchaToken, setIndCaptchaToken] = useState('');
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -117,6 +122,10 @@ export default function JoinPage() {
       e.target.reset();
       return;
     }
+    if (!appCaptchaToken) {
+      setError('Please complete the captcha before submitting.');
+      return;
+    }
     setLoading(true);
     setError('');
     setSuccess(false);
@@ -125,6 +134,7 @@ export default function JoinPage() {
       const formData = new FormData();
       Object.entries(fields).forEach(([key, val]) => formData.append(key, val));
       if (file) formData.append('file', file);
+      formData.append('cf_turnstile_token', appCaptchaToken);
 
       const res = await fetch('/api/forms/membership', {
         method: 'POST',
@@ -151,13 +161,17 @@ export default function JoinPage() {
       setIndStatus('success');
       return;
     }
+    if (!indCaptchaToken) {
+      setIndStatus('error');
+      return;
+    }
     setIndLoading(true);
     setIndStatus('idle');
     try {
       const res = await fetch('/api/forms/individual-waitlist', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(indForm),
+        body: JSON.stringify({ ...indForm, cf_turnstile_token: indCaptchaToken }),
       });
       if (!res.ok) throw new Error('Failed');
       setIndStatus('success');
@@ -412,6 +426,8 @@ export default function JoinPage() {
                       </label>
                     </div>
 
+                    <Turnstile onVerify={setAppCaptchaToken} />
+
                     {error && <p className={styles.errorMsg}>{error}</p>}
 
                     <div className={styles.wizardActions}>
@@ -539,7 +555,8 @@ export default function JoinPage() {
                         onChange={(e) => setIndForm(p => ({ ...p, reason: e.target.value }))}
                       />
                     </div>
-                    {indStatus === 'error' && <p className={styles.errorMsg}>Something went wrong. Please try again.</p>}
+                    <Turnstile onVerify={setIndCaptchaToken} />
+                    {indStatus === 'error' && <p className={styles.errorMsg}>Please complete the captcha and try again.</p>}
                     <button type="submit" className={styles.ctaBtnGold} disabled={indLoading} style={{ width: '100%' }}>
                       {indLoading ? 'Submitting…' : 'Join the Waitlist'}
                     </button>
