@@ -88,7 +88,11 @@ function buildFilters(events) {
 }
 
 export default function EventsPage() {
-  usePageMeta('Events', 'Upcoming summits, workshops, and networking events.');
+  usePageMeta(
+    'Events & Summits for Black ERGs',
+    'Upcoming summits, workshops, and networking events for Black Employee Resource Groups and professionals across NYC, LA, Atlanta, Chicago, Houston, and DC.',
+    { path: '/events' }
+  );
 
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [pastEvents, setPastEvents] = useState([]);
@@ -136,6 +140,50 @@ export default function EventsPage() {
       if (s) s.remove();
     };
   }, []);
+
+  useEffect(() => {
+    if (!upcomingEvents.length) return;
+    const items = upcomingEvents
+      .filter((e) => e.date && e.title)
+      .map((e) => {
+        const startDate = e.date;
+        const img = e.cover_image_url
+          ? (e.cover_image_url.startsWith('http') || e.cover_image_url.startsWith('/')
+              ? e.cover_image_url
+              : `https://blackergcollective.com/api/media/file/${e.cover_image_url.replace(/^medium\//, 'full/')}`)
+          : 'https://blackergcollective.com/images/photos/DTRT-crowd-photo.jpg';
+        const data = {
+          '@context': 'https://schema.org',
+          '@type': 'Event',
+          name: e.title,
+          startDate,
+          eventStatus: 'https://schema.org/EventScheduled',
+          eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+          image: img,
+          description: e.description || e.title,
+          organizer: {
+            '@type': 'Organization',
+            name: 'BERG Collective',
+            url: 'https://blackergcollective.com/',
+          },
+        };
+        if (e.location) {
+          data.location = { '@type': 'Place', name: e.location, address: e.location };
+        }
+        return data;
+      });
+
+    if (!items.length) return;
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.id = 'events-jsonld';
+    script.text = JSON.stringify(items);
+    document.head.appendChild(script);
+    return () => {
+      const existing = document.getElementById('events-jsonld');
+      if (existing) existing.remove();
+    };
+  }, [upcomingEvents]);
 
   async function toggleExpand(event) {
     if (expandedId === event.id) {

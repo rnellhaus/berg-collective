@@ -83,7 +83,11 @@ const initialFields = {
 };
 
 export default function JoinPage() {
-  usePageMeta('Membership', 'ERG membership built for impact. Join the BERG Collective.');
+  usePageMeta(
+    'Membership — Join the Black ERG Network',
+    'Join BERG Collective — ERG membership built for impact. Connect Black Employee Resource Groups with programs, events, partners, and a nationwide community.',
+    { path: '/membership' }
+  );
 
   const [fields, setFields] = useState(initialFields);
   const [file, setFile] = useState(null);

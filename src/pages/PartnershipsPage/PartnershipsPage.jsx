@@ -64,7 +64,11 @@ const PARTNERSHIP_TYPES = [
 ];
 
 export default function PartnershipsPage() {
-  usePageMeta('Partnerships', 'BERG Collective partners with world-class institutions to create transformative experiences for Black professionals.');
+  usePageMeta(
+    'Corporate Partnerships for Black ERGs',
+    'Partner with BERG Collective to support Black Employee Resource Groups through sponsorships, speaking engagements, and community programs.',
+    { path: '/partnerships' }
+  );
   const { honeypotProps, isBot } = useFormProtection();
 
   const [form, setForm] = useState({

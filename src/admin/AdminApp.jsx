@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { useAuth } from './hooks/useAuth';
@@ -26,6 +27,30 @@ function ComingSoon({ label }) {
 function AdminRoutes() {
   const { user, loading } = useAuth();
   const location = useLocation();
+
+  useEffect(() => {
+    let meta = document.head.querySelector('meta[name="robots"]');
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.setAttribute('name', 'robots');
+      document.head.appendChild(meta);
+    }
+    meta.setAttribute('content', 'noindex, nofollow');
+
+    let fontLink = document.getElementById('material-symbols-font');
+    if (!fontLink) {
+      fontLink = document.createElement('link');
+      fontLink.id = 'material-symbols-font';
+      fontLink.rel = 'stylesheet';
+      fontLink.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0';
+      document.head.appendChild(fontLink);
+    }
+
+    return () => {
+      const existing = document.head.querySelector('meta[name="robots"]');
+      if (existing) existing.remove();
+    };
+  }, []);
 
   if (loading) {
     return (

@@ -28,7 +28,11 @@ const cityList = [
 ];
 
 export default function ChaptersPage() {
-  usePageMeta('Chapters', 'Find a BERG Collective chapter near you.');
+  usePageMeta(
+    'BERG Chapters — NYC, LA, Atlanta, Chicago, Houston & DC',
+    'Find a BERG Collective chapter near you. Local networks for Black professionals in NYC, LA, Atlanta, Chicago, Houston, and Washington DC.',
+    { path: '/chapters' }
+  );
   const [selectedCity, setSelectedCity] = useState('nyc');
   const chapter = chapters[selectedCity];
 

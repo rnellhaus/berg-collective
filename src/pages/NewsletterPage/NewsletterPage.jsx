@@ -3,7 +3,11 @@ import usePageMeta from '../../hooks/usePageMeta';
 import styles from './NewsletterPage.module.css';
 
 export default function NewsletterPage() {
-  usePageMeta('Newsletter', 'Stay connected with BERG Collective — events, programs, and community updates.');
+  usePageMeta(
+    'Newsletter — BERG Collective Updates',
+    'Subscribe to the BERG Collective newsletter for events, programs, and community updates from the Black ERG network.',
+    { path: '/newsletter' }
+  );
 
   return (
     <main>

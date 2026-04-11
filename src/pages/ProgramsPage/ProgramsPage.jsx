@@ -48,8 +48,9 @@ const PILLARS = [
 
 export default function ProgramsPage() {
   usePageMeta(
-    'Programs',
-    'Financial empowerment, structured networking, and career growth programs for Black professionals.'
+    'Leadership & Career Programs for Black Professionals',
+    'Financial empowerment, structured networking, and leadership development programs for Black professionals and ERGs nationwide.',
+    { path: '/programs' }
   );
 
   return (

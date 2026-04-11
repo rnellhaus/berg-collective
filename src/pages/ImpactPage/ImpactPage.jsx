@@ -51,7 +51,11 @@ const highlights = [
 const emptyForm = { name: '', email: '', company: '', title: '', linkedin: '' };
 
 export default function ImpactPage() {
-  usePageMeta('Impact', 'See the 2025 impact BERG Collective is making for Black professionals and ERGs.');
+  usePageMeta(
+    '2025 Impact Report — Black ERG Network',
+    'See the 2025 impact BERG Collective delivered for Black professionals and Employee Resource Groups — programs, events, and outcomes by the numbers.',
+    { path: '/impact' }
+  );
 
   const { honeypotProps, isBot } = useFormProtection();
   const [showForm, setShowForm] = useState(false);

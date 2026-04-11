@@ -5,7 +5,11 @@ import PartnerMarquee from '../../components/HomePage/PartnerMarquee';
 import usePageMeta from '../../hooks/usePageMeta';
 
 export default function AboutPage() {
-  usePageMeta('About', 'Learn about BERG Collective\'s mission to empower Black professionals.');
+  usePageMeta(
+    'About — 501(c)(3) Black ERG Network',
+    'Learn how BERG Collective unites Black Employee Resource Groups to build leadership, advance careers, and create community impact across the US.',
+    { path: '/about' }
+  );
   return (
     <main>
       {/* Hero Section */}

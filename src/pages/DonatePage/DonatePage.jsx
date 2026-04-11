@@ -10,7 +10,11 @@ const allocationItems = [
 ];
 
 export default function DonatePage() {
-  usePageMeta('Donate', 'Support BERG Collective with a tax-deductible contribution.');
+  usePageMeta(
+    'Donate — Support Black ERGs Nationwide',
+    'Make a tax-deductible donation to BERG Collective, a 501(c)(3) nonprofit supporting Black Employee Resource Groups, leadership programs, and community events.',
+    { path: '/donate' }
+  );
   return (
     <main className={styles.page}>
 

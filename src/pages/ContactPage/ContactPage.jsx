@@ -37,7 +37,11 @@ const chapters = [
 ];
 
 export default function ContactPage() {
-  usePageMeta('Contact', 'Get in touch with the BERG Collective team.');
+  usePageMeta(
+    'Contact BERG Collective',
+    'Get in touch with the BERG Collective team about partnerships, programs, events, or membership in the Black ERG network.',
+    { path: '/contact' }
+  );
   const { honeypotProps, isBot } = useFormProtection();
   const [formData, setFormData] = useState({
     firstName: '',

@@ -59,7 +59,11 @@ const whyVolunteer = [
 ];
 
 export default function VolunteerPage() {
-  usePageMeta('Volunteer', 'Lend a hand and support BERG Collective events and programs.');
+  usePageMeta(
+    'Volunteer with BERG Collective',
+    'Volunteer with BERG Collective to support events, programs, and community initiatives for Black professionals and ERGs across the US.',
+    { path: '/volunteer' }
+  );
   const { honeypotProps, isBot } = useFormProtection();
   const [formData, setFormData] = useState({
     firstName: '',
