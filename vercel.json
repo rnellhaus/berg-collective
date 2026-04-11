@@ -4,19 +4,19 @@
       "source": "/(.*)",
       "has": [{ "type": "host", "value": "blackergcollective.com" }],
       "destination": "https://bergcollective.org/$1",
-      "permanent": true
+      "statusCode": 301
     },
     {
       "source": "/(.*)",
       "has": [{ "type": "host", "value": "www.blackergcollective.com" }],
       "destination": "https://bergcollective.org/$1",
-      "permanent": true
+      "statusCode": 301
     },
     {
       "source": "/(.*)",
       "has": [{ "type": "host", "value": "www.bergcollective.org" }],
       "destination": "https://bergcollective.org/$1",
-      "permanent": true
+      "statusCode": 301
     },
     { "source": "/join", "destination": "/membership", "permanent": true }
   ],
