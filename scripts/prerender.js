@@ -3,7 +3,25 @@ import { readFile, writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import { dirname, join, extname } from 'path';
 import { fileURLToPath } from 'url';
-import puppeteer from 'puppeteer';
+
+const IS_SERVERLESS = !!process.env.VERCEL || !!process.env.AWS_LAMBDA_FUNCTION_NAME;
+
+let puppeteer;
+let launchOptions;
+if (IS_SERVERLESS) {
+  puppeteer = (await import('puppeteer-core')).default;
+  const chromium = (await import('@sparticuz/chromium')).default;
+  launchOptions = {
+    args: chromium.args,
+    executablePath: await chromium.executablePath(),
+    headless: chromium.headless,
+  };
+} else {
+  puppeteer = (await import('puppeteer')).default;
+  launchOptions = {
+    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+  };
+}
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DIST = join(__dirname, '..', 'dist');
@@ -74,9 +92,7 @@ async function run() {
   }
 
   const server = await startServer();
-  const browser = await puppeteer.launch({
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
-  });
+  const browser = await puppeteer.launch(launchOptions);
 
   try {
     for (const route of ROUTES) {
