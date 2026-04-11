@@ -1,21 +1,21 @@
 {
   "redirects": [
     {
-      "source": "/:path*",
+      "source": "/(.*)",
       "has": [{ "type": "host", "value": "blackergcollective.com" }],
-      "destination": "https://bergcollective.org/:path*",
+      "destination": "https://bergcollective.org/$1",
       "permanent": true
     },
     {
-      "source": "/:path*",
+      "source": "/(.*)",
       "has": [{ "type": "host", "value": "www.blackergcollective.com" }],
-      "destination": "https://bergcollective.org/:path*",
+      "destination": "https://bergcollective.org/$1",
       "permanent": true
     },
     {
-      "source": "/:path*",
+      "source": "/(.*)",
       "has": [{ "type": "host", "value": "www.bergcollective.org" }],
-      "destination": "https://bergcollective.org/:path*",
+      "destination": "https://bergcollective.org/$1",
       "permanent": true
     },
     { "source": "/join", "destination": "/membership", "permanent": true }
