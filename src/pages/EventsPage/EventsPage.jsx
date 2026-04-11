@@ -150,8 +150,8 @@ export default function EventsPage() {
         const img = e.cover_image_url
           ? (e.cover_image_url.startsWith('http') || e.cover_image_url.startsWith('/')
               ? e.cover_image_url
-              : `https://blackergcollective.com/api/media/file/${e.cover_image_url.replace(/^medium\//, 'full/')}`)
-          : 'https://blackergcollective.com/images/photos/DTRT-crowd-photo.jpg';
+              : `https://bergcollective.org/api/media/file/${e.cover_image_url.replace(/^medium\//, 'full/')}`)
+          : 'https://bergcollective.org/images/photos/DTRT-crowd-photo.jpg';
         const data = {
           '@context': 'https://schema.org',
           '@type': 'Event',
@@ -164,7 +164,7 @@ export default function EventsPage() {
           organizer: {
             '@type': 'Organization',
             name: 'BERG Collective',
-            url: 'https://blackergcollective.com/',
+            url: 'https://bergcollective.org/',
           },
         };
         if (e.location) {

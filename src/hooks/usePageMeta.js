@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-const SITE_URL = 'https://blackergcollective.com';
+const SITE_URL = 'https://bergcollective.org';
 const DEFAULT_OG_IMAGE = `${SITE_URL}/images/photos/DTRT-crowd-photo.jpg`;
 
 function upsertMeta(selector, attrName, attrValue, content) {
