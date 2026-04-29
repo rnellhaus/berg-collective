@@ -9,6 +9,7 @@ import eventsRoutes from './routes/events.js';
 import usersRoutes from './routes/users.js';
 import formsRoutes from './routes/forms.js';
 import documentsRoutes from './routes/documents.js';
+import proposalsRoutes from './routes/proposals.js';
 
 const app = express();
 
@@ -16,6 +17,9 @@ const app = express();
 let dbInitialized = false;
 
 app.use(async (req, res, next) => {
+  // Routes that don't require the database — let them through even if DB is down.
+  if (req.path.startsWith('/proposals')) return next();
+
   if (!dbInitialized) {
     try {
       await initDatabase();
@@ -50,6 +54,7 @@ app.use(cors({
 }));
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use('/api/auth', authRoutes);
@@ -59,6 +64,7 @@ app.use('/api/events', eventsRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/forms', formsRoutes);
 app.use('/api/documents', documentsRoutes);
+app.use('/proposals', proposalsRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
