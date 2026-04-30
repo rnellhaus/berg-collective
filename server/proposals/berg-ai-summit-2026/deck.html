@@ -1086,6 +1086,65 @@
       z-index: 95;
     }
   }
+
+  /* ============= MOBILE POLISH PATCHES ============= */
+
+  /* Body copy on dark slides was inheriting --berg-ink (near-black) from the
+     base .body rule, making it unreadable on obsidian / indigo backgrounds.
+     Force light text whenever .body sits inside a dark slide. */
+  .slide.obsidian .body,
+  .slide.indigo   .body,
+  .slide.obsidian .signon-contact,
+  .slide.indigo   .signon-contact {
+    color: var(--berg-paper);
+  }
+
+  @media (max-width: 768px) {
+    /* Smaller, lower-contrast slide counter so it doesn't crop headlines on mobile. */
+    .slide-counter {
+      top: 10px;
+      right: 10px;
+      padding: 4px 9px;
+      font-size: 9.5px;
+      background: rgba(0, 0, 0, 0.35);
+    }
+    body.light-bg .slide-counter {
+      background: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Compact dots so they take less vertical space (and clear bottom content). */
+    .dots {
+      bottom: 12px;
+      padding: 6px 10px;
+      gap: 6px;
+    }
+    .dots .dot { width: 6px; height: 6px; }
+    .dots .dot.active { width: 18px; }
+
+    /* Lift closing-slide corner content above the dots pill so it isn't hidden. */
+    .closing-meta { bottom: 56px; right: 24px; text-align: right; }
+    .bottom-corner-logo { bottom: 56px; right: 24px; height: 28px; }
+    .bottom-left-logo   { bottom: 56px; left:  24px; height: 30px; }
+
+    /* Reserve a bit of right padding on titles/eyebrows in slides whose
+       headlines sit near the top edge, so they don't tuck under the counter. */
+    .hook-layout .eyebrow,
+    .hook-layout .h-statement,
+    .room-layout .eyebrow,
+    .room-layout .h-title,
+    .agenda-layout .eyebrow,
+    .agenda-layout .h-title,
+    .timeline-layout .eyebrow,
+    .timeline-layout .h-title,
+    .signon-layout .eyebrow,
+    .signon-layout .h-statement,
+    .reasons-layout .eyebrow,
+    .reasons-layout .h-title,
+    .more-tiers-layout .eyebrow,
+    .more-tiers-layout .h-title {
+      padding-right: 64px;
+    }
+  }
 </style>
 </head>
 <body>
