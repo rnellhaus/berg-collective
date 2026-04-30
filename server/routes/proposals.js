@@ -189,6 +189,30 @@ const downloadButtonScript = `
       border: 1px solid rgba(255,255,255,0.2);
     }
     .proposal-overlay a:hover { filter: brightness(1.1); }
+    .proposal-overlay {
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .proposal-overlay.is-idle {
+      opacity: 0;
+      transform: translateY(8px);
+      pointer-events: none;
+    }
+  }
+  /* On phones, dock the action button to the bottom-right above the dots
+     indicator and hide the rare "Lock" action so it never covers headlines. */
+  @media (max-width: 768px) {
+    .proposal-overlay {
+      top: auto; right: 10px;
+      bottom: 50px;
+      gap: 6px;
+    }
+    .proposal-overlay a {
+      padding: 7px 11px;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.45);
+    }
+    .proposal-overlay a.secondary { display: none; }
   }
   @media print { .proposal-overlay { display: none !important; } }
 </style>
@@ -196,6 +220,30 @@ const downloadButtonScript = `
   <a class="secondary" href="/proposals/__SLUG__/logout">Lock</a>
   <a href="/proposals/__SLUG__/download">Download PDF</a>
 </div>
+<script>
+  (function () {
+    var overlay = document.querySelector('.proposal-overlay');
+    if (!overlay) return;
+    var idleMs = 3500;
+    var timer = null;
+    function show() {
+      overlay.classList.remove('is-idle');
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(function () { overlay.classList.add('is-idle'); }, idleMs);
+    }
+    show();
+    // Re-show on any user interaction with the deck.
+    ['click', 'touchstart', 'keydown', 'pointerdown'].forEach(function (evt) {
+      document.addEventListener(evt, show, { passive: true });
+    });
+    // Don't hide while the user is hovering the overlay itself.
+    overlay.addEventListener('mouseenter', function () {
+      if (timer) clearTimeout(timer);
+      overlay.classList.remove('is-idle');
+    });
+    overlay.addEventListener('mouseleave', show);
+  })();
+</script>
 `;
 
 function injectOverlay(html, slug) {

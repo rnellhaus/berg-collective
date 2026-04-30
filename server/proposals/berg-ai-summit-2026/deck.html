@@ -912,14 +912,18 @@
       perspective: none;
       touch-action: pan-y;
     }
+    /* Use dvh so iOS Safari's collapsing top/bottom UI doesn't crop the
+       slide. Fall back to vh on browsers that don't support dvh. */
     .stage {
       width: 100vw;
       height: 100vh;
+      height: 100dvh;
       transform-style: flat;
     }
     .slide {
       width: 100vw;
       height: 100vh;
+      height: 100dvh;
       transform-style: flat;
       box-shadow: none;
     }
