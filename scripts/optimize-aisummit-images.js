@@ -23,7 +23,8 @@ const SPEAKERS_OUT = join(OUT, 'speakers');
 // region before the square resize. Missing files are skipped with a warning.
 const SPEAKERS = {
   'dion-ridley': 'dion_headshot.jpg',
-  'evol-greaves': 'evol-headshot.jpg',
+  // Portrait source; auto-crop clipped the top of his head, so anchor near the top.
+  'evol-greaves': { file: 'evol-headshot.jpg', extract: { left: 0, top: 60, width: 1237, height: 1237 } },
   'justin-williams': 'justin williams.jpeg',
   'justin-elliot': 'justin-elliot.png',
   'ian-grant': 'ian grant.jpeg',

@@ -298,8 +298,14 @@
 }
 .presenting {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 13px;
+  gap: 9px;
+}
+.presentingRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 .presentedBy {
   font-size: 11px;
@@ -308,8 +314,13 @@
   letter-spacing: var(--tracking-meta);
   color: var(--text-muted);
 }
+.bergLogoHero {
+  width: 78px;
+  height: auto;
+  opacity: 0.95;
+}
 .ssLogo {
-  width: 152px;
+  width: 132px;
   height: auto;
   opacity: 0.92;
 }

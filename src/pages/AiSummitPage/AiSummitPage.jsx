@@ -271,7 +271,7 @@ function useSummitHead() {
   useEffect(() => {
     const title = 'Amplified Intelligence — The BERG AI Summit 2026';
     const description =
-      'Moving at the speed of thought. Join 150+ leaders at Squarespace HQ on June 27, 2026 to bridge the AI fluency gap and future-proof your career. Presented by Squarespace.';
+      'Moving at the speed of thought. Join 150+ leaders at Squarespace HQ on June 27, 2026 to bridge the AI fluency gap and future-proof your career. Presented by BERG Collective in partnership with Squarespace.';
     const url = `${SITE_URL}${PAGE_PATH}`;
 
     const created = [];
@@ -482,15 +482,28 @@ export default function AiSummitPage() {
           <div className={styles.heroGlow} aria-hidden="true" />
           <div className={styles.heroInner}>
             <div className={`${styles.presenting} ${styles.heroEnter}`}>
-              <span className={styles.presentedBy}>Presented by</span>
-              <img
-                className={styles.ssLogo}
-                src="/images/aisummit/squarespace-white.webp"
-                width="150"
-                height="22"
-                alt="Squarespace"
-                fetchPriority="high"
-              />
+              <span className={styles.presentingRow}>
+                <span className={styles.presentedBy}>Presented by</span>
+                <img
+                  className={styles.bergLogoHero}
+                  src="/images/aisummit/berg-white.webp"
+                  width="78"
+                  height="36"
+                  alt="BERG Collective"
+                  fetchPriority="high"
+                />
+              </span>
+              <span className={styles.presentingRow}>
+                <span className={styles.presentedBy}>in partnership with</span>
+                <img
+                  className={styles.ssLogo}
+                  src="/images/aisummit/squarespace-white.webp"
+                  width="132"
+                  height="19"
+                  alt="Squarespace"
+                  fetchPriority="high"
+                />
+              </span>
             </div>
             <img
               className={`${styles.heroLockup} ${styles.heroEnter}`}
@@ -748,22 +761,22 @@ export default function AiSummitPage() {
             <div className={styles.footerPresented}>
               <span className={styles.presentedBy}>Presented by</span>
               <img
-                className={styles.ssLogoFooter}
-                src="/images/aisummit/squarespace-white.webp"
-                width="132"
-                height="19"
-                alt="Squarespace"
-                loading="lazy"
-              />
-            </div>
-            <div className={styles.footerPresented}>
-              <span className={styles.presentedBy}>Organized by</span>
-              <img
                 className={styles.bergLogoFooter}
                 src="/images/aisummit/berg-white.webp"
                 width="100"
                 height="46"
                 alt="BERG Collective"
+                loading="lazy"
+              />
+            </div>
+            <div className={styles.footerPresented}>
+              <span className={styles.presentedBy}>In partnership with</span>
+              <img
+                className={styles.ssLogoFooter}
+                src="/images/aisummit/squarespace-white.webp"
+                width="132"
+                height="19"
+                alt="Squarespace"
                 loading="lazy"
               />
             </div>
