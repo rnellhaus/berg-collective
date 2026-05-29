@@ -70,6 +70,19 @@ async function run() {
     console.warn('  ! skip OG image: final-square-APPROVED.png not found');
   }
 
+  // Squarespace presenting logo (white wordmark, transparent) — keep alpha.
+  const ssSrc = join(SRC, 'squarespace-logo-horizontal-white.20250422154832839 (1).png');
+  if (existsSync(ssSrc)) {
+    const ssOut = join(OUT, 'squarespace-white.webp');
+    await sharp(ssSrc)
+      .resize(480, null, { fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 92 })
+      .toFile(ssOut);
+    console.log(`  ✓ squarespace logo -> ${ssOut.replace(ROOT, '.')}`);
+  } else {
+    console.warn('  ! skip Squarespace logo: source not found');
+  }
+
   // Hero lockup — flatten transparency onto deep-space and trim weight a touch.
   const lockupSrc = join(SRC, 'logo-amplified-intelligence-transparent.png');
   if (existsSync(lockupSrc)) {

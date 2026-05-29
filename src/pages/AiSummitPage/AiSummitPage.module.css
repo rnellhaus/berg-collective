@@ -297,11 +297,21 @@
   max-width: 900px;
 }
 .presenting {
-  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+.presentedBy {
+  font-size: 11px;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: var(--tracking-meta);
   color: var(--text-muted);
+}
+.ssLogo {
+  width: 152px;
+  height: auto;
+  opacity: 0.92;
 }
 .heroLockup {
   width: min(760px, 88vw);
@@ -678,6 +688,16 @@
   font-size: 15px;
   font-weight: 600;
   color: var(--ice-white);
+}
+.footerPresented {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.ssLogoFooter {
+  width: 130px;
+  height: auto;
+  opacity: 0.9;
 }
 .footerLine {
   font-size: 14px;

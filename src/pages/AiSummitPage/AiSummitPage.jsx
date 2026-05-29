@@ -480,7 +480,17 @@ export default function AiSummitPage() {
           <ParticleField className={styles.heroCanvas} />
           <div className={styles.heroGlow} aria-hidden="true" />
           <div className={styles.heroInner}>
-            <p className={`${styles.presenting} ${styles.heroEnter}`}>Presented by Squarespace</p>
+            <div className={`${styles.presenting} ${styles.heroEnter}`}>
+              <span className={styles.presentedBy}>Presented by</span>
+              <img
+                className={styles.ssLogo}
+                src="/images/aisummit/squarespace-white.webp"
+                width="150"
+                height="22"
+                alt="Squarespace"
+                fetchPriority="high"
+              />
+            </div>
             <img
               className={`${styles.heroLockup} ${styles.heroEnter}`}
               src="/images/aisummit/lockup.webp"
@@ -733,7 +743,18 @@ export default function AiSummitPage() {
             <Monogram size={34} idSuffix="footer" />
             <span>Amplified Intelligence — The BERG AI Summit 2026</span>
           </div>
-          <p className={styles.footerLine}>Presented by Squarespace · Organized by BERG Collective.</p>
+          <div className={styles.footerPresented}>
+            <span className={styles.presentedBy}>Presented by</span>
+            <img
+              className={styles.ssLogoFooter}
+              src="/images/aisummit/squarespace-white.webp"
+              width="132"
+              height="19"
+              alt="Squarespace"
+              loading="lazy"
+            />
+          </div>
+          <p className={styles.footerLine}>Organized by BERG Collective</p>
           <p className={styles.footerAddr}>225 Varick St, New York, NY 10014</p>
           <a
             href={LUMA_EVENT_URL}
