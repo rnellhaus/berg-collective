@@ -85,17 +85,17 @@ inside Squarespace Code Blocks (which sanitize some markup).
 1. **Luma `evt-` id** — replace the short-code fallback (`qw6m5bzv`) with the exact
    `evt-…` embed id once available. See "Swapping in the real Luma `evt-` id" above.
    (Marked with a `TODO` comment in `AiSummitPage.jsx`.)
-2. **Marcus Ellison headshot** — no source image exists, so he currently renders as a
-   gradient **"ME"** initials tile. Add `marcus-ellison` art to the AI Summit folder, map
-   it in `scripts/optimize-aisummit-images.js`, re-run, and set `img: 'marcus-ellison'`
-   in the `SPEAKERS` array.
-3. **Afterparty location** — the 5:30 PM "Reception & Afterparty" line says *Location TBD*.
+2. **Afterparty location** — the 5:30 PM "Reception & Afterparty" line says *Location TBD*.
    Update `SCHEDULE` once confirmed.
-4. **Tunde Ajaba-Ogundipe title** — no title was provided; currently labeled "Speaker".
+3. **Tunde Ajaba-Ogundipe title** — no title was provided; currently labeled "Speaker".
    Update the `SPEAKERS` array when known.
-5. **OG image (optional)** — currently the 1200×1200 square key art
+4. **OG image (optional)** — currently the 1200×1200 square key art
    (`og-amplified-intelligence.jpg`). If a 1.91:1 (1200×630) crop is preferred for link
    previews, export one and point `OG_IMAGE` + `og:image:width/height` at it.
-6. **`apple-touch-icon`** — generated as a 180×180 PNG from the "Ai" monogram SVG. Swap in
+5. **`apple-touch-icon`** — generated as a 180×180 PNG from the "Ai" monogram SVG. Swap in
    an official monogram PNG here and at `public/images/aisummit/ai-monogram.svg` if brand
    provides one.
+
+> Marcus Ellison's headshot is now wired in (the source had a LinkedIn "#HIRING" banner,
+> so the optimizer pre-crops the face region above it — see `SPEAKERS` in
+> `scripts/optimize-aisummit-images.js`).

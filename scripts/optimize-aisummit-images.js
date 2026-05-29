@@ -19,7 +19,8 @@ const SRC = join(ROOT, 'public', 'images', 'AI Summit');
 const OUT = join(ROOT, 'public', 'images', 'aisummit');
 const SPEAKERS_OUT = join(OUT, 'speakers');
 
-// slug -> source filename (relative to SRC). Missing files are skipped with a warning.
+// slug -> source filename (relative to SRC), or { file, extract } to pre-crop a
+// region before the square resize. Missing files are skipped with a warning.
 const SPEAKERS = {
   'dion-ridley': 'dion_headshot.jpg',
   'evol-greaves': 'evol-headshot.jpg',
@@ -30,21 +31,26 @@ const SPEAKERS = {
   'monk-inyang': 'Monk Inyang.jpeg',
   'x-eyee': 'X-Eyee.png',
   'rich-nellhaus': '1774548295292-rich-headshot-new.jpg',
-  // 'marcus-ellison': missing source — rendered as a gradient initials tile in the UI.
+  // Source (800x800) has a LinkedIn "#HIRING" banner in the bottom-left; crop the
+  // face region above/right of it before the square resize.
+  'marcus-ellison': { file: 'marcus-ellison.jpeg', extract: { left: 345, top: 45, width: 455, height: 455 } },
 };
 
 async function run() {
   await mkdir(SPEAKERS_OUT, { recursive: true });
 
-  for (const [slug, file] of Object.entries(SPEAKERS)) {
+  for (const [slug, entry] of Object.entries(SPEAKERS)) {
+    const file = typeof entry === 'string' ? entry : entry.file;
+    const extract = typeof entry === 'string' ? null : entry.extract;
     const src = join(SRC, file);
     if (!existsSync(src)) {
       console.warn(`  ! skip ${slug}: source not found (${file})`);
       continue;
     }
     const dest = join(SPEAKERS_OUT, `${slug}.webp`);
-    await sharp(src)
-      .rotate() // respect EXIF orientation
+    let pipe = sharp(src).rotate(); // respect EXIF orientation
+    if (extract) pipe = pipe.extract(extract);
+    await pipe
       .resize(560, 560, { fit: 'cover', position: 'attention' })
       .webp({ quality: 80 })
       .toFile(dest);

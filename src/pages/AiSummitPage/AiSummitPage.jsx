@@ -69,7 +69,7 @@ const SPEAKERS = [
   { img: 'x-eyee', name: 'X. Eyee', title: 'CEO, Malo Santo' },
   { img: 'monk-inyang', name: 'Monk Inyang', title: 'CEO, 1st Street Partnerships' },
   { img: 'ian-grant', name: 'Ian Grant', title: 'CEO, Greenlit' },
-  { img: null, name: 'Marcus Ellison', title: 'Founder & CEO, Breadcrumb.ai' }, // TODO: add headshot
+  { img: 'marcus-ellison', name: 'Marcus Ellison', title: 'Founder & CEO, Breadcrumb.ai' },
   { img: 'tunde-ajaba-ogundipe', name: 'Tunde Ajaba-Ogundipe', title: 'Speaker' },
   { img: 'rich-nellhaus', name: 'Rich Nellhaus', title: 'Founder, Staffify & BERG Collective' },
 ];
