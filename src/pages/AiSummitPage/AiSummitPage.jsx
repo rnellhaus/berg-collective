@@ -743,18 +743,30 @@ export default function AiSummitPage() {
             <Monogram size={34} idSuffix="footer" />
             <span>Amplified Intelligence — The BERG AI Summit 2026</span>
           </div>
-          <div className={styles.footerPresented}>
-            <span className={styles.presentedBy}>Presented by</span>
-            <img
-              className={styles.ssLogoFooter}
-              src="/images/aisummit/squarespace-white.webp"
-              width="132"
-              height="19"
-              alt="Squarespace"
-              loading="lazy"
-            />
+          <div className={styles.footerPartners}>
+            <div className={styles.footerPresented}>
+              <span className={styles.presentedBy}>Presented by</span>
+              <img
+                className={styles.ssLogoFooter}
+                src="/images/aisummit/squarespace-white.webp"
+                width="132"
+                height="19"
+                alt="Squarespace"
+                loading="lazy"
+              />
+            </div>
+            <div className={styles.footerPresented}>
+              <span className={styles.presentedBy}>Organized by</span>
+              <img
+                className={styles.bergLogoFooter}
+                src="/images/aisummit/berg-white.webp"
+                width="100"
+                height="46"
+                alt="BERG Collective"
+                loading="lazy"
+              />
+            </div>
           </div>
-          <p className={styles.footerLine}>Organized by BERG Collective</p>
           <p className={styles.footerAddr}>225 Varick St, New York, NY 10014</p>
           <a
             href={LUMA_EVENT_URL}

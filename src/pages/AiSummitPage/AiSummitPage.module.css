@@ -689,19 +689,27 @@
   font-weight: 600;
   color: var(--ice-white);
 }
+.footerPartners {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  margin: 4px 0 2px;
+}
 .footerPresented {
   display: flex;
   align-items: center;
-  gap: 11px;
+  gap: 12px;
 }
 .ssLogoFooter {
   width: 130px;
   height: auto;
   opacity: 0.9;
 }
-.footerLine {
-  font-size: 14px;
-  color: var(--text-soft);
+.bergLogoFooter {
+  width: 100px;
+  height: auto;
+  opacity: 0.92;
 }
 .footerAddr {
   font-size: 13px;

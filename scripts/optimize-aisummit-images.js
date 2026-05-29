@@ -83,6 +83,21 @@ async function run() {
     console.warn('  ! skip Squarespace logo: source not found');
   }
 
+  // BERG Collective "organized by" logo — source is black-on-transparent, so
+  // invert the color channels (keep alpha) to get a clean white logo for the dark UI.
+  const bergSrc = join(ROOT, 'public', 'images', 'logo.png');
+  if (existsSync(bergSrc)) {
+    const bergOut = join(OUT, 'berg-white.webp');
+    await sharp(bergSrc)
+      .negate({ alpha: false })
+      .resize(360, null, { fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 92 })
+      .toFile(bergOut);
+    console.log(`  ✓ berg logo -> ${bergOut.replace(ROOT, '.')}`);
+  } else {
+    console.warn('  ! skip BERG logo: public/images/logo.png not found');
+  }
+
   // Hero lockup — flatten transparency onto deep-space and trim weight a touch.
   const lockupSrc = join(SRC, 'logo-amplified-intelligence-transparent.png');
   if (existsSync(lockupSrc)) {
