@@ -783,7 +783,7 @@ export default function AiSummitPage() {
               />
             </div>
           </div>
-          <p className={styles.footerAddr}>225 Varick St, New York, NY 10014</p>
+          <p className={styles.footerAddr}>Squarespace HQ, New York, NY</p>
           <a
             href={LUMA_EVENT_URL}
             className={`${styles.btn} ${styles.btnSm} luma-checkout--button`}
