@@ -24,6 +24,7 @@ const NewsletterPage = lazy(() => import('./pages/NewsletterPage/NewsletterPage'
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage/NotFoundPage'));
 const PartnershipsPage = lazy(() => import('./pages/PartnershipsPage/PartnershipsPage'));
 const VolunteerPage = lazy(() => import('./pages/VolunteerPage/VolunteerPage'));
+const AiSummitPage = lazy(() => import('./pages/AiSummitPage/AiSummitPage'));
 const AdminApp = lazy(() => import('./admin/AdminApp'));
 
 function Loading() {
@@ -65,6 +66,7 @@ export default function App() {
     <BrowserRouter>
       <Suspense fallback={<Loading />}>
         <Routes>
+          <Route path="/aisummit" element={<AiSummitPage />} />
           <Route path="/admin/*" element={<AdminApp />} />
           <Route path="/*" element={<PublicLayout />} />
         </Routes>

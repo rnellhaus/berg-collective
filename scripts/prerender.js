@@ -40,6 +40,7 @@ const ROUTES = [
   '/contact',
   '/volunteer',
   '/newsletter',
+  '/aisummit',
 ];
 
 const MIME = {
