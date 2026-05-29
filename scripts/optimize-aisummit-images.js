@@ -34,6 +34,7 @@ const SPEAKERS = {
   'rich-nellhaus': '1774548295292-rich-headshot-new.jpg',
   'nana-bediako': 'Nana Bediako.jpeg',
   'ryan-moseley': 'ryanmoseley_headshot.png',
+  'bert-gervais': 'bert gervais.jpeg',
   // Source (800x800) has a LinkedIn "#HIRING" banner in the bottom-left; crop the
   // face region above/right of it before the square resize.
   'marcus-ellison': { file: 'marcus-ellison.jpeg', extract: { left: 345, top: 45, width: 455, height: 455 } },
