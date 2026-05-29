@@ -71,6 +71,7 @@ const SPEAKERS = [
   { img: 'ian-grant', name: 'Ian Grant', title: 'CEO, Greenlit' },
   { img: 'marcus-ellison', name: 'Marcus Ellison', title: 'Founder & CEO, Breadcrumb.ai' },
   { img: 'tunde-ajaba-ogundipe', name: 'Tunde Ajaba-Ogundipe', title: 'Speaker' },
+  { img: 'ryan-moseley', name: 'Ryan Moseley', title: 'Senior Engineering Manager, Squarespace' },
   { img: 'nana-bediako', name: 'Nana Bediako', title: 'Global Lead, Creators & Creative Strategy' },
   { img: 'rich-nellhaus', name: 'Rich Nellhaus', title: 'Founder, Staffify & BERG Collective' },
 ];
