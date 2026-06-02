@@ -35,7 +35,9 @@ const SPEAKERS = {
   'nana-bediako': 'Nana Bediako.jpeg',
   'ryan-moseley': 'ryanmoseley_headshot.png',
   'bert-gervais': 'bert gervais.jpeg',
-  'marcus-ellison': 'marcus ellison.jpeg',
+  // Portrait source (1179x1640); attention-crop clipped his head, so anchor a
+  // square on the face with headroom before the square resize.
+  'marcus-ellison': { file: 'marcus ellison.jpeg', extract: { left: 200, top: 40, width: 900, height: 900 } },
   'chinedu-enekwe': 'chinedu-headshot.jpeg',
 };
 
