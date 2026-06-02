@@ -564,6 +564,14 @@
   grid-template-columns: repeat(5, 1fr);
   gap: 26px 20px;
 }
+.speakerNote {
+  margin: 38px auto 0;
+  max-width: 720px;
+  text-align: center;
+  font-size: clamp(15px, 1.5vw, 17px);
+  font-weight: 300;
+  color: var(--text-soft);
+}
 .speaker {
   text-align: center;
 }

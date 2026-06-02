@@ -66,15 +66,17 @@ const SPEAKERS = [
   { img: 'evol-greaves', name: 'Evol Greaves', title: 'VP of Engineering, Betterment' },
   { img: 'justin-elliot', name: 'Justin Elliot', title: 'Co-Founder & CTO, WRTH · Anthropic Ambassador' },
   { img: 'justin-williams', name: 'Justin Williams', title: 'Co-Founder, Stealth Startup' },
-  { img: 'x-eyee', name: 'X. Eyee', title: 'CEO, Malo Santo' },
-  { img: 'monk-inyang', name: 'Monk Inyang', title: 'CEO, 1st Street Partnerships' },
-  { img: 'ian-grant', name: 'Ian Grant', title: 'CEO, Greenlit' },
+  // Temporarily removed pending confirmation — restore when they confirm.
+  // { img: 'x-eyee', name: 'X. Eyee', title: 'CEO, Malo Santo' },
+  // { img: 'monk-inyang', name: 'Monk Inyang', title: 'CEO, 1st Street Partnerships' },
+  // { img: 'ian-grant', name: 'Ian Grant', title: 'CEO, Greenlit' },
   { img: 'marcus-ellison', name: 'Marcus Ellison', title: 'Founder & CEO, Breadcrumb.ai' },
   { img: 'tunde-ajaba-ogundipe', name: 'Tunde Ajaba-Ogundipe', title: 'Co-Founder / CEO, No Wahala and Ereko Labs' },
   { img: 'ryan-moseley', name: 'Ryan Moseley', title: 'Senior Engineering Manager, Squarespace' },
   { img: 'nana-bediako', name: 'Nana Bediako', title: 'Global Lead, Creators & Creative Strategy' },
   { img: 'bert-gervais', name: 'Bert Gervais', title: 'Co-Founder, Genius Potential' },
   { img: 'rich-nellhaus', name: 'Rich Nellhaus', title: 'Founder, Staffify & BERG Collective' },
+  { img: 'chinedu-enekwe', name: 'Chinedu Enekwe', title: 'Investor/Partner, Passbook' },
 ];
 
 function initials(name) {
@@ -692,6 +694,9 @@ export default function AiSummitPage() {
                 </li>
               ))}
             </ul>
+            <p className={styles.speakerNote} data-reveal>
+              Plus <span className={styles.grad}>special guest speakers</span> — announcements to come.
+            </p>
           </div>
         </section>
 
