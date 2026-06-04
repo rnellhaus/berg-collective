@@ -39,6 +39,8 @@ const SPEAKERS = {
   // square on the face with headroom before the square resize.
   'marcus-ellison': { file: 'marcus ellison.jpeg', extract: { left: 200, top: 40, width: 900, height: 900 } },
   'chinedu-enekwe': 'chinedu-headshot.jpeg',
+  // Small portrait (194x259); anchor square at the top to keep the full head.
+  'frank-holland': { file: 'frank-holland.jpeg', extract: { left: 0, top: 0, width: 194, height: 194 } },
 };
 
 async function run() {

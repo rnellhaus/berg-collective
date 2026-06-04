@@ -62,6 +62,7 @@ const TRACKS = [
 
 // img: slug of optimized webp in /images/aisummit/speakers, or null for an initials tile.
 const SPEAKERS = [
+  { img: 'frank-holland', name: 'Frank Holland', title: 'News Anchor, CNBC' },
   { img: 'dion-ridley', name: 'Dion Ridley', title: 'Engineering Leader, Netflix' },
   { img: 'evol-greaves', name: 'Evol Greaves', title: 'VP of Engineering, Betterment' },
   { img: 'justin-elliot', name: 'Justin Elliot', title: 'Co-Founder & CTO, WRTH · Anthropic Ambassador' },
