@@ -105,15 +105,33 @@ async function run() {
     console.warn('  ! skip BERG logo: public/images/logo.png not found');
   }
 
-  // Hero lockup — flatten transparency onto deep-space and trim weight a touch.
-  const lockupSrc = join(SRC, 'logo-amplified-intelligence-transparent.png');
+  // Hero lockup — the white-version PNG ships with a baked dark checker
+  // background (no real alpha), so key out the neutral dark pixels into
+  // transparency while preserving the white wordmark AND the blue "Ai"
+  // monogram. Alpha = max(luminance key, chroma key): white text survives on
+  // luminance, the saturated-blue monogram survives on chroma.
+  const lockupSrc = join(SRC, 'logo-white-version.png');
   if (existsSync(lockupSrc)) {
     const lockupOut = join(OUT, 'lockup.webp');
-    await sharp(lockupSrc)
-      .resize(1200, null, { fit: 'inside', withoutEnlargement: true })
-      .webp({ quality: 92 })
+    const { data, info } = await sharp(lockupSrc)
+      .removeAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+    const { width, height } = info;
+    const rgba = Buffer.alloc(width * height * 4);
+    for (let i = 0, p = 0; i < data.length; i += 3, p += 4) {
+      const r = data[i], g = data[i + 1], b = data[i + 2];
+      const lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      const chroma = Math.max(r, g, b) - Math.min(r, g, b);
+      // lum-25 kills the ~10-15 dark checker; *1.7 reaches full opacity by ~175.
+      const a = Math.max(0, Math.min(255, Math.max((lum - 25) * 1.7, chroma * 2.2)));
+      rgba[p] = r; rgba[p + 1] = g; rgba[p + 2] = b; rgba[p + 3] = Math.round(a);
+    }
+    await sharp(rgba, { raw: { width, height, channels: 4 } })
+      .resize(1600, null, { fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 92, alphaQuality: 100 })
       .toFile(lockupOut);
-    console.log(`  ✓ hero lockup -> ${lockupOut.replace(ROOT, '.')}`);
+    console.log(`  ✓ hero lockup (bg knocked out) -> ${lockupOut.replace(ROOT, '.')}`);
   }
 
   console.log('done.');

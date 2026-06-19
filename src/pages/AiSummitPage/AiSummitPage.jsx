@@ -514,7 +514,7 @@ export default function AiSummitPage() {
               className={`${styles.heroLockup} ${styles.heroEnter}`}
               src="/images/aisummit/lockup.webp"
               width="760"
-              height="230"
+              height="253"
               alt="Amplified Intelligence — Moving at the speed of thought"
               fetchPriority="high"
             />
