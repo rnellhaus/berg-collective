@@ -25,6 +25,18 @@ export async function initDatabase() {
     console.log('Created default admin user: rich@bergcollective.org');
   }
 
+  // Migration: password reset tokens table
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS password_resets (
+      id SERIAL PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      token TEXT UNIQUE NOT NULL,
+      expires_at TIMESTAMPTZ NOT NULL,
+      used BOOLEAN NOT NULL DEFAULT FALSE,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    )
+  `);
+
   // Migration: ensure reviewed columns exist on form_submissions
   const { rows: cols } = await pool.query(
     `SELECT column_name FROM information_schema.columns

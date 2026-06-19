@@ -58,6 +58,32 @@
   gap: 20px;
 }
 
+.helpText {
+  margin: 0;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #6b5752;
+}
+
+.link {
+  color: #8b3223;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.success {
+  background-color: #e6f4ea;
+  color: #1e6b3a;
+  border: 1px solid #b7dfc4;
+  padding: 12px 14px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
 .field {
   display: flex;
   flex-direction: column;

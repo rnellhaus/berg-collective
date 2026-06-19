@@ -3,6 +3,8 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { useAuth } from './hooks/useAuth';
 import LoginPage from './pages/LoginPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import AcceptInvitePage from './pages/AcceptInvitePage';
 import AdminLayout from './components/AdminLayout';
 import DashboardPage from './pages/DashboardPage';
@@ -70,13 +72,16 @@ function AdminRoutes() {
     );
   }
 
-  if (!user && location.pathname !== '/admin/login' && location.pathname !== '/admin/accept-invite') {
+  const publicPaths = ['/admin/login', '/admin/accept-invite', '/admin/forgot-password', '/admin/reset-password'];
+  if (!user && !publicPaths.includes(location.pathname)) {
     return <Navigate to="/admin/login" replace state={{ from: location }} />;
   }
 
   return (
     <Routes>
       <Route path="login" element={<LoginPage />} />
+      <Route path="forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="reset-password" element={<ResetPasswordPage />} />
       <Route path="accept-invite" element={<AcceptInvitePage />} />
       <Route element={<AdminLayout />}>
         <Route index element={<DashboardPage />} />

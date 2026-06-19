@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import styles from './LoginPage.module.css';
 
@@ -70,6 +70,10 @@ export default function LoginPage() {
           <button type="submit" className={styles.submit} disabled={submitting}>
             {submitting ? 'Signing in…' : 'Sign In'}
           </button>
+
+          <p className={styles.helpText}>
+            <Link to="/admin/forgot-password" className={styles.link}>Forgot your password?</Link>
+          </p>
         </form>
       </div>
     </div>
