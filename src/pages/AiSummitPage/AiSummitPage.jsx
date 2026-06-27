@@ -150,8 +150,8 @@ const SPEAKERS = [
 const SPONSORS = [
   { name: 'OpenAI', img: null },
   { name: 'Anthropic', img: null },
-  { name: 'Genius Potential', img: 'genius-potential' },
   { name: 'Squarespace', img: 'squarespace' },
+  { name: 'Genius Potential', img: 'genius-potential' },
   { name: 'BlackTech Meetup', img: null },
 ];
 
