@@ -61,12 +61,14 @@ const SCHEDULE = [
         floor: '12th Floor',
         talk: 'The Death of the App and the Rise of Agents',
         speaker: 'Justin Elliot — Co-Founder & CTO, WRTH · Anthropic Ambassador',
+        desc: "For two decades, the app was the fundamental unit of shipped software — a destination users tapped into to get things done. In an agentic world, that model inverts: users delegate intent to agents that traverse services on their behalf, and the tap-through app begins to disappear. Justin makes the case for what replaces it.",
       },
       {
         n: '02',
         floor: '6th Floor (Moon Landing)',
-        talk: 'AI on the Go: Full-Stack Building from Your Phone',
+        talk: 'AI on the Go: Building Full-Featured Applications from Your Mobile Device',
         speaker: 'Ryan Moseley — Senior Engineering Manager, Squarespace',
+        desc: "You don't need to be tethered to your laptop to build and ship. Ryan demonstrates a full build-and-deploy workflow straight from a phone — coding, previewing, and shipping a real application with the same level of interaction and oversight you'd expect from a desktop setup. Expect a live, mobile-first demonstration of AI development: what it makes effortless, and where it still falls short.",
       },
     ],
   },
@@ -77,14 +79,16 @@ const SCHEDULE = [
       {
         n: '01',
         floor: '12th Floor',
-        talk: 'Building an AI-Native Company',
+        talk: 'Building an AI-Native Company: Reimagining How We Work',
         speaker: 'Justin Williams — Co-Founder, Stealth Startup',
+        desc: "Justin lays out how to build the skills needed to operate in a company in a rapidly changing world. He shares real examples and practical tips to help humans and agents share context, hand off work cleanly, and operate on a common foundation. No matter your role, there's a culture you need to set — and these best practices will help you enjoy what's most important about your work.",
       },
       {
         n: '02',
         floor: '6th Floor (Moon Landing)',
-        talk: 'AI Breadcrumbs: Your GTM Brain',
+        talk: 'From Campaigns to Systems: Build an AI Partnership Brain in 10 Minutes',
         speaker: 'Marcus Ellison — Founder & CEO, Breadcrumb.ai',
+        desc: "Marcus built an AI Partnership Brain to scale Breadcrumb's commercial partnerships from 2 to 20 in a single week. In this session, he shares the playbook.",
       },
     ],
   },
@@ -720,6 +724,7 @@ export default function AiSummitPage() {
                             </span>
                             <p className={styles.tTrackTalk}>{tr.talk}</p>
                             <p className={styles.tTrackSpeaker}>{tr.speaker}</p>
+                            {tr.desc && <p className={styles.tTrackDesc}>{tr.desc}</p>}
                           </div>
                         ))}
                       </div>
