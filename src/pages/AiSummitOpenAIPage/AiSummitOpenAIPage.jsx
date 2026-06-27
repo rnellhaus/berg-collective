@@ -213,6 +213,13 @@ export default function AiSummitOpenAIPage() {
                 As a thank-you to every <strong>Amplified Intelligence</strong> attendee, OpenAI is giving you three
                 months of ChatGPT Plus, completely free. Submit your email below to claim it.
               </p>
+              <p className={styles.deadline}>
+                <svg className={styles.deadlineIcon} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 7v5l3 2" />
+                </svg>
+                Deadline to apply: <strong>Tuesday, June 30</strong>
+              </p>
             </section>
 
             {/* ── How to claim ── */}

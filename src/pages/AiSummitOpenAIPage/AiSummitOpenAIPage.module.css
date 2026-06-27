@@ -138,6 +138,26 @@
   max-width: 540px;
   margin: 0 auto;
 }
+.deadline {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 22px 0 0;
+  padding: 9px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffd9a8;
+  background: rgba(255, 170, 70, 0.1);
+  border: 1px solid rgba(255, 170, 70, 0.35);
+  border-radius: 999px;
+}
+.deadline strong {
+  color: #fff;
+}
+.deadlineIcon {
+  color: #ffb454;
+  flex: 0 0 auto;
+}
 
 /* ── Steps ── */
 .steps {
