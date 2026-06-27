@@ -142,6 +142,7 @@ const SPEAKERS = [
   { img: 'ryan-moseley', name: 'Ryan Moseley', title: 'Senior Engineering Manager, Squarespace' },
   { img: 'nana-bediako', name: 'Nana Bediako', title: 'Global Lead, Creators & Creative Strategy' },
   { img: 'bert-gervais', name: 'Bert Gervais', title: 'Co-Founder, Genius Potential' },
+  { img: 'david-horne', name: 'David Horne', title: 'Co-Founder, Genius Potential' },
   { img: 'rich-nellhaus', name: 'Rich Nellhaus', title: 'Founder, Staffify & BERG Collective' },
 ];
 
