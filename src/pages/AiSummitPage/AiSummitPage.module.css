@@ -683,28 +683,28 @@
   padding: 0;
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
 }
 .sponsorCard {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 132px;
-  padding: 26px 28px;
-  background: #fff;
+  min-height: 128px;
+  padding: 26px 30px;
+  background: var(--surface-overlay);
   border: 1px solid var(--hairline);
   border-radius: var(--radius-card);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
-  transition: transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+  transition: transform var(--dur) var(--ease), border-color var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
 }
 .sponsorCard:hover {
   transform: translateY(-4px);
-  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.42);
+  border-color: rgba(124, 77, 255, 0.4);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.4), 0 0 30px rgba(124, 77, 255, 0.14);
 }
 .sponsorLogo {
-  max-width: 100%;
-  max-height: 60px;
+  max-width: 80%;
+  max-height: 52px;
   width: auto;
   height: auto;
   object-fit: contain;
@@ -714,7 +714,7 @@
   font-weight: 700;
   letter-spacing: -0.01em;
   line-height: 1.15;
-  color: #0b0f17;
+  color: var(--ice-white);
   text-align: center;
 }
 
@@ -922,6 +922,9 @@
   .tTracks {
     grid-template-columns: 1fr;
   }
+  .sponsorGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
   .timeline::before {
     left: 78px;
   }
@@ -935,6 +938,9 @@
 }
 @media (max-width: 560px) {
   .speakerGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .sponsorGrid {
     grid-template-columns: repeat(2, 1fr);
   }
   .brandText {

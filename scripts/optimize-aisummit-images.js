@@ -106,41 +106,58 @@ async function run() {
   }
 
   // ── Sponsor logos ──
-  // Rendered on light "chip" cards in the Sponsors section, so each logo keeps
-  // its native dark/colored artwork (the page's white hero/footer logos would
-  // disappear on white). Missing sponsors fall back to a text wordmark in the UI.
+  // Rendered as white/light marks on dark "glass" chips (matching the page's
+  // card system). Monochrome black logos are inverted to white so they show on
+  // the dark UI; logos already supplied in white are used as-is; full-color
+  // marks are kept as-is. Sources live alongside the outputs in
+  // /images/aisummit/sponsors. Missing sources fall back to a text wordmark.
   const SPONSORS_OUT = join(OUT, 'sponsors');
   await mkdir(SPONSORS_OUT, { recursive: true });
 
-  // Genius Potential — full-color illustrative mark; trim the transparent margin
-  // and compress. Native colors read well on a white chip.
-  const gpSrc = join(SRC, 'genius potential.avif');
-  if (existsSync(gpSrc)) {
-    const gpOut = join(SPONSORS_OUT, 'genius-potential.webp');
-    await sharp(gpSrc)
+  // mode: 'invert' (black-on-transparent → white), 'whiteout' (color-on-solid-white
+  // → white knockout on transparent), or 'asis' (already white / full-color).
+  const SPONSOR_LOGOS = [
+    { slug: 'openai', file: 'OAI_OpenAI_Wordmark_Black.svg', mode: 'invert', box: [480, 96] },
+    { slug: 'anthropic', file: 'anthropic-wordmark-black.svg', mode: 'invert', box: [480, 96] },
+    // Supplied as a white wordmark on transparent — use as-is on the dark chip.
+    { slug: 'squarespace', file: 'squarespace-logo-horizontal-white.20250422154832839 (1) (1).png', mode: 'asis', box: [480, 120] },
+    // Navy + yellow mark on an opaque white plate — knock out the white to a
+    // clean white reversed logo so it reads on the dark UI.
+    { slug: 'betterment', file: 'betterment-logo-vector-2023.png', mode: 'whiteout', box: [480, 120] },
+    // White stacked logo on transparent — use as-is.
+    { slug: 'blacktech-meetup', file: 'BTM_logo-white.png', mode: 'asis', box: [440, 180] },
+    // Full-color illustrative mark — keep native colors (bright interior reads on dark).
+    { slug: 'genius-potential', file: 'Genius potential LOGO-06.png', mode: 'asis', box: [440, 220] },
+  ];
+  for (const { slug, file, mode, box } of SPONSOR_LOGOS) {
+    const src = join(SPONSORS_OUT, file);
+    if (!existsSync(src)) {
+      console.warn(`  ! skip sponsor ${slug}: source not found (${file})`);
+      continue;
+    }
+    let pipe;
+    if (mode === 'whiteout') {
+      // Build alpha from distance-to-white so both the navy wordmark and the
+      // yellow icon survive, then paint every surviving pixel white.
+      const { data, info } = await sharp(src).removeAlpha().raw().toBuffer({ resolveWithObject: true });
+      const { width, height } = info;
+      const rgba = Buffer.alloc(width * height * 4);
+      for (let i = 0, p = 0; i < data.length; i += 3, p += 4) {
+        const deficit = Math.max(255 - data[i], 255 - data[i + 1], 255 - data[i + 2]);
+        const a = Math.max(0, Math.min(255, (deficit - 12) * 1.4));
+        rgba[p] = 255; rgba[p + 1] = 255; rgba[p + 2] = 255; rgba[p + 3] = Math.round(a);
+      }
+      pipe = sharp(rgba, { raw: { width, height, channels: 4 } });
+    } else {
+      pipe = sharp(src, { density: 300 });
+      if (mode === 'invert') pipe = pipe.negate({ alpha: false }); // black mark -> white mark
+    }
+    await pipe
       .trim()
-      .resize(480, 300, { fit: 'inside', withoutEnlargement: true })
-      .webp({ quality: 90 })
-      .toFile(gpOut);
-    console.log(`  ✓ sponsor genius-potential -> ${gpOut.replace(ROOT, '.')}`);
-  } else {
-    console.warn('  ! skip Genius Potential logo: source not found');
-  }
-
-  // Squarespace — only a white wordmark exists; invert to black for the light chip
-  // (matches Squarespace's standard black wordmark).
-  const ssSponsorSrc = join(SRC, 'squarespace-logo-horizontal-white.20250422154832839 (1).png');
-  if (existsSync(ssSponsorSrc)) {
-    const ssSponsorOut = join(SPONSORS_OUT, 'squarespace.webp');
-    await sharp(ssSponsorSrc)
-      .negate({ alpha: false })
-      .trim()
-      .resize(480, 140, { fit: 'inside', withoutEnlargement: true })
-      .webp({ quality: 92 })
-      .toFile(ssSponsorOut);
-    console.log(`  ✓ sponsor squarespace -> ${ssSponsorOut.replace(ROOT, '.')}`);
-  } else {
-    console.warn('  ! skip Squarespace sponsor logo: source not found');
+      .resize(box[0], box[1], { fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 92, alphaQuality: 100 })
+      .toFile(join(SPONSORS_OUT, `${slug}.webp`));
+    console.log(`  ✓ sponsor ${slug} -> ./public/images/aisummit/sponsors/${slug}.webp`);
   }
 
   // Hero lockup — the white-version PNG ships with a baked dark checker

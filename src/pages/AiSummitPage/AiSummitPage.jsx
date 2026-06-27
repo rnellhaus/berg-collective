@@ -148,11 +148,12 @@ const SPEAKERS = [
 // img: slug of optimized webp in /images/aisummit/sponsors, or null for a text
 // wordmark fallback (used until the real logo file is supplied).
 const SPONSORS = [
-  { name: 'OpenAI', img: null },
-  { name: 'Anthropic', img: null },
+  { name: 'OpenAI', img: 'openai' },
+  { name: 'Anthropic', img: 'anthropic' },
   { name: 'Squarespace', img: 'squarespace' },
+  { name: 'Betterment', img: 'betterment' },
   { name: 'Genius Potential', img: 'genius-potential' },
-  { name: 'BlackTech Meetup', img: null },
+  { name: 'BlackTech Meetup', img: 'blacktech-meetup' },
 ];
 
 function initials(name) {
