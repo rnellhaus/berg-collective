@@ -49,7 +49,7 @@ const SCHEDULE = [
   {
     time: '11:00 AM',
     title: 'Thrive like "Knicks in Five": Future-Proof Your Career in the Age of AI',
-    speakers: ['Bert Gervais — Founder, Creative Genius'],
+    speakers: ['Bert Gervais — Co-Founder, Genius Potential'],
   },
   { time: '12:00 PM', title: 'Lunch Break' },
   {
