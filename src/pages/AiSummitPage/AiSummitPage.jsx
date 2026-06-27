@@ -40,17 +40,83 @@ const GAINS = [
 ];
 
 const SCHEDULE = [
-  { time: '10:00 AM', title: 'Registration & Morning Coffee', sub: 'Check-in, grab a coffee, meet fellow attendees.' },
-  { time: '11:00 AM', title: 'Welcome Address', sub: 'Opening remarks from BERG Leadership.' },
-  { time: '11:15 AM', title: 'Fireside Chat', talk: 'Onward', sub: 'Future-Proofing Your Career in the Age of AI, with top AI-native operators.' },
-  { time: '12:00 PM', title: 'Lunch & Networking', sub: 'Premium catered lunch at Squarespace HQ.' },
-  { time: '12:45 PM', title: 'Interactive Workshops', sub: 'Track-specific, hands-on sessions.' },
-  { time: '02:45 PM', title: 'Fireside Chat', talk: 'Interoperability', sub: 'Building for Agents and Humans, with AI-native entrepreneurs.' },
-  { time: '03:30 PM', title: 'Coffee Break', sub: 'Afternoon refresh and networking.' },
-  { time: '03:45 PM', title: 'Live Demos', sub: 'Top 2 AI hacks from each workshop track.' },
-  { time: '04:00 PM', title: 'Keynote', talk: 'Moving at the Speed of Thought', sub: 'The closing vision for an AI-native future.' },
-  { time: '05:00 PM', title: 'Closing Ceremony', sub: 'Peer celebration, awards, and prizes.' },
-  { time: '05:30 PM', title: 'Reception & Afterparty', sub: 'Location TBD.' },
+  { time: '10:00 AM', title: 'Registration & Refreshments', sub: 'Check-in, get caffeinated, meet fellow attendees.' },
+  {
+    time: '10:45 AM',
+    title: 'Opening Remarks',
+    speakers: ['Evol Greaves — Director of Innovation & Growth, BERG Collective'],
+  },
+  {
+    time: '11:00 AM',
+    title: 'Thrive like "Knicks in Five": Future-Proof Your Career in the Age of AI',
+    speakers: ['Bert Gervais — Founder, Creative Genius'],
+  },
+  { time: '12:00 PM', title: 'Lunch Break' },
+  {
+    time: '12:45 PM',
+    title: 'Session 1 — Featured Talks',
+    tracks: [
+      {
+        n: '01',
+        floor: '12th Floor',
+        talk: 'The Death of the App and the Rise of Agents',
+        speaker: 'Justin Elliot — Co-Founder & CTO, WRTH · Anthropic Ambassador',
+      },
+      {
+        n: '02',
+        floor: '6th Floor (Moon Landing)',
+        talk: 'AI on the Go: Full-Stack Building from Your Phone',
+        speaker: 'Ryan Moseley — Senior Engineering Manager, Squarespace',
+      },
+    ],
+  },
+  {
+    time: '1:45 PM',
+    title: 'Session 2 — Featured Talks',
+    tracks: [
+      {
+        n: '01',
+        floor: '12th Floor',
+        talk: 'Building an AI-Native Company',
+        speaker: 'Justin Williams — Co-Founder, Stealth Startup',
+      },
+      {
+        n: '02',
+        floor: '6th Floor (Moon Landing)',
+        talk: 'AI Breadcrumbs: Your GTM Brain',
+        speaker: 'Marcus Ellison — Founder & CEO, Breadcrumb.ai',
+      },
+    ],
+  },
+  { time: '2:45 PM', title: 'Break', sub: 'Afternoon refresh and networking.' },
+  {
+    time: '3:00 PM',
+    title: 'The Art of Differentiation: Standing Out in a Sea of Sameness',
+    speakers: [
+      'Nana Bediako — Global Creative Lead & AI Systems Architect',
+      'Evol Greaves — VP of Engineering, Betterment',
+    ],
+  },
+  {
+    time: '3:45 PM',
+    title: 'Speed of Thought: The Future of Entrepreneurship',
+    speakers: [
+      'Frank Holland — Anchor, CNBC',
+      'Rich Nellhaus — Founder, BERG Collective',
+      'Evol Greaves — VP of Engineering, Betterment',
+      'Justin Elliot — Co-Founder & CTO, WRTH · Anthropic Ambassador',
+    ],
+  },
+  {
+    time: '4:45 PM',
+    title: 'Closing Remarks',
+    speakers: ['Elena Ruyter — Director of BERG Collective'],
+  },
+  {
+    time: '5:00 PM',
+    title: 'World Cup Watch Party',
+    sub: 'England vs Panama (vibes by DJ Ty-Michelle) · 12th Floor & Rooftop',
+  },
 ];
 
 const TRACKS = [
@@ -77,7 +143,6 @@ const SPEAKERS = [
   { img: 'nana-bediako', name: 'Nana Bediako', title: 'Global Lead, Creators & Creative Strategy' },
   { img: 'bert-gervais', name: 'Bert Gervais', title: 'Co-Founder, Genius Potential' },
   { img: 'rich-nellhaus', name: 'Rich Nellhaus', title: 'Founder, Staffify & BERG Collective' },
-  { img: 'chinedu-enekwe', name: 'Chinedu Enekwe', title: 'Investor/Partner, Passbook' },
 ];
 
 function initials(name) {
@@ -623,16 +688,29 @@ export default function AiSummitPage() {
                   <span className={styles.tTime}>{item.time}</span>
                   <span className={styles.tDot} aria-hidden="true" />
                   <div className={styles.tBody}>
-                    <h3 className={styles.tTitle}>
-                      {item.title}
-                      {item.talk && (
-                        <>
-                          {': '}
-                          <em className={styles.tTalk}>{item.talk}</em>
-                        </>
-                      )}
-                    </h3>
-                    <p className={styles.tSub}>{item.sub}</p>
+                    <h3 className={styles.tTitle}>{item.title}</h3>
+                    {item.sub && <p className={styles.tSub}>{item.sub}</p>}
+                    {item.speakers && (
+                      <ul className={styles.tSpeakers}>
+                        {item.speakers.map((sp) => (
+                          <li key={sp}>{sp}</li>
+                        ))}
+                      </ul>
+                    )}
+                    {item.tracks && (
+                      <div className={styles.tTracks}>
+                        {item.tracks.map((tr) => (
+                          <div key={tr.n} className={styles.tTrackCard}>
+                            <span className={styles.tTrackTag}>
+                              Track {tr.n}
+                              <span className={styles.tTrackFloor}> · {tr.floor}</span>
+                            </span>
+                            <p className={styles.tTrackTalk}>{tr.talk}</p>
+                            <p className={styles.tTrackSpeaker}>{tr.speaker}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </li>
               ))}
