@@ -48,8 +48,17 @@ const SCHEDULE = [
   },
   {
     time: '11:00 AM',
-    title: 'Thrive like "Knicks in Five": Future-Proof Your Career in the Age of AI',
-    speakers: ['Bert Gervais — Co-Founder, Genius Potential'],
+    title: 'How to Thrive like "Knicks in Five": Future-Proof Your Career in the Age of AI',
+    speakers: [
+      'Bert Gervais — Co-Founder, Genius Potential',
+      'David Horne — Co-Founder, Genius Potential',
+    ],
+    desc: [
+      "Feeling overwhelmed by AI? You're not alone. Across the workplace, professionals are asking the same question: how do I ensure that AI doesn't make my role less valuable?",
+      "Genius Potential is a workplace training and career development firm built on a simple belief: the companies that win with AI are the ones that invest in their people first. We specialize in corporate engagement and retention, and our approach is different because we don't just teach AI tools — we teach the human skills that make people irreplaceable, no matter how the technology changes.",
+      "In this interactive, no-fluff session, we'll give participants a practical framework for turning AI anxiety into action. They'll learn how to use AI as a tool, strengthen the skills that still matter most, and build habits that keep them relevant, adaptable, and valuable.",
+      "Participants leave with clear strategies for using AI with confidence, driving adoption within their organizations, and future-proofing their careers in a rapidly evolving world.",
+    ],
   },
   { time: '12:00 PM', title: 'Lunch Break' },
   {
@@ -716,7 +725,10 @@ export default function AiSummitPage() {
                         ))}
                       </ul>
                     )}
-                    {item.desc && <p className={styles.tDesc}>{item.desc}</p>}
+                    {item.desc &&
+                      (Array.isArray(item.desc) ? item.desc : [item.desc]).map((para, idx) => (
+                        <p key={idx} className={styles.tDesc}>{para}</p>
+                      ))}
                     {item.tracks && (
                       <div className={styles.tTracks}>
                         {item.tracks.map((tr) => (
