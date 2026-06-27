@@ -100,6 +100,7 @@ const SCHEDULE = [
       'Nana Bediako — Global Creative Lead & AI Systems Architect',
       'Evol Greaves — VP of Engineering, Betterment',
     ],
+    desc: "A plenary fireside on building a personal brand when AI makes everyone's output look and sound alike. The conversation moves from naming the problem — the sea of sameness — to what actually makes a personal brand (beyond just posting more), to the AI angle, and lands on practical steps the room can use tomorrow. Closes with audience Q&A and a rapid-fire round.",
   },
   {
     time: '3:45 PM',
@@ -110,6 +111,7 @@ const SCHEDULE = [
       'Evol Greaves — VP of Engineering, Betterment',
       'Justin Elliot — Co-Founder & CTO, WRTH · Anthropic Ambassador',
     ],
+    desc: "A moderated plenary panel on building in an AI-native world, from the founder and investor seats. The arc opens wide on how building a company in 2026 differs from five years ago, digs into the new rules of company-building — collapsing costs, smaller AI-leveraged teams, what that means for deal flow and valuations — and brings it home with concrete takeaways for the room, followed by audience Q&A.",
   },
   {
     time: '4:45 PM',
@@ -714,6 +716,7 @@ export default function AiSummitPage() {
                         ))}
                       </ul>
                     )}
+                    {item.desc && <p className={styles.tDesc}>{item.desc}</p>}
                     {item.tracks && (
                       <div className={styles.tTracks}>
                         {item.tracks.map((tr) => (

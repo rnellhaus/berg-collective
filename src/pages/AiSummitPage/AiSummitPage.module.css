@@ -532,6 +532,14 @@
   font-weight: 300;
   color: var(--text-muted);
 }
+.tDesc {
+  margin-top: 12px;
+  max-width: 640px;
+  font-size: 14px;
+  font-weight: 300;
+  line-height: 1.6;
+  color: var(--text-soft);
+}
 .tTracks {
   margin-top: 14px;
   display: grid;
