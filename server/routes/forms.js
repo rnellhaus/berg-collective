@@ -356,6 +356,55 @@ router.post('/volunteer', rejectBot, verifyTurnstile, async (req, res) => {
   }
 });
 
+// ─── POST /api/forms/aisummit-openai — AI Summit: OpenAI ChatGPT Plus credit claim ───
+router.post('/aisummit-openai', rejectBot, async (req, res) => {
+  try {
+    const { name, email, has_account, consent } = req.body;
+
+    const cleanName = (name || '').trim();
+    const cleanEmail = (email || '').trim();
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail);
+
+    if (!cleanName || !emailOk) {
+      return res.status(400).json({ error: 'A valid full name and email are required.' });
+    }
+    if (!has_account || !consent) {
+      return res.status(400).json({ error: 'Please confirm your OpenAI account and agree to share your email to continue.' });
+    }
+
+    const pool = getPool();
+
+    // Dedupe by email within this form type — treat repeats as success.
+    const { rows: existing } = await pool.query(
+      `SELECT id FROM form_submissions
+       WHERE form_type = 'aisummit_openai'
+       AND LOWER(data::jsonb->>'email') = LOWER($1)
+       LIMIT 1`,
+      [cleanEmail]
+    );
+    if (existing.length > 0) {
+      return res.status(200).json({ message: "You're all set — your email is already on the list." });
+    }
+
+    const data = {
+      name: cleanName,
+      email: cleanEmail,
+      has_openai_account: true,
+      consent_share_openai: true,
+    };
+
+    await pool.query(
+      'INSERT INTO form_submissions (form_type, data) VALUES ($1, $2)',
+      ['aisummit_openai', JSON.stringify(data)]
+    );
+
+    res.status(201).json({ message: "You're all set — OpenAI will apply your 3 months of ChatGPT Plus." });
+  } catch (err) {
+    console.error('AI Summit OpenAI claim error:', err);
+    res.status(500).json({ error: 'Failed to submit. Please try again.' });
+  }
+});
+
 // ─── Auth-protected admin endpoints ───
 
 // ─── GET /api/forms/submissions — Admin: list submissions with filtering & pagination ───
