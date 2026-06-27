@@ -105,6 +105,44 @@ async function run() {
     console.warn('  ! skip BERG logo: public/images/logo.png not found');
   }
 
+  // ── Sponsor logos ──
+  // Rendered on light "chip" cards in the Sponsors section, so each logo keeps
+  // its native dark/colored artwork (the page's white hero/footer logos would
+  // disappear on white). Missing sponsors fall back to a text wordmark in the UI.
+  const SPONSORS_OUT = join(OUT, 'sponsors');
+  await mkdir(SPONSORS_OUT, { recursive: true });
+
+  // Genius Potential — full-color illustrative mark; trim the transparent margin
+  // and compress. Native colors read well on a white chip.
+  const gpSrc = join(SRC, 'genius potential.avif');
+  if (existsSync(gpSrc)) {
+    const gpOut = join(SPONSORS_OUT, 'genius-potential.webp');
+    await sharp(gpSrc)
+      .trim()
+      .resize(480, 300, { fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 90 })
+      .toFile(gpOut);
+    console.log(`  ✓ sponsor genius-potential -> ${gpOut.replace(ROOT, '.')}`);
+  } else {
+    console.warn('  ! skip Genius Potential logo: source not found');
+  }
+
+  // Squarespace — only a white wordmark exists; invert to black for the light chip
+  // (matches Squarespace's standard black wordmark).
+  const ssSponsorSrc = join(SRC, 'squarespace-logo-horizontal-white.20250422154832839 (1).png');
+  if (existsSync(ssSponsorSrc)) {
+    const ssSponsorOut = join(SPONSORS_OUT, 'squarespace.webp');
+    await sharp(ssSponsorSrc)
+      .negate({ alpha: false })
+      .trim()
+      .resize(480, 140, { fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 92 })
+      .toFile(ssSponsorOut);
+    console.log(`  ✓ sponsor squarespace -> ${ssSponsorOut.replace(ROOT, '.')}`);
+  } else {
+    console.warn('  ! skip Squarespace sponsor logo: source not found');
+  }
+
   // Hero lockup — the white-version PNG ships with a baked dark checker
   // background (no real alpha), so key out the neutral dark pixels into
   // transparency while preserving the white wordmark AND the blue "Ai"

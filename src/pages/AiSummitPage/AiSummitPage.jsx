@@ -145,6 +145,16 @@ const SPEAKERS = [
   { img: 'rich-nellhaus', name: 'Rich Nellhaus', title: 'Founder, Staffify & BERG Collective' },
 ];
 
+// img: slug of optimized webp in /images/aisummit/sponsors, or null for a text
+// wordmark fallback (used until the real logo file is supplied).
+const SPONSORS = [
+  { name: 'OpenAI', img: null },
+  { name: 'Anthropic', img: null },
+  { name: 'Genius Potential', img: 'genius-potential' },
+  { name: 'Squarespace', img: 'squarespace' },
+  { name: 'BlackTech Meetup', img: null },
+];
+
 function initials(name) {
   return name
     .split(/\s+/)
@@ -776,6 +786,36 @@ export default function AiSummitPage() {
             <p className={styles.speakerNote} data-reveal>
               Plus <span className={styles.grad}>special guest speakers</span> — announcements to come.
             </p>
+          </div>
+        </section>
+
+        {/* ── Sponsors ── */}
+        <section id="sponsors" className={styles.section}>
+          <div className={styles.wrap}>
+            <p className={styles.eyebrow} data-reveal>
+              Our Sponsors
+            </p>
+            <span className={styles.rule} data-reveal aria-hidden="true" />
+            <h2 className={styles.h2} data-reveal>
+              Made possible by <span className={styles.grad}>our sponsors.</span>
+            </h2>
+            <ul className={styles.sponsorGrid}>
+              {SPONSORS.map((sp) => (
+                <li key={sp.name} className={styles.sponsorCard} data-reveal>
+                  {sp.img ? (
+                    <img
+                      className={styles.sponsorLogo}
+                      src={`/images/aisummit/sponsors/${sp.img}.webp`}
+                      alt={sp.name}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : (
+                    <span className={styles.sponsorWordmark}>{sp.name}</span>
+                  )}
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
 
