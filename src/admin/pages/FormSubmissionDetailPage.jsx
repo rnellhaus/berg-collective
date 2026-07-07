@@ -9,6 +9,8 @@ const TYPE_LABELS = {
   newsletter: 'Newsletter Signup',
   contact: 'Contact Form',
   volunteer: 'Volunteer Signup',
+  aisummit_openai: 'AI Summit — OpenAI ChatGPT Plus Claim',
+  aisummit_survey: 'AI Summit 2026 — Pulse Survey',
 };
 
 const FIELD_LABELS = {
@@ -34,6 +36,20 @@ const FIELD_LABELS = {
   application_file: 'Application File',
   area_of_interest: 'Area of Interest',
   availability: 'Availability',
+  has_openai_account: 'Has OpenAI account?',
+  consent_share_openai: 'Consented to share email with OpenAI?',
+  rating_overall: 'Overall rating (1–5)',
+  nps: 'Likelihood to recommend (0–10)',
+  session_thrive_knicks: 'Session: How to Thrive like "Knicks in Five"',
+  session_death_of_app: 'Session: The Death of the App and the Rise of Agents',
+  session_ai_on_the_go: 'Session: AI on the Go',
+  session_ai_native_company: 'Session: Building an AI-Native Company',
+  session_partnership_brain: 'Session: Build an AI Partnership Brain in 10 Minutes',
+  session_differentiation: 'Session: The Art of Differentiation',
+  session_speed_of_thought: 'Session: Speed of Thought',
+  most_valuable: 'Most valuable about the programming?',
+  general_feedback: 'General feedback',
+  next_summit: 'Change or add for the next summit?',
 };
 
 function formatDate(dateStr) {

@@ -42,6 +42,7 @@ const ROUTES = [
   '/newsletter',
   '/aisummit',
   '/aisummit/openai',
+  '/aisummit/survey',
 ];
 
 const MIME = {

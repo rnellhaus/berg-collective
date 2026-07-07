@@ -17,6 +17,7 @@ import EventEditorPage from './pages/EventEditorPage';
 import FormSubmissionsPage from './pages/FormSubmissionsPage';
 import FormSubmissionDetailPage from './pages/FormSubmissionDetailPage';
 import DocumentsPage from './pages/DocumentsPage';
+import SurveyResultsPage from './pages/SurveyResultsPage';
 
 function ComingSoon({ label }) {
   return (
@@ -92,6 +93,7 @@ function AdminRoutes() {
         <Route path="events/:id" element={<EventEditorPage />} />
         <Route path="forms" element={<FormSubmissionsPage />} />
         <Route path="forms/:id" element={<FormSubmissionDetailPage />} />
+        <Route path="surveys/aisummit" element={<SurveyResultsPage />} />
         <Route path="media" element={<MediaLibraryPage />} />
         <Route path="documents" element={<DocumentsPage />} />
         <Route path="users" element={<UsersPage />} />

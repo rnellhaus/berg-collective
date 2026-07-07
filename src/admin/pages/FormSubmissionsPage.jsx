@@ -10,6 +10,8 @@ const FORM_TYPES = [
   { value: 'newsletter', label: 'Newsletter' },
   { value: 'contact', label: 'Contact' },
   { value: 'volunteer', label: 'Volunteer' },
+  { value: 'aisummit_openai', label: 'AI Summit — OpenAI Claim' },
+  { value: 'aisummit_survey', label: 'AI Summit — Survey' },
 ];
 
 const TYPE_COLORS = {
@@ -19,6 +21,8 @@ const TYPE_COLORS = {
   newsletter: { bg: '#fef3f2', color: '#991b1b' },
   contact: { bg: '#f5f1ee', color: '#8e5f57' },
   volunteer: { bg: '#fef9e7', color: '#8b6914' },
+  aisummit_openai: { bg: '#eef2ff', color: '#4338ca' },
+  aisummit_survey: { bg: '#ecfeff', color: '#0e7490' },
 };
 
 const TYPE_LABELS = {
@@ -28,6 +32,8 @@ const TYPE_LABELS = {
   newsletter: 'Newsletter',
   contact: 'Contact',
   volunteer: 'Volunteer',
+  aisummit_openai: 'AI Summit — OpenAI',
+  aisummit_survey: 'AI Summit — Survey',
 };
 
 function formatDate(dateStr) {
@@ -159,6 +165,12 @@ export default function FormSubmissionsPage() {
           Form Submissions
         </h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+          <Link
+            to="/admin/surveys/aisummit"
+            style={{ fontSize: '0.82rem', fontWeight: '600', color: '#8b3223', textDecoration: 'none' }}
+          >
+            AI Summit Survey Results →
+          </Link>
           <div style={{ fontSize: '0.8rem', color: '#6b5752' }}>
             {pagination.total} total submission{pagination.total !== 1 ? 's' : ''}
           </div>

@@ -44,6 +44,12 @@
       "headers": [
         { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
       ]
+    },
+    {
+      "source": "/aisummit/survey",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" }
+      ]
     }
   ]
 }
