@@ -4,11 +4,22 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import rateLimit from 'express-rate-limit';
 import { Resend } from 'resend';
+import { OAuth2Client } from 'google-auth-library';
 import { getPool } from '../db/connection.js';
 import { generateTokens, verifyRefreshToken, JWT_SECRET } from '../middleware/auth.js';
 
 const router = Router();
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+
+// Google Sign-In (ID token flow) — set GOOGLE_CLIENT_ID to enable.
+const googleClient = process.env.GOOGLE_CLIENT_ID
+  ? new OAuth2Client(process.env.GOOGLE_CLIENT_ID)
+  : null;
+
+// Kill switch for password auth once all admins are confirmed on Google
+// sign-in. Set ALLOW_PASSWORD_LOGIN=false to disable login + reset flows.
+const passwordLoginEnabled = process.env.ALLOW_PASSWORD_LOGIN !== 'false';
+const PASSWORD_DISABLED_MSG = 'Password sign-in is disabled. Please use Sign in with Google.';
 
 const loginLimiter = rateLimit({
   windowMs: 60 * 1000,
@@ -29,9 +40,62 @@ const COOKIE_OPTS = {
   secure: process.env.NODE_ENV === 'production' || !!process.env.VERCEL,
 };
 
+// GET /api/auth/config — public login-page config (which sign-in methods to show).
+// The Google client ID is public by design (it ships in the sign-in button).
+router.get('/config', (req, res) => {
+  res.json({
+    googleClientId: process.env.GOOGLE_CLIENT_ID || null,
+    passwordLoginEnabled,
+  });
+});
+
+// POST /api/auth/google — Sign in with Google (ID token from GIS button)
+// Only emails that already exist in the users table are allowed in; the
+// Google account is the identity + 2FA layer, authorization stays here.
+router.post('/google', loginLimiter, async (req, res) => {
+  try {
+    if (!googleClient) {
+      return res.status(503).json({ error: 'Google sign-in is not configured' });
+    }
+    const { credential } = req.body;
+    if (!credential) return res.status(400).json({ error: 'Missing Google credential' });
+
+    let payload;
+    try {
+      const ticket = await googleClient.verifyIdToken({
+        idToken: credential,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+      payload = ticket.getPayload();
+    } catch {
+      return res.status(401).json({ error: 'Invalid Google credential' });
+    }
+
+    if (!payload?.email || !payload.email_verified) {
+      return res.status(401).json({ error: 'Your Google account email is not verified' });
+    }
+
+    const pool = getPool();
+    const { rows } = await pool.query('SELECT * FROM users WHERE LOWER(email) = LOWER($1)', [payload.email]);
+    const user = rows[0];
+    if (!user) {
+      return res.status(403).json({ error: `No admin account exists for ${payload.email}` });
+    }
+
+    const { accessToken, refreshToken } = generateTokens(user);
+    res.cookie('access_token', accessToken, { ...COOKIE_OPTS, maxAge: 15 * 60 * 1000 });
+    res.cookie('refresh_token', refreshToken, { ...COOKIE_OPTS, maxAge: 7 * 24 * 60 * 60 * 1000 });
+    res.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+  } catch (err) {
+    console.error('Google login error:', err);
+    res.status(500).json({ error: 'Login failed' });
+  }
+});
+
 // POST /api/auth/login
 router.post('/login', loginLimiter, async (req, res) => {
   try {
+    if (!passwordLoginEnabled) return res.status(403).json({ error: PASSWORD_DISABLED_MSG });
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
 
@@ -103,6 +167,7 @@ router.get('/me', async (req, res) => {
 router.post('/forgot-password', forgotLimiter, async (req, res) => {
   const generic = { message: 'If an account exists for that email, a reset link has been sent.' };
   try {
+    if (!passwordLoginEnabled) return res.status(403).json({ error: PASSWORD_DISABLED_MSG });
     const { email } = req.body;
     if (!email) return res.status(400).json({ error: 'Email is required' });
 
@@ -179,6 +244,7 @@ router.post('/forgot-password', forgotLimiter, async (req, res) => {
 // POST /api/auth/reset-password — set a new password using a token (PUBLIC)
 router.post('/reset-password', async (req, res) => {
   try {
+    if (!passwordLoginEnabled) return res.status(403).json({ error: PASSWORD_DISABLED_MSG });
     const { token, password } = req.body;
     if (!token || !password) return res.status(400).json({ error: 'Token and password are required' });
     if (password.length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters' });
