@@ -205,31 +205,6 @@
   text-decoration: underline;
 }
 
-/* ── Google sign-in ──────────────────────────────────────── */
-.googleWrap {
-  display: flex;
-  justify-content: center;
-  margin: 8px 0 4px;
-}
-
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 18px 0 6px;
-  color: #9c8a86;
-  font-size: 0.78rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.dividerLine {
-  flex: 1;
-  height: 1px;
-  background: #e8e1da;
-}
-
 /* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 480px) {
   .card {

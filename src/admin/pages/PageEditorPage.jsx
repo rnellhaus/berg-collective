@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useApi } from '../hooks/useApi';
 import FieldEditor from '../components/FieldEditor';
@@ -136,11 +136,12 @@ export default function PageEditorPage() {
 
       {!loading && !error && (
         <>
-          <div className={styles.headerRow}>
+          <header className={styles.headerRow}>
             <h1 className={styles.heading}>{page?.title || slug}</h1>
             <div className={styles.actions}>
               <button className={styles.previewBtn} onClick={handlePreview} type="button">
-                Preview ↗
+                <span className="material-symbols-outlined" aria-hidden="true">open_in_new</span>
+                Preview
               </button>
               <button
                 className={styles.saveBtn}
@@ -148,10 +149,11 @@ export default function PageEditorPage() {
                 disabled={saving || !activeSection}
                 type="button"
               >
+                <span className="material-symbols-outlined" aria-hidden="true">save</span>
                 {saving ? 'Saving…' : 'Save Section'}
               </button>
             </div>
-          </div>
+          </header>
 
           {/* Section Tabs */}
           {sections.length > 0 && (
@@ -176,13 +178,16 @@ export default function PageEditorPage() {
 
           {/* Field Editor */}
           {activeSection && (
-            <div className={styles.editorCard}>
-              <FieldEditor
-                fields={fields}
-                onChange={handleFieldChange}
-                onImagePickerOpen={handleImagePickerOpen}
-              />
-            </div>
+            <>
+              <h2 className={styles.sectionLabel}>Section content</h2>
+              <div className={styles.editorCard}>
+                <FieldEditor
+                  fields={fields}
+                  onChange={handleFieldChange}
+                  onImagePickerOpen={handleImagePickerOpen}
+                />
+              </div>
+            </>
           )}
 
           {sections.length === 0 && (

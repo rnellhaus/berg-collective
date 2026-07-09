@@ -4,14 +4,14 @@
   padding-bottom: 80px;
 }
 
-/* Breadcrumb */
+/* ── Breadcrumb ──────────────────────────────────────────── */
 .breadcrumb {
   display: flex;
   align-items: center;
   gap: 6px;
   font-size: 0.82rem;
   color: #8e5f57;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
 
 .breadcrumbLink {
@@ -25,7 +25,7 @@
 }
 
 .breadcrumbSep {
-  color: #c8b8b4;
+  color: #c4aca6;
 }
 
 .breadcrumbCurrent {
@@ -33,18 +33,18 @@
   font-weight: 600;
 }
 
-/* Header row */
+/* ── Header row ──────────────────────────────────────────── */
 .headerRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
   flex-wrap: wrap;
 }
 
 .heading {
-  font-size: 1.5rem;
+  font-size: 1.55rem;
   font-weight: 700;
   color: #191110;
   margin: 0;
@@ -57,68 +57,86 @@
 }
 
 .previewBtn {
-  padding: 8px 16px;
-  background: #fff;
-  border: 1px solid #e8e1da;
-  border-radius: 6px;
-  color: #191110;
-  font-size: 0.875rem;
-  font-family: Epilogue, sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px;
+  background: #ffffff;
+  border: 1px solid #e3dbd8;
+  border-radius: 8px;
+  color: #6b5752;
+  font-size: 0.85rem;
   font-weight: 600;
+  font-family: inherit;
   cursor: pointer;
-  transition: border-color 0.15s, background 0.15s;
+  white-space: nowrap;
+  transition: border-color 0.15s, color 0.15s;
 }
 
 .previewBtn:hover {
-  border-color: #8b3223;
-  background: #fdf9f8;
+  border-color: #d3a79e;
+  color: #8b3223;
+}
+
+.previewBtn :global(.material-symbols-outlined) {
+  font-size: 17px;
 }
 
 .saveBtn {
-  padding: 8px 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
   background: #8b3223;
   border: none;
-  border-radius: 6px;
-  color: #fff;
+  border-radius: 8px;
+  color: #ffffff;
   font-size: 0.875rem;
-  font-family: Epilogue, sans-serif;
-  font-weight: 700;
+  font-weight: 600;
+  font-family: inherit;
   cursor: pointer;
-  transition: background 0.15s;
+  white-space: nowrap;
+  transition: background 0.15s, opacity 0.15s;
 }
 
 .saveBtn:hover:not(:disabled) {
-  background: #6e2619;
+  background: #6f2719;
 }
 
 .saveBtn:disabled {
   opacity: 0.6;
-  cursor: not-allowed;
+  cursor: default;
 }
 
-/* Section Tabs */
+.saveBtn :global(.material-symbols-outlined) {
+  font-size: 18px;
+}
+
+/* ── Section tabs (segmented) ────────────────────────────── */
 .tabs {
-  display: flex;
+  display: inline-flex;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 24px;
-  border-bottom: 2px solid #e8e1da;
-  padding-bottom: 0;
+  gap: 4px;
+  margin-bottom: 8px;
+  background: #ece4e0;
+  border-radius: 10px;
+  padding: 4px;
 }
 
 .tab {
   position: relative;
-  padding: 8px 16px;
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 14px;
   background: none;
   border: none;
-  border-bottom: 3px solid transparent;
-  margin-bottom: -2px;
-  font-family: Epilogue, sans-serif;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: #8e5f57;
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #6b5752;
   cursor: pointer;
-  transition: color 0.15s, border-color 0.15s;
+  transition: background 0.12s, color 0.12s, box-shadow 0.12s;
   text-transform: capitalize;
   white-space: nowrap;
 }
@@ -128,8 +146,10 @@
 }
 
 .tabActive {
-  color: #8b3223;
-  border-bottom-color: #8b3223;
+  background: #ffffff;
+  color: #191110;
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(25, 17, 16, 0.1);
 }
 
 .unsavedDot {
@@ -142,15 +162,24 @@
   vertical-align: middle;
 }
 
-/* Editor Card */
+/* ── Editor card ─────────────────────────────────────────── */
+.sectionLabel {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9c8a86;
+  margin: 18px 0 10px;
+}
+
 .editorCard {
-  background: #fff;
-  border: 1px solid #e8e1da;
-  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #e3dbd8;
+  border-radius: 12px;
   padding: 24px;
 }
 
-/* Status / error */
+/* ── Status / error ──────────────────────────────────────── */
 .statusMsg {
   color: #8e5f57;
   font-style: italic;
@@ -159,12 +188,16 @@
 }
 
 .errorMsg {
+  margin-top: 32px;
+  padding: 10px 14px;
+  background: #fdf3f1;
+  border: 1px solid #eed6d0;
+  border-radius: 8px;
   color: #8b3223;
   font-size: 0.9rem;
-  margin-top: 32px;
 }
 
-/* Toast */
+/* ── Toast ───────────────────────────────────────────────── */
 .toast {
   position: fixed;
   bottom: 28px;
@@ -179,16 +212,29 @@
 }
 
 .toastSuccess {
-  background: #1a3d2b;
-  color: #d4f0e0;
+  background: #e4efe0;
+  border: 1px solid #c8ddc0;
+  color: #3d6132;
 }
 
 .toastError {
-  background: #8b3223;
-  color: #fde8e4;
+  background: #fdf3f1;
+  border: 1px solid #eed6d0;
+  color: #8b3223;
 }
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 680px) {
+  .headerRow {
+    align-items: flex-start;
+  }
+
+  .editorCard {
+    padding: 18px;
+  }
 }

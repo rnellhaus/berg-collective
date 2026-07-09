@@ -69,30 +69,34 @@ export default function ImagePicker({ isOpen, onClose, onSelect, currentImageId 
         <div className={styles.header}>
           <h2 className={styles.title}>Choose Image</h2>
           <button className={styles.closeBtn} onClick={onClose} aria-label="Close">
-            ✕
+            <span className="material-symbols-outlined" aria-hidden="true">close</span>
           </button>
         </div>
 
         <div className={styles.toolbar}>
-          <input
-            type="text"
-            className={styles.searchInput}
-            placeholder="Search by filename…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <div className={styles.searchBox}>
+            <span className="material-symbols-outlined" aria-hidden="true">search</span>
+            <input
+              type="search"
+              placeholder="Search by filename…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              aria-label="Search images"
+            />
+          </div>
           <button
             className={styles.uploadBtn}
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
           >
+            <span className="material-symbols-outlined" aria-hidden="true">upload</span>
             {uploading ? 'Uploading…' : 'Upload New'}
           </button>
           <input
             ref={fileInputRef}
             type="file"
             accept="image/*"
-            style={{ display: 'none' }}
+            className={styles.hiddenInput}
             onChange={handleFileChange}
           />
         </div>
@@ -102,7 +106,10 @@ export default function ImagePicker({ isOpen, onClose, onSelect, currentImageId 
         <div className={styles.gridArea}>
           {loading && <p className={styles.statusMsg}>Loading media…</p>}
           {!loading && filtered.length === 0 && (
-            <p className={styles.statusMsg}>No images found.</p>
+            <div className={styles.empty}>
+              <span className="material-symbols-outlined" aria-hidden="true">image_search</span>
+              <p>No images found.</p>
+            </div>
           )}
           {!loading && filtered.length > 0 && (
             <div className={styles.grid}>

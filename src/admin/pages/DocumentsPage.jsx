@@ -15,11 +15,14 @@ function CopyLinkButton({ slug }) {
   }
   return (
     <button
-      className={styles.copyBtn}
+      className={`${styles.iconBtn} ${copied ? styles.iconBtnCopied : ''}`}
       onClick={handleCopy}
-      title="Copy public link"
+      title={copied ? 'Copied!' : 'Copy public link'}
+      aria-label="Copy public link"
     >
-      {copied ? 'Copied!' : 'Copy Link'}
+      <span className="material-symbols-outlined" aria-hidden="true">
+        {copied ? 'check' : 'link'}
+      </span>
     </button>
   );
 }
@@ -175,79 +178,90 @@ export default function DocumentsPage() {
 
   return (
     <div className={styles.page}>
-      {/* Top bar */}
-      <div className={styles.topBar}>
-        <div className={styles.topBarLeft}>
-          <input
-            className={styles.searchInput}
-            type="text"
-            placeholder="Search documents…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+      {/* Header */}
+      <header className={styles.header}>
+        <div>
+          <h1 className={styles.title}>Documents</h1>
+          <p className={styles.subtitle}>Upload files and share public links.</p>
+        </div>
+        {isAdmin && (
+          <button
+            className={styles.primaryBtn}
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading}
+          >
+            <span className="material-symbols-outlined" aria-hidden="true">upload</span>
+            {uploading ? 'Uploading…' : 'Upload Document'}
+          </button>
+        )}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv"
+          className={styles.hiddenInput}
+          onChange={handleFileChange}
+        />
+      </header>
+
+      {/* Toolbar */}
+      <div className={styles.toolbar}>
+        <div className={styles.toolbarLeft}>
+          <div className={styles.searchBox}>
+            <span className="material-symbols-outlined" aria-hidden="true">search</span>
+            <input
+              type="search"
+              placeholder="Search documents…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              aria-label="Search documents"
+            />
+          </div>
           <select
             className={styles.categorySelect}
             value={category}
             onChange={(e) => setCategory(e.target.value)}
+            aria-label="Filter by category"
           >
             {CATEGORIES.map((c) => (
               <option key={c} value={c}>{c}</option>
             ))}
           </select>
         </div>
-        <div className={styles.topBarRight}>
-          {uploadError && <span className={styles.uploadError}>{uploadError}</span>}
-          {isAdmin && (
-            <button
-              className={styles.uploadBtn}
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
-            >
-              {uploading ? 'Uploading…' : 'Upload Document'}
-            </button>
-          )}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv"
-            style={{ display: 'none' }}
-            onChange={handleFileChange}
-          />
-        </div>
-      </div>
-
-      {/* Stats bar */}
-      <div className={styles.statsBar}>
-        <span className={styles.statsText}>
+        <span className={styles.count}>
           {docs.length} {docs.length === 1 ? 'document' : 'documents'}
         </span>
       </div>
 
-      {loadError && <div className={styles.errorMsg}>{loadError}</div>}
+      {uploadError && <div className={styles.errorBanner}>{uploadError}</div>}
+      {loadError && <div className={styles.errorBanner}>{loadError}</div>}
 
       {/* Main layout */}
       <div className={styles.mainLayout}>
         {/* Document list */}
         <div className={styles.listWrap}>
           {docs.length === 0 && !loadError ? (
-            <div className={styles.emptyState}>No documents found. Upload your first document.</div>
+            <div className={styles.empty}>
+              <span className="material-symbols-outlined" aria-hidden="true">folder_open</span>
+              <p>No documents found. Upload your first document.</p>
+            </div>
           ) : (
-            <div className={styles.docList}>
+            <div className={styles.listCard}>
               {docs.map((doc) => (
                 <button
                   key={doc.id}
                   className={`${styles.docRow} ${selected?.id === doc.id ? styles.docRowActive : ''}`}
                   onClick={() => openDetail(doc)}
                 >
-                  <span className={`material-symbols-outlined ${styles.docIcon}`}>
+                  <span className={`material-symbols-outlined ${styles.docIcon}`} aria-hidden="true">
                     {fileIcon(doc.mime_type)}
                   </span>
                   <div className={styles.docInfo}>
                     <span className={styles.docTitle}>{doc.title || doc.original_name}</span>
                     <span className={styles.docMeta}>
-                      {doc.original_name} &middot; {formatBytes(doc.size_bytes)} &middot; {doc.category}
+                      {doc.original_name} &middot; {formatBytes(doc.size_bytes)}
                     </span>
                   </div>
+                  <span className={styles.catPill}>{doc.category}</span>
                   <CopyLinkButton slug={doc.slug} />
                 </button>
               ))}
@@ -260,11 +274,13 @@ export default function DocumentsPage() {
           <div className={styles.detail}>
             <div className={styles.detailHeader}>
               <span className={styles.detailHeaderTitle}>Document Details</span>
-              <button className={styles.closeBtn} onClick={closeDetail} aria-label="Close">&#x2715;</button>
+              <button className={styles.closeBtn} onClick={closeDetail} aria-label="Close">
+                <span className="material-symbols-outlined" aria-hidden="true">close</span>
+              </button>
             </div>
 
             <div className={styles.detailIcon}>
-              <span className={`material-symbols-outlined ${styles.detailIconLg}`}>
+              <span className={`material-symbols-outlined ${styles.detailIconLg}`} aria-hidden="true">
                 {fileIcon(selected.mime_type)}
               </span>
             </div>
@@ -338,6 +354,7 @@ export default function DocumentsPage() {
               rel="noopener noreferrer"
               className={styles.previewBtn}
             >
+              <span className="material-symbols-outlined" aria-hidden="true">open_in_new</span>
               Open / Download
             </a>
 
@@ -351,6 +368,7 @@ export default function DocumentsPage() {
                   </div>
                 ) : (
                   <button className={styles.deleteBtn} onClick={handleDelete}>
+                    <span className="material-symbols-outlined" aria-hidden="true">delete</span>
                     Delete Document
                   </button>
                 )}

@@ -236,27 +236,14 @@ export default function UsersPage() {
   return (
     <div className={styles.page}>
       {/* Header */}
-      <div className={styles.header}>
+      <header className={styles.header}>
         <div>
-          <h1 className={styles.pageTitle}>Users</h1>
-          <p className={styles.pageSubtitle}>Manage admin access and roles.</p>
+          <h1 className={styles.title}>Users</h1>
+          <p className={styles.subtitle}>Manage admin access and roles.</p>
         </div>
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+        <div className={styles.headerActions}>
           <button
-            className={styles.addBtn}
-            style={{ background: '#D4AF37', color: '#000' }}
-            onClick={() => {
-              setShowInviteForm((v) => !v);
-              setShowAddForm(false);
-              setInviteError('');
-              setInviteLink('');
-              setInviteForm(EMPTY_INVITE);
-            }}
-          >
-            {showInviteForm ? 'Cancel' : 'Invite Team Member'}
-          </button>
-          <button
-            className={styles.addBtn}
+            className={styles.secondaryBtn}
             onClick={() => {
               setShowAddForm((v) => !v);
               setShowInviteForm(false);
@@ -265,10 +252,28 @@ export default function UsersPage() {
               setAddForm(EMPTY_FORM);
             }}
           >
-            {showAddForm ? 'Cancel' : '+ Add User'}
+            <span className="material-symbols-outlined" aria-hidden="true">
+              {showAddForm ? 'close' : 'add'}
+            </span>
+            {showAddForm ? 'Cancel' : 'Add User'}
+          </button>
+          <button
+            className={styles.primaryBtn}
+            onClick={() => {
+              setShowInviteForm((v) => !v);
+              setShowAddForm(false);
+              setInviteError('');
+              setInviteLink('');
+              setInviteForm(EMPTY_INVITE);
+            }}
+          >
+            <span className="material-symbols-outlined" aria-hidden="true">
+              {showInviteForm ? 'close' : 'person_add'}
+            </span>
+            {showInviteForm ? 'Cancel' : 'Invite Team Member'}
           </button>
         </div>
-      </div>
+      </header>
 
       {/* Success message (persists after form closes) */}
       {addSuccess && (
@@ -277,39 +282,39 @@ export default function UsersPage() {
 
       {/* Invite form */}
       {showInviteForm && (
-        <div className={styles.addForm}>
+        <div className={styles.formCard}>
           <div className={styles.formTitle}>Invite Team Member</div>
 
           {inviteLink ? (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div className={styles.inviteResult}>
               <div className={styles.successMsg}>
                 {inviteEmailSent
                   ? `Invitation email sent to ${inviteForm.email}!`
                   : `Invite created for ${inviteForm.email} (email could not be sent — share the link below).`}
               </div>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              <div className={styles.inviteLinkRow}>
                 <input
-                  className={styles.fieldInput}
-                  style={{ flex: 1, fontSize: '0.8rem' }}
+                  className={`${styles.fieldInput} ${styles.inviteLinkInput}`}
                   type="text"
                   value={inviteLink}
                   readOnly
                   onClick={(e) => e.target.select()}
                 />
                 <button
-                  className={styles.createBtn}
-                  style={{ background: copied ? '#1e6e1e' : '#8b3223', whiteSpace: 'nowrap' }}
+                  className={`${styles.createBtn} ${copied ? styles.copiedBtn : ''}`}
                   onClick={handleCopyLink}
                   type="button"
                 >
+                  <span className="material-symbols-outlined" aria-hidden="true">
+                    {copied ? 'check' : 'content_copy'}
+                  </span>
                   {copied ? 'Copied!' : 'Copy Link'}
                 </button>
               </div>
               <button
-                className={styles.cancelEditBtn}
+                className={`${styles.secondaryBtn} ${styles.selfStart}`}
                 onClick={resetInvite}
                 type="button"
-                style={{ alignSelf: 'flex-start' }}
               >
                 Send Another Invite
               </button>
@@ -344,9 +349,10 @@ export default function UsersPage() {
                   </div>
                 </div>
               </div>
-              {inviteError && <div className={styles.errorMsg} style={{ marginTop: '10px' }}>{inviteError}</div>}
-              <div className={styles.formActions} style={{ marginTop: '14px' }}>
+              {inviteError && <div className={`${styles.errorBanner} ${styles.formError}`}>{inviteError}</div>}
+              <div className={`${styles.formActions} ${styles.formActionsSpaced}`}>
                 <button type="submit" className={styles.createBtn} disabled={inviteBusy}>
+                  <span className="material-symbols-outlined" aria-hidden="true">send</span>
                   {inviteBusy ? 'Sending…' : 'Send Invite'}
                 </button>
               </div>
@@ -357,7 +363,7 @@ export default function UsersPage() {
 
       {/* Add user form */}
       {showAddForm && (
-        <form className={styles.addForm} onSubmit={handleAddSubmit} noValidate>
+        <form className={styles.formCard} onSubmit={handleAddSubmit} noValidate>
           <div className={styles.formTitle}>New User</div>
 
           <div className={styles.formGrid}>
@@ -426,7 +432,7 @@ export default function UsersPage() {
             </div>
           </div>
 
-          {addError && <div className={styles.errorMsg}>{addError}</div>}
+          {addError && <div className={styles.errorBanner}>{addError}</div>}
 
           <div className={styles.formActions}>
             <button
@@ -434,6 +440,7 @@ export default function UsersPage() {
               className={styles.createBtn}
               disabled={addBusy}
             >
+              <span className="material-symbols-outlined" aria-hidden="true">person_add</span>
               {addBusy ? 'Creating…' : 'Create User'}
             </button>
           </div>
@@ -442,13 +449,16 @@ export default function UsersPage() {
 
       {/* User list */}
       {loading ? (
-        <div className={styles.loadingMsg}>Loading users…</div>
+        <p className={styles.stateMsg}>Loading users…</p>
       ) : loadError ? (
-        <div className={styles.errorMsg}>{loadError}</div>
+        <div className={styles.errorBanner}>{loadError}</div>
       ) : users.length === 0 ? (
-        <div className={styles.emptyState}>No users found.</div>
+        <div className={styles.empty}>
+          <span className="material-symbols-outlined" aria-hidden="true">group</span>
+          <p>No users found.</p>
+        </div>
       ) : (
-        <div className={styles.table}>
+        <div className={styles.tableCard}>
           <div className={styles.tableHead}>
             <div className={styles.colName}>Name</div>
             <div className={styles.colEmail}>Email</div>
@@ -499,7 +509,7 @@ export default function UsersPage() {
                     >
                       {editBusy ? 'Saving…' : 'Save'}
                     </button>
-                    <button className={styles.cancelEditBtn} onClick={cancelEdit}>
+                    <button className={styles.secondaryBtn} onClick={cancelEdit}>
                       Cancel
                     </button>
                   </div>
@@ -511,9 +521,11 @@ export default function UsersPage() {
                     <span className={styles.userName}>{u.name || '—'}</span>
                     {isSelf(u) && <span className={styles.youBadge}>you</span>}
                   </div>
-                  <div className={`${styles.colEmail} ${styles.userEmail}`}>{u.email}</div>
+                  <div className={styles.colEmail}>
+                    <span className={styles.emailChip}>{u.email}</span>
+                  </div>
                   <div className={styles.colRole}>
-                    <span className={`${styles.roleBadge} ${u.role === 'admin' ? styles.roleAdmin : styles.roleEditor}`}>
+                    <span className={`${styles.rolePill} ${u.role === 'admin' ? styles.roleAdmin : styles.roleEditor}`}>
                       {u.role === 'admin' ? 'Admin' : 'Editor'}
                     </span>
                   </div>
@@ -522,10 +534,12 @@ export default function UsersPage() {
                   </div>
                   <div className={styles.colActions}>
                     <button
-                      className={styles.editBtn}
+                      className={styles.iconBtn}
                       onClick={() => startEdit(u)}
+                      title="Edit user"
+                      aria-label="Edit user"
                     >
-                      Edit
+                      <span className="material-symbols-outlined" aria-hidden="true">edit</span>
                     </button>
 
                     {deleteId === u.id ? (
@@ -547,12 +561,13 @@ export default function UsersPage() {
                       </div>
                     ) : (
                       <button
-                        className={styles.deleteBtn}
+                        className={`${styles.iconBtn} ${styles.iconBtnDanger}`}
                         onClick={() => handleDelete(u.id)}
                         disabled={isSelf(u)}
                         title={isSelf(u) ? 'You cannot delete your own account' : 'Delete user'}
+                        aria-label="Delete user"
                       >
-                        Delete
+                        <span className="material-symbols-outlined" aria-hidden="true">delete</span>
                       </button>
                     )}
                   </div>

@@ -359,7 +359,7 @@ export default function MediaLibraryPage() {
                 onClick={() => !importLoading && setShowImportModal(false)}
                 aria-label="Close"
               >
-                &#x2715;
+                <span className="material-symbols-outlined" aria-hidden="true">close</span>
               </button>
             </div>
             <form onSubmit={handleImportUrl} className={styles.modalBody}>
@@ -413,9 +413,10 @@ export default function MediaLibraryPage() {
                 </button>
                 <button
                   type="submit"
-                  className={styles.uploadBtn}
+                  className={styles.primaryBtn}
                   disabled={importLoading || !importUrl.trim()}
                 >
+                  <span className="material-symbols-outlined" aria-hidden="true">download</span>
                   {importLoading ? 'Importing…' : 'Import Image'}
                 </button>
               </div>
@@ -424,40 +425,27 @@ export default function MediaLibraryPage() {
         </div>
       )}
 
-      {/* Top bar */}
-      <div className={styles.topBar}>
-        <div className={styles.topBarLeft}>
-          <input
-            className={styles.searchInput}
-            type="text"
-            placeholder="Search by filename…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <select
-            className={styles.categorySelect}
-            value={category}
-            onChange={(e) => setCategory(e.target.value)}
-          >
-            {CATEGORIES.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </select>
+      {/* Page header */}
+      <header className={styles.header}>
+        <div>
+          <h1 className={styles.title}>Media Library</h1>
+          <p className={styles.subtitle}>Upload and organize images used across the site.</p>
         </div>
-        <div className={styles.topBarRight}>
-          {uploadError && <span className={styles.uploadError}>{uploadError}</span>}
+        <div className={styles.headerActions}>
           <button
-            className={styles.importUrlBtn}
+            className={styles.secondaryBtn}
             onClick={() => setShowImportModal(true)}
             disabled={uploading || importLoading}
           >
+            <span className="material-symbols-outlined" aria-hidden="true">add_link</span>
             Import from URL
           </button>
           <button
-            className={styles.uploadBtn}
+            className={styles.primaryBtn}
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
           >
+            <span className="material-symbols-outlined" aria-hidden="true">upload</span>
             {uploading ? 'Uploading…' : 'Upload Images'}
           </button>
           <input
@@ -465,21 +453,45 @@ export default function MediaLibraryPage() {
             type="file"
             accept="image/*"
             multiple
-            style={{ display: 'none' }}
+            className={styles.hiddenInput}
             onChange={handleFileChange}
           />
         </div>
-      </div>
+      </header>
 
-      {/* Stats bar */}
-      <div className={styles.statsBar}>
-        <span className={styles.statsText}>
+      {/* Toolbar */}
+      <div className={styles.toolbar}>
+        <div className={styles.toolbarLeft}>
+          <div className={styles.searchBox}>
+            <span className="material-symbols-outlined" aria-hidden="true">search</span>
+            <input
+              type="search"
+              placeholder="Search by filename…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              aria-label="Search media"
+            />
+          </div>
+          <select
+            className={styles.categorySelect}
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            aria-label="Filter by category"
+          >
+            {CATEGORIES.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </div>
+        <span className={styles.count}>
           {media.length} {media.length === 1 ? 'image' : 'images'}
           {totalSavings > 0 && (
             <> &middot; {formatBytes(totalSavings)} saved via WebP</>
           )}
         </span>
       </div>
+
+      {uploadError && <div className={styles.errorBanner}>{uploadError}</div>}
 
       {loadError && <div className={styles.errorMsg}>{loadError}</div>}
 
@@ -530,7 +542,10 @@ export default function MediaLibraryPage() {
         {/* Grid */}
         <div className={`${styles.gridWrap} ${selected ? styles.gridWrapNarrow : ''}`}>
           {media.length === 0 && !loadError ? (
-            <div className={styles.emptyState}>No images found.</div>
+            <div className={styles.empty}>
+              <span className="material-symbols-outlined" aria-hidden="true">photo_library</span>
+              <p>No images found.</p>
+            </div>
           ) : (
             <div className={`${styles.grid} ${selected ? styles.gridNarrow : ''}`}>
               {media.map((item) => (
@@ -558,7 +573,9 @@ export default function MediaLibraryPage() {
           <div className={styles.detail}>
             <div className={styles.detailHeader}>
               <span className={styles.detailTitle}>Image Details</span>
-              <button className={styles.closeBtn} onClick={closeDetail} aria-label="Close">&#x2715;</button>
+              <button className={styles.closeBtn} onClick={closeDetail} aria-label="Close">
+                <span className="material-symbols-outlined" aria-hidden="true">close</span>
+              </button>
             </div>
 
             <div className={styles.detailPreviewWrap}>
@@ -631,6 +648,7 @@ export default function MediaLibraryPage() {
                   </div>
                 ) : (
                   <button className={styles.deleteBtn} onClick={handleDelete}>
+                    <span className="material-symbols-outlined" aria-hidden="true">delete</span>
                     Delete Image
                   </button>
                 )}

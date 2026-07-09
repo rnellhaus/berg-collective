@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useApi } from '../hooks/useApi';
 import styles from './PhotoGalleryManager.module.css';
 
@@ -78,31 +78,29 @@ function MediaPickerModal({ onConfirm, onCancel, apiFetch }) {
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.modalHeader}>
           <h3 className={styles.modalTitle}>Add Event Photos</h3>
-          <button className={styles.modalClose} onClick={onCancel} type="button">
-            ✕
+          <button className={styles.modalClose} onClick={onCancel} type="button" aria-label="Close">
+            <span className="material-symbols-outlined" aria-hidden="true">close</span>
           </button>
         </div>
 
-        <div style={{ padding: '0 20px 12px', display: 'flex', gap: '8px', alignItems: 'center' }}>
-          <label style={{
-            padding: '8px 16px', background: '#8b3223', color: '#fff', borderRadius: '8px',
-            fontSize: '13px', fontWeight: '600', cursor: 'pointer', display: 'inline-block',
-          }}>
+        <div className={styles.modalToolbar}>
+          <label className={styles.uploadBtn}>
+            <span className="material-symbols-outlined" aria-hidden="true">upload</span>
             {uploading ? 'Uploading…' : 'Upload New Photos'}
             <input
               type="file"
               accept="image/*"
               multiple
               onChange={handleUpload}
-              style={{ display: 'none' }}
+              className={styles.hiddenInput}
               disabled={uploading}
             />
           </label>
-          <span style={{ fontSize: '12px', color: '#8e5f57' }}>or select from library below</span>
+          <span className={styles.toolbarHint}>or select from library below</span>
         </div>
 
         {loading && <p className={styles.stateMsg}>Loading media…</p>}
-        {error && <p className={styles.errorMsg}>{error}</p>}
+        {error && <p className={styles.modalError}>{error}</p>}
 
         {!loading && !error && mediaItems.length === 0 && (
           <p className={styles.stateMsg}>No media found. Upload some photos to get started.</p>
@@ -123,9 +121,13 @@ function MediaPickerModal({ onConfirm, onCancel, apiFetch }) {
                   {src ? (
                     <img src={src} alt={item.filename || ''} />
                   ) : (
-                    <span style={{ fontSize: '10px', color: '#8e5f57' }}>{item.filename}</span>
+                    <span className={styles.thumbFilename}>{item.filename}</span>
                   )}
-                  {isSelected && <span className={styles.checkMark}>✓</span>}
+                  {isSelected && (
+                    <span className={styles.checkMark}>
+                      <span className="material-symbols-outlined" aria-hidden="true">check</span>
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -232,14 +234,18 @@ export default function PhotoGalleryManager({ eventId, photos = [], onPhotosChan
           onClick={() => setShowPicker(true)}
           disabled={saving}
         >
-          + Add Photos
+          <span className="material-symbols-outlined" aria-hidden="true">add_photo_alternate</span>
+          Add Photos
         </button>
       </div>
 
       {error && <div className={styles.errorMsg}>{error}</div>}
 
       {localPhotos.length === 0 ? (
-        <p className={styles.emptyMsg}>No photos yet. Click "+ Add Photos" to upload or select from your media library.</p>
+        <div className={styles.empty}>
+          <span className="material-symbols-outlined" aria-hidden="true">photo_library</span>
+          <p>No photos yet. Click "Add Photos" to upload or select from your media library.</p>
+        </div>
       ) : (
         <div className={styles.photoGrid}>
           {localPhotos.map((photo, i) => {
@@ -254,7 +260,7 @@ export default function PhotoGalleryManager({ eventId, photos = [], onPhotosChan
                       className={styles.photoThumb}
                     />
                   ) : (
-                    <div className={styles.photoThumb} style={{ background: '#f0ebe6', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '11px', color: '#8e5f57' }}>
+                    <div className={styles.thumbFallback}>
                       No preview
                     </div>
                   )}
@@ -264,8 +270,9 @@ export default function PhotoGalleryManager({ eventId, photos = [], onPhotosChan
                     onClick={() => handleRemove(photo.id)}
                     disabled={saving}
                     title="Remove photo"
+                    aria-label="Remove photo"
                   >
-                    ✕
+                    <span className="material-symbols-outlined" aria-hidden="true">close</span>
                   </button>
                 </div>
                 <div className={styles.photoControls}>
@@ -275,8 +282,9 @@ export default function PhotoGalleryManager({ eventId, photos = [], onPhotosChan
                     onClick={() => movePhoto(i, -1)}
                     disabled={i === 0 || saving}
                     title="Move left"
+                    aria-label="Move left"
                   >
-                    ←
+                    <span className="material-symbols-outlined" aria-hidden="true">chevron_left</span>
                   </button>
                   <button
                     type="button"
@@ -284,8 +292,9 @@ export default function PhotoGalleryManager({ eventId, photos = [], onPhotosChan
                     onClick={() => movePhoto(i, 1)}
                     disabled={i === localPhotos.length - 1 || saving}
                     title="Move right"
+                    aria-label="Move right"
                   >
-                    →
+                    <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
                   </button>
                 </div>
               </div>

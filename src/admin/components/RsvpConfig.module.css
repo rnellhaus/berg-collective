@@ -1,0 +1,109 @@
+.card {
+  background: #ffffff;
+  border: 1px solid #e3dbd8;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.cardLabel {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9c8a86;
+  margin-bottom: 14px;
+}
+
+.platformRow {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.platformBtn {
+  padding: 7px 14px;
+  border: 1px solid #e3dbd8;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #6b5752;
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s, background 0.12s;
+}
+
+.platformBtn:hover {
+  border-color: #d3a79e;
+  color: #8b3223;
+}
+
+.platformBtnActive {
+  background: #f6e7e3;
+  border-color: #8b3223;
+  color: #8b3223;
+  font-weight: 600;
+}
+
+.fieldLabel {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4a3a36;
+  margin-bottom: 6px;
+}
+
+.input {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1px solid #e3dbd8;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #191110;
+  background: #ffffff;
+  box-sizing: border-box;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.15s;
+}
+
+.input:focus {
+  border-color: #8b3223;
+}
+
+.input::placeholder {
+  color: #b3a29e;
+}
+
+.helpText {
+  font-size: 0.775rem;
+  color: #8e5f57;
+  margin-top: 6px;
+}
+
+.helpText code {
+  border-radius: 5px;
+  padding: 1px 6px;
+  font-size: 0.72rem;
+  background: #f1eae7;
+  color: #6b5752;
+  font-family: ui-monospace, Menlo, monospace;
+}
+
+.infoBox {
+  margin-top: 14px;
+  padding: 10px 14px;
+  background: #f5efdb;
+  border-radius: 8px;
+  font-size: 0.825rem;
+  color: #6b4c10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.infoBox :global(.material-symbols-outlined) {
+  font-size: 17px;
+  flex-shrink: 0;
+}

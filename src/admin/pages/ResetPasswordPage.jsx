@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import styles from './LoginPage.module.css';
+import styles from './ResetPasswordPage.module.css';
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate();
@@ -61,45 +61,60 @@ export default function ResetPasswordPage() {
         {done ? (
           <>
             <div className={styles.success} role="status">
-              Your password has been updated. Redirecting you to sign in…
+              <span className="material-symbols-outlined" aria-hidden="true">check_circle</span>
+              <span>Your password has been updated. Redirecting you to sign in…</span>
             </div>
             <p className={styles.helpText}>
               <Link to="/admin/login" className={styles.link}>Go to sign in now</Link>
             </p>
           </>
         ) : !token ? (
-          <div className={styles.error} role="alert">{error}</div>
+          <div className={styles.error} role="alert">
+            <span className="material-symbols-outlined" aria-hidden="true">error</span>
+            <span>{error}</span>
+          </div>
         ) : (
           <form className={styles.form} onSubmit={handleSubmit} noValidate>
-            {error && <div className={styles.error} role="alert">{error}</div>}
+            {error && (
+              <div className={styles.error} role="alert">
+                <span className="material-symbols-outlined" aria-hidden="true">error</span>
+                <span>{error}</span>
+              </div>
+            )}
 
             <div className={styles.field}>
               <label htmlFor="password" className={styles.label}>New Password</label>
-              <input
-                id="password"
-                type="password"
-                className={styles.input}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="new-password"
-                placeholder="Minimum 8 characters"
-                required
-                disabled={submitting}
-              />
+              <div className={styles.inputWrap}>
+                <span className="material-symbols-outlined" aria-hidden="true">lock</span>
+                <input
+                  id="password"
+                  type="password"
+                  className={styles.input}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="new-password"
+                  placeholder="Minimum 8 characters"
+                  required
+                  disabled={submitting}
+                />
+              </div>
             </div>
 
             <div className={styles.field}>
               <label htmlFor="confirmPassword" className={styles.label}>Confirm New Password</label>
-              <input
-                id="confirmPassword"
-                type="password"
-                className={styles.input}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                autoComplete="new-password"
-                required
-                disabled={submitting}
-              />
+              <div className={styles.inputWrap}>
+                <span className="material-symbols-outlined" aria-hidden="true">lock_reset</span>
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  className={styles.input}
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  autoComplete="new-password"
+                  required
+                  disabled={submitting}
+                />
+              </div>
             </div>
 
             <button type="submit" className={styles.submit} disabled={submitting}>

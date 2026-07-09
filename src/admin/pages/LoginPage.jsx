@@ -102,32 +102,24 @@ export default function LoginPage() {
           <p className={styles.subtitle}>Sign in to manage your content</p>
         </div>
 
-        {error && <div className={styles.error} role="alert">{error}</div>}
+        {error && (
+          <div className={styles.error} role="alert">
+            <span className="material-symbols-outlined" aria-hidden="true">error</span>
+            <span>{error}</span>
+          </div>
+        )}
 
         {showGoogle && (
-          <div style={{ display: 'flex', justifyContent: 'center', margin: '8px 0 4px' }}>
+          <div className={styles.googleWrap}>
             <div ref={googleBtnRef} />
           </div>
         )}
 
         {showGoogle && showPassword && (
-          <div
-            aria-hidden="true"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              margin: '18px 0 6px',
-              color: '#9c8a86',
-              fontSize: '0.78rem',
-              fontWeight: 600,
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-            }}
-          >
-            <span style={{ flex: 1, height: '1px', background: '#e8e1da' }} />
+          <div className={styles.divider} aria-hidden="true">
+            <span className={styles.dividerLine} />
             or
-            <span style={{ flex: 1, height: '1px', background: '#e8e1da' }} />
+            <span className={styles.dividerLine} />
           </div>
         )}
 
@@ -135,30 +127,36 @@ export default function LoginPage() {
           <form className={styles.form} onSubmit={handleSubmit} noValidate>
             <div className={styles.field}>
               <label htmlFor="email" className={styles.label}>Email</label>
-              <input
-                id="email"
-                type="email"
-                className={styles.input}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-                required
-                disabled={submitting}
-              />
+              <div className={styles.inputWrap}>
+                <span className="material-symbols-outlined" aria-hidden="true">mail</span>
+                <input
+                  id="email"
+                  type="email"
+                  className={styles.input}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  required
+                  disabled={submitting}
+                />
+              </div>
             </div>
 
             <div className={styles.field}>
               <label htmlFor="password" className={styles.label}>Password</label>
-              <input
-                id="password"
-                type="password"
-                className={styles.input}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoComplete="current-password"
-                required
-                disabled={submitting}
-              />
+              <div className={styles.inputWrap}>
+                <span className="material-symbols-outlined" aria-hidden="true">lock</span>
+                <input
+                  id="password"
+                  type="password"
+                  className={styles.input}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="current-password"
+                  required
+                  disabled={submitting}
+                />
+              </div>
             </div>
 
             <button type="submit" className={styles.submit} disabled={submitting}>

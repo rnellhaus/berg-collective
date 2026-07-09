@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useApi } from '../hooks/useApi';
+import styles from './SurveyResultsPage.module.css';
 
 const TEXT_QUESTIONS = [
   { key: 'most_valuable', label: 'What did you find most valuable about the programming?' },
@@ -16,12 +17,10 @@ function formatDate(dateStr) {
 
 function StatCard({ label, value, sub }) {
   return (
-    <div style={{ flex: '1 1 160px', padding: '18px 20px', border: '1px solid #e8e1da', borderRadius: '8px', background: '#fff' }}>
-      <div style={{ fontSize: '0.78rem', fontWeight: '600', color: '#8e5f57', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-        {label}
-      </div>
-      <div style={{ fontSize: '1.8rem', fontWeight: '700', color: '#191110', marginTop: '4px' }}>{value}</div>
-      {sub && <div style={{ fontSize: '0.78rem', color: '#9c8a86', marginTop: '2px' }}>{sub}</div>}
+    <div className={styles.statCard}>
+      <div className={styles.statLabel}>{label}</div>
+      <div className={styles.statValue}>{value}</div>
+      {sub && <div className={styles.statSub}>{sub}</div>}
     </div>
   );
 }
@@ -74,62 +73,51 @@ export default function SurveyResultsPage() {
   }
 
   if (loading) {
-    return <p style={{ color: '#8e5f57', fontStyle: 'italic' }}>Loading survey results…</p>;
+    return <p className={styles.stateMsg}>Loading survey results…</p>;
   }
   if (error) {
-    return <p style={{ color: '#8b3223' }}>Error: {error}</p>;
+    return <p className={styles.errorMsg}>Error: {error}</p>;
   }
   if (!results) return null;
 
   const { totalResponses, overall, nps, sessions, responses } = results;
 
   return (
-    <div style={{ maxWidth: '960px' }}>
+    <div className={styles.page}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+      <header className={styles.header}>
         <div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#191110', margin: 0 }}>
-            AI Summit 2026 — Pulse Survey
-          </h1>
-          <div style={{ fontSize: '0.82rem', color: '#8e5f57', marginTop: '4px' }}>
-            Amplified Intelligence · June 27 · Squarespace HQ
-          </div>
+          <h1 className={styles.title}>AI Summit 2026 — Pulse Survey</h1>
+          <p className={styles.subtitle}>Amplified Intelligence · June 27 · Squarespace HQ</p>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <Link
-            to="/admin/forms"
-            style={{ fontSize: '0.82rem', fontWeight: '600', color: '#8b3223', textDecoration: 'none' }}
-          >
-            All submissions →
+        <div className={styles.headerActions}>
+          <Link to="/admin/forms" className={styles.mutedLink}>
+            All submissions
+            <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
           </Link>
           <button
             onClick={handleExport}
             disabled={exporting || totalResponses === 0}
-            style={{
-              padding: '7px 14px',
-              border: '1px solid #8b3223',
-              borderRadius: '6px',
-              background: '#8b3223',
-              color: '#fff',
-              fontSize: '0.82rem',
-              fontWeight: '600',
-              cursor: exporting || totalResponses === 0 ? 'default' : 'pointer',
-              opacity: exporting || totalResponses === 0 ? 0.5 : 1,
-            }}
+            className={styles.primaryBtn}
           >
+            <span className="material-symbols-outlined" aria-hidden="true">download</span>
             {exporting ? 'Exporting…' : 'Export CSV'}
           </button>
         </div>
-      </div>
+      </header>
 
       {totalResponses === 0 ? (
-        <p style={{ color: '#8e5f57', fontStyle: 'italic' }}>
-          No responses yet. Share the survey link: <code>bergcollective.org/aisummit/survey</code>
-        </p>
+        <div className={styles.empty}>
+          <span className="material-symbols-outlined" aria-hidden="true">ballot</span>
+          <p>
+            No responses yet. Share the survey link:{' '}
+            <code className={styles.monoChip}>bergcollective.org/aisummit/survey</code>
+          </p>
+        </div>
       ) : (
         <>
           {/* Stat cards */}
-          <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap', marginBottom: '28px' }}>
+          <div className={styles.statRow}>
             <StatCard label="Responses" value={totalResponses} />
             <StatCard
               label="Overall rating"
@@ -144,66 +132,47 @@ export default function SurveyResultsPage() {
           </div>
 
           {/* Session ratings */}
-          <h2 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#191110', margin: '0 0 12px' }}>
-            Session ratings
-          </h2>
-          <div style={{ border: '1px solid #e8e1da', borderRadius: '8px', overflow: 'hidden', marginBottom: '28px', background: '#fff' }}>
-            {sessions.map((s, i) => (
-              <div
-                key={s.key}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '14px',
-                  padding: '12px 16px',
-                  borderBottom: i === sessions.length - 1 ? 'none' : '1px solid #e8e1da',
-                }}
-              >
-                <div style={{ flex: 1, minWidth: 0, fontSize: '0.85rem', color: '#191110' }}>{s.title}</div>
-                <div style={{ width: '120px', height: '8px', background: '#f0eae4', borderRadius: '4px', flexShrink: 0 }}>
-                  <div
-                    style={{
-                      width: s.average != null ? `${(s.average / 5) * 100}%` : 0,
-                      height: '100%',
-                      background: '#D4AF37',
-                      borderRadius: '4px',
-                    }}
-                  />
+          <section className={styles.section}>
+            <h2 className={styles.sectionLabel}>Session Ratings</h2>
+            <div className={styles.card}>
+              {sessions.map((s) => (
+                <div key={s.key} className={styles.sessionRow}>
+                  <div className={styles.sessionTitle}>{s.title}</div>
+                  <div className={styles.barTrack}>
+                    <div
+                      className={styles.barFill}
+                      style={{ '--fill': s.average != null ? `${(s.average / 5) * 100}%` : '0%' }}
+                    />
+                  </div>
+                  <div className={styles.sessionScore}>
+                    {s.average != null ? s.average.toFixed(1) : '—'}
+                    <span className={styles.sessionCount}> ({s.count})</span>
+                  </div>
                 </div>
-                <div style={{ width: '76px', textAlign: 'right', fontSize: '0.82rem', fontWeight: '600', color: '#191110', flexShrink: 0 }}>
-                  {s.average != null ? s.average.toFixed(1) : '—'}
-                  <span style={{ fontWeight: '400', color: '#9c8a86' }}> ({s.count})</span>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </section>
 
           {/* Written feedback */}
           {TEXT_QUESTIONS.map(({ key, label }) => {
             const answers = responses.filter((r) => r[key]);
             if (answers.length === 0) return null;
             return (
-              <div key={key} style={{ marginBottom: '28px' }}>
-                <h2 style={{ fontSize: '1.05rem', fontWeight: '700', color: '#191110', margin: '0 0 12px' }}>
-                  {label} <span style={{ fontWeight: '400', color: '#9c8a86', fontSize: '0.82rem' }}>({answers.length})</span>
+              <section key={key} className={styles.section}>
+                <h2 className={styles.sectionLabel}>
+                  {label} <span className={styles.sectionCount}>({answers.length})</span>
                 </h2>
-                <div style={{ border: '1px solid #e8e1da', borderRadius: '8px', overflow: 'hidden', background: '#fff' }}>
-                  {answers.map((r, i) => (
-                    <div
-                      key={r.id}
-                      style={{
-                        padding: '12px 16px',
-                        borderBottom: i === answers.length - 1 ? 'none' : '1px solid #e8e1da',
-                      }}
-                    >
-                      <div style={{ fontSize: '0.88rem', color: '#191110', whiteSpace: 'pre-line' }}>{r[key]}</div>
-                      <div style={{ fontSize: '0.75rem', color: '#9c8a86', marginTop: '6px' }}>
+                <div className={styles.card}>
+                  {answers.map((r) => (
+                    <div key={r.id} className={styles.quoteRow}>
+                      <div className={styles.quoteText}>{r[key]}</div>
+                      <div className={styles.quoteMeta}>
                         {r.name || 'Anonymous'} · {formatDate(r.created_at)}
                       </div>
                     </div>
                   ))}
                 </div>
-              </div>
+              </section>
             );
           })}
         </>

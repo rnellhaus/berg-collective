@@ -1,0 +1,274 @@
+.page {
+  max-width: 960px;
+}
+
+/* ── Header ──────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #191110;
+  margin: 0;
+}
+
+.subtitle {
+  color: #8e5f57;
+  margin: 6px 0 0;
+  font-size: 0.9rem;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.mutedLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #8e5f57;
+  text-decoration: none;
+  transition: color 0.12s;
+}
+
+.mutedLink:hover {
+  color: #8b3223;
+}
+
+.mutedLink :global(.material-symbols-outlined) {
+  font-size: 17px;
+}
+
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  background: #8b3223;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.primaryBtn:hover:not(:disabled) {
+  background: #6f2719;
+}
+
+.primaryBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.primaryBtn :global(.material-symbols-outlined) {
+  font-size: 18px;
+}
+
+/* ── Stat cards ──────────────────────────────────────────── */
+.statRow {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 22px;
+}
+
+.statCard {
+  flex: 1 1 160px;
+  padding: 18px 20px;
+  background: #ffffff;
+  border: 1px solid #e3dbd8;
+  border-radius: 12px;
+}
+
+.statLabel {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8e5f57;
+}
+
+.statValue {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #191110;
+  margin-top: 4px;
+}
+
+.statSub {
+  font-size: 0.78rem;
+  color: #9c8a86;
+  margin-top: 2px;
+}
+
+/* ── Sections ────────────────────────────────────────────── */
+.section {
+  margin-top: 28px;
+}
+
+.sectionLabel {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9c8a86;
+  margin: 0 0 10px;
+}
+
+.sectionCount {
+  font-weight: 600;
+  color: #c4aca6;
+  letter-spacing: normal;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e3dbd8;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* ── Session rating rows ─────────────────────────────────── */
+.sessionRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 18px;
+  border-bottom: 1px solid #f0e9e5;
+}
+
+.sessionRow:last-child {
+  border-bottom: none;
+}
+
+.sessionTitle {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.85rem;
+  color: #191110;
+}
+
+.barTrack {
+  width: 120px;
+  height: 8px;
+  background: #f1eae7;
+  border-radius: 4px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.barFill {
+  width: var(--fill, 0%);
+  height: 100%;
+  background: #8b3223;
+  border-radius: 4px;
+}
+
+.sessionScore {
+  width: 76px;
+  text-align: right;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #191110;
+  flex-shrink: 0;
+}
+
+.sessionCount {
+  font-weight: 400;
+  color: #9c8a86;
+}
+
+/* ── Written feedback ────────────────────────────────────── */
+.quoteRow {
+  padding: 13px 18px;
+  border-bottom: 1px solid #f0e9e5;
+}
+
+.quoteRow:last-child {
+  border-bottom: none;
+}
+
+.quoteText {
+  font-size: 0.88rem;
+  color: #191110;
+  white-space: pre-line;
+}
+
+.quoteMeta {
+  font-size: 0.75rem;
+  color: #9c8a86;
+  margin-top: 6px;
+}
+
+/* ── Mono chip ───────────────────────────────────────────── */
+.monoChip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 5px;
+  font-size: 0.75rem;
+  background: #f1eae7;
+  color: #6b5752;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* ── States ──────────────────────────────────────────────── */
+.stateMsg {
+  color: #8e5f57;
+  font-style: italic;
+}
+
+.errorMsg {
+  color: #8b3223;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 44px 20px;
+  background: #ffffff;
+  border: 1px dashed #ddd2cd;
+  border-radius: 12px;
+  color: #9c8a86;
+}
+
+.empty :global(.material-symbols-outlined) {
+  font-size: 30px;
+  color: #c4aca6;
+}
+
+.empty p {
+  margin: 0;
+  font-size: 0.875rem;
+  text-align: center;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 680px) {
+  .barTrack {
+    width: 72px;
+  }
+
+  .sessionRow,
+  .quoteRow {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+}

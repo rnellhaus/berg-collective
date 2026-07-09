@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import styles from './LoginPage.module.css';
+import styles from './ForgotPasswordPage.module.css';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -41,7 +41,8 @@ export default function ForgotPasswordPage() {
         {sent ? (
           <>
             <div className={styles.success} role="status">
-              If an account exists for that email, a reset link is on its way. The link expires in 1 hour.
+              <span className="material-symbols-outlined" aria-hidden="true">mark_email_read</span>
+              <span>If an account exists for that email, a reset link is on its way. The link expires in 1 hour.</span>
             </div>
             <p className={styles.helpText}>
               <Link to="/admin/login" className={styles.link}>Back to sign in</Link>
@@ -49,21 +50,29 @@ export default function ForgotPasswordPage() {
           </>
         ) : (
           <form className={styles.form} onSubmit={handleSubmit} noValidate>
-            {error && <div className={styles.error} role="alert">{error}</div>}
+            {error && (
+              <div className={styles.error} role="alert">
+                <span className="material-symbols-outlined" aria-hidden="true">error</span>
+                <span>{error}</span>
+              </div>
+            )}
 
             <div className={styles.field}>
               <label htmlFor="email" className={styles.label}>Email</label>
-              <input
-                id="email"
-                type="email"
-                className={styles.input}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-                placeholder="Your admin email"
-                required
-                disabled={submitting}
-              />
+              <div className={styles.inputWrap}>
+                <span className="material-symbols-outlined" aria-hidden="true">mail</span>
+                <input
+                  id="email"
+                  type="email"
+                  className={styles.input}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  placeholder="Your admin email"
+                  required
+                  disabled={submitting}
+                />
+              </div>
             </div>
 
             <button type="submit" className={styles.submit} disabled={submitting}>

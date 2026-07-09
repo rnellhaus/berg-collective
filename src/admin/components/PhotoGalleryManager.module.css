@@ -1,57 +1,82 @@
+/* Rendered inside the "Event Photos" section card of the event editor,
+   so the container itself is chromeless. */
 .container {
-  border: 1px solid #e8e1da;
-  border-radius: 8px;
-  padding: 20px;
-  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  gap: 10px;
 }
 
 .sectionLabel {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #8e5f57;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #4a3a36;
 }
 
 .addBtn {
-  padding: 7px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
   background: #8b3223;
   color: #ffffff;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.85rem;
   font-weight: 600;
+  font-family: inherit;
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: background 0.15s;
 }
 
 .addBtn:hover:not(:disabled) {
-  opacity: 0.88;
+  background: #6f2719;
 }
 
 .addBtn:disabled {
-  opacity: 0.5;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
-.emptyMsg {
+.addBtn :global(.material-symbols-outlined) {
+  font-size: 17px;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 32px 20px;
+  border: 1px dashed #ddd2cd;
+  border-radius: 12px;
+  color: #9c8a86;
+  text-align: center;
+}
+
+.empty :global(.material-symbols-outlined) {
+  font-size: 30px;
+  color: #c4aca6;
+}
+
+.empty p {
+  margin: 0;
   font-size: 0.875rem;
-  color: #8e5f57;
-  font-style: italic;
-  margin: 8px 0 0;
 }
 
 .errorMsg {
+  background: #fdf3f1;
+  border: 1px solid #eed6d0;
+  border-radius: 8px;
+  padding: 10px 14px;
   font-size: 0.85rem;
   color: #8b3223;
-  margin-bottom: 12px;
 }
 
 .photoGrid {
@@ -69,9 +94,10 @@
 .photoThumbWrap {
   position: relative;
   aspect-ratio: 4 / 3;
-  border-radius: 6px;
+  border-radius: 8px;
   overflow: hidden;
-  background: #f5f1ee;
+  background: #faf6f4;
+  border: 1px solid #e3dbd8;
 }
 
 .photoThumb {
@@ -81,23 +107,33 @@
   display: block;
 }
 
+.thumbFallback {
+  width: 100%;
+  height: 100%;
+  background: #f1eae7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: #8e5f57;
+}
+
 .removeBtn {
   position: absolute;
   top: 5px;
   right: 5px;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   border: none;
   background: rgba(139, 50, 35, 0.85);
   color: #ffffff;
-  font-size: 0.7rem;
-  font-weight: 700;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   line-height: 1;
+  padding: 0;
   transition: background 0.15s;
 }
 
@@ -106,8 +142,12 @@
 }
 
 .removeBtn:disabled {
-  opacity: 0.5;
+  opacity: 0.6;
   cursor: not-allowed;
+}
+
+.removeBtn :global(.material-symbols-outlined) {
+  font-size: 15px;
 }
 
 .photoControls {
@@ -117,19 +157,21 @@
 
 .moveBtn {
   flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 4px;
-  border: 1px solid #e8e1da;
-  border-radius: 4px;
-  background: #fbfaf9;
+  border: 1px solid #e3dbd8;
+  border-radius: 7px;
+  background: #ffffff;
   color: #8e5f57;
-  font-size: 0.8rem;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  transition: border-color 0.12s, color 0.12s;
 }
 
 .moveBtn:hover:not(:disabled) {
-  background: #f5f1ee;
-  color: #191110;
+  border-color: #d3a79e;
+  color: #8b3223;
 }
 
 .moveBtn:disabled {
@@ -137,27 +179,11 @@
   cursor: not-allowed;
 }
 
-.captionInput {
-  width: 100%;
-  padding: 6px 8px;
-  border: 1px solid #e8e1da;
-  border-radius: 5px;
-  font-size: 0.775rem;
-  color: #191110;
-  background: #fbfaf9;
-  box-sizing: border-box;
-  outline: none;
+.moveBtn :global(.material-symbols-outlined) {
+  font-size: 17px;
 }
 
-.captionInput::placeholder {
-  color: #b9a9a5;
-}
-
-.captionInput:focus {
-  border-color: #8b3223;
-}
-
-/* Media Picker Modal */
+/* ── Media picker modal ──────────────────────────────────── */
 .modalOverlay {
   position: fixed;
   inset: 0;
@@ -171,13 +197,14 @@
 
 .modal {
   background: #ffffff;
-  border-radius: 10px;
+  border: 1px solid #e3dbd8;
+  border-radius: 12px;
   width: 100%;
   max-width: 680px;
   max-height: 80vh;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 8px 40px rgba(25, 17, 16, 0.18);
 }
 
 .modalHeader {
@@ -185,7 +212,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 18px 20px 14px;
-  border-bottom: 1px solid #e8e1da;
+  border-bottom: 1px solid #f0e9e5;
 }
 
 .modalTitle {
@@ -196,18 +223,64 @@
 }
 
 .modalClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: none;
-  font-size: 1rem;
   color: #8e5f57;
   cursor: pointer;
-  padding: 4px 6px;
-  border-radius: 4px;
+  padding: 4px;
+  border-radius: 7px;
   line-height: 1;
+  transition: background 0.12s, color 0.12s;
 }
 
 .modalClose:hover {
-  background: #f5f1ee;
+  background: #f1eae7;
+  color: #8b3223;
+}
+
+.modalClose :global(.material-symbols-outlined) {
+  font-size: 19px;
+}
+
+.modalToolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px 12px;
+}
+
+.uploadBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: #8b3223;
+  color: #ffffff;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.uploadBtn:hover {
+  background: #6f2719;
+}
+
+.uploadBtn :global(.material-symbols-outlined) {
+  font-size: 17px;
+}
+
+.toolbarHint {
+  font-size: 0.75rem;
+  color: #9c8a86;
+}
+
+.hiddenInput {
+  display: none;
 }
 
 .stateMsg {
@@ -215,6 +288,16 @@
   color: #8e5f57;
   font-size: 0.875rem;
   font-style: italic;
+}
+
+.modalError {
+  margin: 0 20px 12px;
+  background: #fdf3f1;
+  border: 1px solid #eed6d0;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  color: #8b3223;
 }
 
 .mediaGrid {
@@ -229,10 +312,10 @@
 .mediaThumb {
   position: relative;
   aspect-ratio: 1;
-  border: 2px solid #e8e1da;
-  border-radius: 6px;
+  border: 2px solid #e3dbd8;
+  border-radius: 8px;
   overflow: hidden;
-  background: #f5f1ee;
+  background: #faf6f4;
   cursor: pointer;
   padding: 0;
   transition: border-color 0.15s;
@@ -246,12 +329,18 @@
 }
 
 .mediaThumb:hover {
-  border-color: #8b3223;
+  border-color: #d3a79e;
 }
 
 .mediaThumbSelected {
   border-color: #8b3223;
-  border-width: 2px;
+}
+
+.thumbFilename {
+  font-size: 0.65rem;
+  color: #8e5f57;
+  word-break: break-all;
+  padding: 4px;
 }
 
 .checkMark {
@@ -263,11 +352,13 @@
   border-radius: 50%;
   width: 20px;
   height: 20px;
-  font-size: 0.7rem;
-  font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.checkMark :global(.material-symbols-outlined) {
+  font-size: 13px;
 }
 
 .modalFooter {
@@ -275,42 +366,48 @@
   justify-content: flex-end;
   gap: 10px;
   padding: 14px 20px;
-  border-top: 1px solid #e8e1da;
+  border-top: 1px solid #f0e9e5;
 }
 
 .btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   padding: 8px 18px;
   background: #8b3223;
   color: #ffffff;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 600;
+  font-family: inherit;
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: background 0.15s;
 }
 
 .btnPrimary:hover:not(:disabled) {
-  opacity: 0.88;
+  background: #6f2719;
 }
 
 .btnPrimary:disabled {
-  opacity: 0.45;
+  opacity: 0.6;
   cursor: not-allowed;
 }
 
 .btnSecondary {
   padding: 8px 18px;
   background: #ffffff;
-  color: #8e5f57;
-  border: 1px solid #e8e1da;
-  border-radius: 6px;
+  color: #6b5752;
+  border: 1px solid #e3dbd8;
+  border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 600;
+  font-family: inherit;
   cursor: pointer;
-  transition: background 0.15s;
+  transition: border-color 0.12s, color 0.12s;
 }
 
 .btnSecondary:hover {
-  background: #f5f1ee;
+  border-color: #d3a79e;
+  color: #8b3223;
 }

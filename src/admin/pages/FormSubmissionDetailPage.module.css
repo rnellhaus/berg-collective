@@ -1,0 +1,276 @@
+.page {
+  max-width: 700px;
+}
+
+/* ── Back link ───────────────────────────────────────────── */
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: #8e5f57;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+  transition: color 0.12s;
+}
+
+.backLink:hover {
+  color: #8b3223;
+}
+
+.backLink :global(.material-symbols-outlined) {
+  font-size: 18px;
+}
+
+/* ── Header ──────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.title {
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #191110;
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  background: #8b3223;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.primaryBtn:hover:not(:disabled) {
+  background: #6f2719;
+}
+
+.primaryBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.secondaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  background: #ffffff;
+  border: 1px solid #e3dbd8;
+  border-radius: 8px;
+  color: #6b5752;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+}
+
+.secondaryBtn:hover:not(:disabled) {
+  border-color: #d3a79e;
+  color: #8b3223;
+}
+
+.secondaryBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.dangerBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  background: #ffffff;
+  border: 1px solid #eed6d0;
+  border-radius: 8px;
+  color: #8b3223;
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.12s, background 0.12s;
+}
+
+.dangerBtn:hover:not(:disabled) {
+  border-color: #d3a79e;
+  background: #fdf3f1;
+}
+
+.dangerBtn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* ── Meta ────────────────────────────────────────────────── */
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  font-size: 0.82rem;
+  color: #6b5752;
+}
+
+.metaItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.metaItem :global(.material-symbols-outlined) {
+  font-size: 16px;
+  color: #9c8a86;
+}
+
+.pill {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pillWarm {
+  background: #f5efdb;
+  color: #6b4c10;
+}
+
+.pillBrick {
+  background: #f6e7e3;
+  color: #8b3223;
+}
+
+.pillGreen {
+  background: #e4efe0;
+  color: #3d6132;
+}
+
+/* ── Sections ────────────────────────────────────────────── */
+.section {
+  margin-top: 26px;
+}
+
+.sectionLabel {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9c8a86;
+  margin: 0 0 10px;
+}
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e3dbd8;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* ── Field definition list ───────────────────────────────── */
+.fieldList {
+  margin: 0;
+}
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 12px;
+  padding: 13px 18px;
+  border-bottom: 1px solid #f0e9e5;
+}
+
+.fieldRow:last-child {
+  border-bottom: none;
+}
+
+.fieldLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #a5928e;
+  padding-top: 2px;
+}
+
+.fieldValue {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #191110;
+  white-space: pre-line;
+  word-break: break-word;
+  min-width: 0;
+}
+
+.valueLink {
+  color: #8b3223;
+  text-decoration: none;
+}
+
+.valueLink:hover {
+  text-decoration: underline;
+}
+
+/* ── Attachment ──────────────────────────────────────────── */
+.attachmentCard {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #e3dbd8;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 0.85rem;
+}
+
+.attachmentCard :global(.material-symbols-outlined) {
+  font-size: 18px;
+  color: #8e5f57;
+}
+
+.attachmentName {
+  color: #191110;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+/* ── States ──────────────────────────────────────────────── */
+.stateMsg {
+  color: #8e5f57;
+  font-style: italic;
+}
+
+.errorMsg {
+  color: #8b3223;
+  margin-top: 16px;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 680px) {
+  .fieldRow {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+}

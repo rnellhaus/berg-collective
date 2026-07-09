@@ -1,0 +1,127 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #8e5f57;
+}
+
+.input {
+  padding: 9px 12px;
+  border: 1px solid #e3dbd8;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: #191110;
+  background: #ffffff;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.input:focus {
+  border-color: #8b3223;
+}
+
+.input::placeholder {
+  color: #b3a29e;
+}
+
+.textarea {
+  padding: 9px 12px;
+  border: 1px solid #e3dbd8;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: #191110;
+  background: #ffffff;
+  outline: none;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+  resize: vertical;
+  min-height: 100px;
+  line-height: 1.5;
+}
+
+.textarea:focus {
+  border-color: #8b3223;
+}
+
+.textarea::placeholder {
+  color: #b3a29e;
+}
+
+/* ── Image fields ────────────────────────────────────────── */
+.imageRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  border: 1px solid #e3dbd8;
+  background: #f1eae7;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.thumbId {
+  font-size: 0.65rem;
+  color: #6b5752;
+  text-align: center;
+  padding: 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.thumbPlaceholder {
+  color: #c4aca6;
+}
+
+.thumbPlaceholder :global(.material-symbols-outlined) {
+  font-size: 22px;
+}
+
+.chooseImgBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #ffffff;
+  border: 1px solid #e3dbd8;
+  border-radius: 8px;
+  color: #6b5752;
+  font-size: 0.85rem;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s;
+}
+
+.chooseImgBtn:hover {
+  border-color: #d3a79e;
+  color: #8b3223;
+}
+
+.chooseImgBtn :global(.material-symbols-outlined) {
+  font-size: 17px;
+}

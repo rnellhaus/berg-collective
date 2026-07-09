@@ -89,19 +89,22 @@ function CoverImagePicker({ value, onChange, apiFetch }) {
         {thumbUrl ? (
           <img src={thumbUrl} alt="Cover" className={styles.coverThumb} />
         ) : value ? (
-          <div className={styles.coverPlaceholder} style={{ background: '#f0ebe6', color: '#8e5f57', fontSize: '12px' }}>Image selected (ID: {value.id})</div>
+          <div className={`${styles.coverPlaceholder} ${styles.coverPlaceholderSelected}`}>Image selected (ID: {value.id})</div>
         ) : (
           <div className={styles.coverPlaceholder}>No image selected</div>
         )}
         <button type="button" className={styles.chooseCoverBtn} onClick={openPicker}>
+          <span className="material-symbols-outlined" aria-hidden="true">photo_library</span>
           Choose from Library
         </button>
-        <label className={styles.chooseCoverBtn} style={{ cursor: 'pointer' }}>
+        <label className={styles.chooseCoverBtn}>
+          <span className="material-symbols-outlined" aria-hidden="true">upload</span>
           {uploading ? 'Uploading…' : 'Upload New'}
-          <input type="file" accept="image/*" onChange={handleUpload} style={{ display: 'none' }} disabled={uploading} />
+          <input type="file" accept="image/*" onChange={handleUpload} className={styles.hiddenInput} disabled={uploading} />
         </label>
         {value && (
           <button type="button" className={styles.removeCoverBtn} onClick={() => onChange(null)}>
+            <span className="material-symbols-outlined" aria-hidden="true">close</span>
             Remove
           </button>
         )}
@@ -112,17 +115,15 @@ function CoverImagePicker({ value, onChange, apiFetch }) {
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <div className={styles.modalHeader}>
               <h3 className={styles.modalTitle}>Choose Image</h3>
-              <button className={styles.modalClose} type="button" onClick={() => setShowPicker(false)}>
-                ✕
+              <button className={styles.modalClose} type="button" onClick={() => setShowPicker(false)} aria-label="Close">
+                <span className="material-symbols-outlined" aria-hidden="true">close</span>
               </button>
             </div>
-            <div style={{ padding: '0 20px 12px', display: 'flex', gap: '8px' }}>
-              <label style={{
-                padding: '8px 16px', background: '#8b3223', color: '#fff', borderRadius: '8px',
-                fontSize: '13px', fontWeight: '600', cursor: 'pointer',
-              }}>
+            <div className={styles.modalToolbar}>
+              <label className={styles.uploadBtn}>
+                <span className="material-symbols-outlined" aria-hidden="true">upload</span>
                 {uploading ? 'Uploading…' : 'Upload New Image'}
-                <input type="file" accept="image/*" onChange={handleUpload} style={{ display: 'none' }} disabled={uploading} />
+                <input type="file" accept="image/*" onChange={handleUpload} className={styles.hiddenInput} disabled={uploading} />
               </label>
             </div>
             {loading && <p className={styles.stateMsg}>Loading media…</p>}
@@ -144,7 +145,7 @@ function CoverImagePicker({ value, onChange, apiFetch }) {
                       {src ? (
                         <img src={src} alt={item.filename || ''} />
                       ) : (
-                        <span style={{ fontSize: '10px', color: '#8e5f57' }}>{item.filename}</span>
+                        <span className={styles.pickerFilename}>{item.filename}</span>
                       )}
                     </button>
                   );
@@ -291,27 +292,52 @@ export default function EventEditorPage() {
   }
 
   if (loading) {
-    return <p className={styles.stateMsg}>Loading event…</p>;
+    return (
+      <div className={styles.page}>
+        <p className={styles.stateMsg}>Loading event…</p>
+      </div>
+    );
   }
 
   return (
-    <div className={styles.container}>
-      <div className={styles.topBar}>
-        <h1 className={styles.heading}>{isNew ? 'New Event' : 'Edit Event'}</h1>
-        <button
-          type="button"
-          className={styles.backBtn}
-          onClick={() => navigate('/admin/events')}
-        >
-          ← Back to Events
-        </button>
-      </div>
+    <div className={styles.page}>
+      <header className={styles.header}>
+        <div>
+          <h1 className={styles.title}>{isNew ? 'New Event' : 'Edit Event'}</h1>
+          <p className={styles.subtitle}>
+            {isNew
+              ? 'Fill in the details to create a new BERG event.'
+              : 'Update event details, RSVP settings, and photos.'}
+          </p>
+        </div>
+        <div className={styles.headerActions}>
+          <button
+            type="button"
+            className={styles.secondaryBtn}
+            onClick={() => navigate('/admin/events')}
+          >
+            <span className="material-symbols-outlined" aria-hidden="true">arrow_back</span>
+            Back to Events
+          </button>
+          <button
+            type="submit"
+            form="event-editor-form"
+            className={styles.primaryBtn}
+            disabled={saving}
+          >
+            <span className="material-symbols-outlined" aria-hidden="true">
+              {isNew ? 'add' : 'save'}
+            </span>
+            {saving ? 'Saving…' : isNew ? 'Create Event' : 'Save Changes'}
+          </button>
+        </div>
+      </header>
 
       {error && <div className={styles.errorBanner}>{error}</div>}
 
-      <form onSubmit={handleSave} className={styles.form}>
+      <form id="event-editor-form" onSubmit={handleSave} className={styles.form}>
         <div className={styles.card}>
-          <div className={styles.cardTitle}>Event Details</div>
+          <div className={styles.cardLabel}>Event Details</div>
 
           <div className={styles.fieldGroup}>
             <label className={styles.label}>Title</label>
@@ -407,11 +433,10 @@ export default function EventEditorPage() {
               {customCity && (
                 <input
                   type="text"
-                  className={styles.input}
+                  className={`${styles.input} ${styles.inputSpaced}`}
                   value={form.chapter}
                   onChange={(e) => handleField('chapter', e.target.value)}
                   placeholder="Enter city name, e.g. Miami"
-                  style={{ marginTop: '8px' }}
                   autoFocus
                 />
               )}
@@ -448,7 +473,7 @@ export default function EventEditorPage() {
         </div>
 
         <div className={styles.card}>
-          <div className={styles.cardTitle}>Cover Image</div>
+          <div className={styles.cardLabel}>Cover Image</div>
           <CoverImagePicker
             value={coverImage}
             onChange={handleCoverChange}
@@ -464,12 +489,12 @@ export default function EventEditorPage() {
         />
 
         <div className={styles.card}>
-          <div className={styles.cardTitle}>Event Photos</div>
-          <p style={{ fontSize: '13px', color: '#8e5f57', marginBottom: '16px' }}>
+          <div className={styles.cardLabel}>Event Photos</div>
+          <p className={styles.cardHint}>
             Add up to 4 preview photos so people can get a feel of what to expect. These appear as small thumbnails on the events page.
           </p>
           {isNew ? (
-            <p style={{ fontSize: '13px', color: '#8e5f57', fontStyle: 'italic' }}>
+            <p className={styles.cardNote}>
               Save the event first, then you can add photos.
             </p>
           ) : (
@@ -484,9 +509,12 @@ export default function EventEditorPage() {
         <div className={styles.actions}>
           <button
             type="submit"
-            className={styles.saveBtn}
+            className={styles.primaryBtn}
             disabled={saving}
           >
+            <span className="material-symbols-outlined" aria-hidden="true">
+              {isNew ? 'add' : 'save'}
+            </span>
             {saving ? 'Saving…' : isNew ? 'Create Event' : 'Save Changes'}
           </button>
 
@@ -497,6 +525,7 @@ export default function EventEditorPage() {
               onClick={() => setShowDeleteConfirm(true)}
               disabled={saving}
             >
+              <span className="material-symbols-outlined" aria-hidden="true">delete</span>
               Delete Event
             </button>
           )}

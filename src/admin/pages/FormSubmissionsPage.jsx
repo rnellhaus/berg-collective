@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { useApi } from '../hooks/useApi';
+import styles from './FormSubmissionsPage.module.css';
 
 const FORM_TYPES = [
   { value: '', label: 'All Forms' },
@@ -14,15 +15,15 @@ const FORM_TYPES = [
   { value: 'aisummit_survey', label: 'AI Summit — Survey' },
 ];
 
-const TYPE_COLORS = {
-  membership: { bg: '#F5EFDB', color: '#6b4c10' },
-  individual_waitlist: { bg: '#e8f0fe', color: '#1a56db' },
-  impact_download: { bg: '#f0fdf4', color: '#166534' },
-  newsletter: { bg: '#fef3f2', color: '#991b1b' },
-  contact: { bg: '#f5f1ee', color: '#8e5f57' },
-  volunteer: { bg: '#fef9e7', color: '#8b6914' },
-  aisummit_openai: { bg: '#eef2ff', color: '#4338ca' },
-  aisummit_survey: { bg: '#ecfeff', color: '#0e7490' },
+const TYPE_PILL_CLASS = {
+  membership: 'pillWarm',
+  individual_waitlist: 'pillBrick',
+  impact_download: 'pillGreen',
+  newsletter: 'pillNeutral',
+  contact: 'pillNeutral',
+  volunteer: 'pillWarm',
+  aisummit_openai: 'pillBrick',
+  aisummit_survey: 'pillGreen',
 };
 
 const TYPE_LABELS = {
@@ -35,6 +36,12 @@ const TYPE_LABELS = {
   aisummit_openai: 'AI Summit — OpenAI',
   aisummit_survey: 'AI Summit — Survey',
 };
+
+const REVIEW_TABS = [
+  { value: '', label: 'All' },
+  { value: '0', label: 'Needs Review' },
+  { value: '1', label: 'Reviewed' },
+];
 
 function formatDate(dateStr) {
   if (!dateStr) return '—';
@@ -158,246 +165,158 @@ export default function FormSubmissionsPage() {
   }
 
   return (
-    <div style={{ maxWidth: '960px' }}>
+    <div className={styles.page}>
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
-        <h1 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#191110', margin: 0 }}>
-          Form Submissions
-        </h1>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <Link
-            to="/admin/surveys/aisummit"
-            style={{ fontSize: '0.82rem', fontWeight: '600', color: '#8b3223', textDecoration: 'none' }}
-          >
-            AI Summit Survey Results →
+      <header className={styles.header}>
+        <div>
+          <h1 className={styles.title}>Form Submissions</h1>
+          <p className={styles.subtitle}>Review, track, and export submissions from site forms.</p>
+        </div>
+        <div className={styles.headerActions}>
+          <Link to="/admin/surveys/aisummit" className={styles.mutedLink}>
+            AI Summit Survey Results
+            <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
           </Link>
-          <div style={{ fontSize: '0.8rem', color: '#6b5752' }}>
-            {pagination.total} total submission{pagination.total !== 1 ? 's' : ''}
-          </div>
           <button
             onClick={handleExport}
             disabled={exporting || pagination.total === 0}
-            style={{
-              padding: '7px 14px',
-              border: '1px solid #8b3223',
-              borderRadius: '6px',
-              background: '#8b3223',
-              color: '#fff',
-              fontSize: '0.82rem',
-              fontWeight: '600',
-              cursor: exporting || pagination.total === 0 ? 'default' : 'pointer',
-              opacity: exporting || pagination.total === 0 ? 0.5 : 1,
-            }}
+            className={styles.primaryBtn}
           >
+            <span className="material-symbols-outlined" aria-hidden="true">download</span>
             {exporting ? 'Exporting…' : 'Export CSV'}
           </button>
         </div>
-      </div>
+      </header>
 
       {/* Filters */}
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '20px', flexWrap: 'wrap' }}>
-        <select
-          value={typeFilter}
-          onChange={handleFilterChange(setTypeFilter)}
-          style={{
-            padding: '7px 12px',
-            border: '1px solid #e3dbd8',
-            borderRadius: '6px',
-            fontSize: '0.85rem',
-            color: '#191110',
-            background: '#fff',
-          }}
-        >
-          {FORM_TYPES.map(t => (
-            <option key={t.value} value={t.value}>{t.label}</option>
-          ))}
-        </select>
-        <select
-          value={reviewedFilter}
-          onChange={handleFilterChange(setReviewedFilter)}
-          style={{
-            padding: '7px 12px',
-            border: '1px solid #e3dbd8',
-            borderRadius: '6px',
-            fontSize: '0.85rem',
-            color: '#191110',
-            background: '#fff',
-          }}
-        >
-          <option value="">All Status</option>
-          <option value="0">Needs Review</option>
-          <option value="1">Reviewed</option>
-        </select>
+      <div className={styles.toolbar}>
+        <div className={styles.filters}>
+          <div className={styles.tabBar} role="tablist">
+            {REVIEW_TABS.map(t => (
+              <button
+                key={t.value}
+                onClick={() => handleFilterChange(setReviewedFilter)({ target: { value: t.value } })}
+                className={`${styles.tab}${reviewedFilter === t.value ? ` ${styles.tabActive}` : ''}`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
+          <select
+            value={typeFilter}
+            onChange={handleFilterChange(setTypeFilter)}
+            className={styles.select}
+            aria-label="Filter by form type"
+          >
+            {FORM_TYPES.map(t => (
+              <option key={t.value} value={t.value}>{t.label}</option>
+            ))}
+          </select>
+        </div>
+        <span className={styles.count}>
+          {pagination.total} total submission{pagination.total !== 1 ? 's' : ''}
+        </span>
       </div>
 
       {/* Loading / Error */}
-      {loading && (
-        <p style={{ color: '#8e5f57', fontStyle: 'italic', marginTop: '24px' }}>Loading submissions…</p>
-      )}
-      {error && (
-        <p style={{ color: '#8b3223', marginTop: '24px' }}>Error: {error}</p>
-      )}
+      {loading && <p className={styles.stateMsg}>Loading submissions…</p>}
+      {error && <p className={styles.errorMsg}>Error: {error}</p>}
 
       {/* Empty state */}
       {!loading && !error && submissions.length === 0 && (
-        <p style={{ color: '#8e5f57', fontStyle: 'italic', marginTop: '24px' }}>
-          No submissions found.
-        </p>
+        <div className={styles.empty}>
+          <span className="material-symbols-outlined" aria-hidden="true">inbox</span>
+          <p>No submissions found.</p>
+        </div>
       )}
 
       {/* Table */}
       {!loading && !error && submissions.length > 0 && (
-        <div style={{ border: '1px solid #e8e1da', borderRadius: '8px', overflow: 'hidden' }}>
-          {submissions.map((sub, i) => {
-            const { name, email } = getSubmitterInfo(sub);
-            const typeStyle = TYPE_COLORS[sub.form_type] || { bg: '#f5f1ee', color: '#8e5f57' };
-            return (
-              <div
-                key={sub.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '14px',
-                  padding: '14px 16px',
-                  borderBottom: i === submissions.length - 1 ? 'none' : '1px solid #e8e1da',
-                  background: sub.reviewed ? '#ffffff' : '#fffbf5',
-                  flexWrap: 'wrap',
-                }}
-              >
-                {/* Review indicator */}
-                <div
-                  style={{
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    background: sub.reviewed ? '#d1d5db' : '#D4AF37',
-                    flexShrink: 0,
-                  }}
-                  title={sub.reviewed ? 'Reviewed' : 'Needs review'}
-                />
-
-                {/* Type badge */}
-                <span
-                  style={{
-                    display: 'inline-block',
-                    padding: '2px 8px',
-                    borderRadius: '4px',
-                    fontSize: '0.72rem',
-                    fontWeight: '600',
-                    background: typeStyle.bg,
-                    color: typeStyle.color,
-                    minWidth: '70px',
-                    textAlign: 'center',
-                  }}
-                >
-                  {TYPE_LABELS[sub.form_type] || sub.form_type}
-                </span>
-
-                {/* Name & email */}
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: '0.9rem', fontWeight: '600', color: '#191110', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {name}
-                  </div>
-                  <div style={{ fontSize: '0.8rem', color: '#8e5f57', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {email}
-                  </div>
-                </div>
-
-                {/* Timestamp */}
-                <div style={{ fontSize: '0.78rem', color: '#9c8a86', whiteSpace: 'nowrap' }}>
-                  {formatDate(sub.created_at)}
-                </div>
-
-                {/* Actions */}
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginLeft: 'auto', whiteSpace: 'nowrap' }}>
-                  <button
-                    onClick={() => handleToggleReview(sub.id)}
-                    disabled={togglingId === sub.id}
-                    style={{
-                      padding: '4px 10px',
-                      border: `1px solid ${sub.reviewed ? '#d1d5db' : '#D4AF37'}`,
-                      borderRadius: '6px',
-                      background: sub.reviewed ? '#fff' : '#fffbf5',
-                      color: sub.reviewed ? '#6b5752' : '#8b6914',
-                      fontSize: '0.78rem',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    {togglingId === sub.id ? '...' : sub.reviewed ? 'Undo Review' : 'Mark Reviewed'}
-                  </button>
-                  <button
-                    onClick={() => handleDelete(sub.id)}
-                    disabled={deletingId === sub.id}
-                    title="Delete submission"
-                    style={{
-                      padding: '4px 10px',
-                      border: '1px solid #fecaca',
-                      borderRadius: '6px',
-                      background: '#fff',
-                      color: '#991b1b',
-                      fontSize: '0.78rem',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    {deletingId === sub.id ? '...' : 'Delete'}
-                  </button>
-                  <Link
-                    to={`/admin/forms/${sub.id}`}
-                    style={{
-                      color: '#8b3223',
-                      textDecoration: 'none',
-                      fontWeight: '600',
-                      fontSize: '0.875rem',
-                    }}
-                  >
-                    View →
-                  </Link>
-                </div>
-              </div>
-            );
-          })}
+        <div className={styles.tableCard}>
+          <table className={styles.table}>
+            <thead>
+              <tr>
+                <th className={styles.dotCell} aria-label="Review status"></th>
+                <th>Type</th>
+                <th>Submitter</th>
+                <th className={styles.dateCell}>Submitted</th>
+                <th aria-label="Actions"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {submissions.map((sub) => {
+                const { name, email } = getSubmitterInfo(sub);
+                const pillClass = styles[TYPE_PILL_CLASS[sub.form_type]] || styles.pillNeutral;
+                return (
+                  <tr key={sub.id} className={sub.reviewed ? undefined : styles.unreadRow}>
+                    <td className={styles.dotCell}>
+                      <span
+                        className={`${styles.dot} ${sub.reviewed ? styles.dotRead : styles.dotUnread}`}
+                        title={sub.reviewed ? 'Reviewed' : 'Needs review'}
+                      />
+                    </td>
+                    <td>
+                      <span className={`${styles.pill} ${pillClass}`}>
+                        {TYPE_LABELS[sub.form_type] || sub.form_type}
+                      </span>
+                    </td>
+                    <td className={styles.submitterCell}>
+                      <div className={styles.submitterName}>{name}</div>
+                      <div className={styles.submitterEmail}>{email}</div>
+                    </td>
+                    <td className={styles.dateCell}>{formatDate(sub.created_at)}</td>
+                    <td className={styles.actionCell}>
+                      <div className={styles.actions}>
+                        <button
+                          onClick={() => handleToggleReview(sub.id)}
+                          disabled={togglingId === sub.id}
+                          className={`${styles.secondaryBtn}${sub.reviewed ? '' : ` ${styles.reviewBtnUnread}`}`}
+                        >
+                          {togglingId === sub.id ? '...' : sub.reviewed ? 'Undo Review' : 'Mark Reviewed'}
+                        </button>
+                        <button
+                          onClick={() => handleDelete(sub.id)}
+                          disabled={deletingId === sub.id}
+                          title="Delete submission"
+                          className={styles.dangerBtn}
+                        >
+                          {deletingId === sub.id ? '...' : 'Delete'}
+                        </button>
+                        <Link to={`/admin/forms/${sub.id}`} className={styles.viewLink}>
+                          View
+                          <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
+                        </Link>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       )}
 
       {/* Pagination */}
       {!loading && pagination.totalPages > 1 && (
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '20px', alignItems: 'center' }}>
+        <div className={styles.pagination}>
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page <= 1}
-            style={{
-              padding: '6px 14px',
-              border: '1px solid #e3dbd8',
-              borderRadius: '6px',
-              background: '#fff',
-              color: page <= 1 ? '#d1d5db' : '#8b3223',
-              fontSize: '0.85rem',
-              fontWeight: '600',
-              cursor: page <= 1 ? 'default' : 'pointer',
-            }}
+            className={styles.pageBtn}
           >
-            ← Prev
+            <span className="material-symbols-outlined" aria-hidden="true">chevron_left</span>
+            Prev
           </button>
-          <span style={{ fontSize: '0.85rem', color: '#6b5752' }}>
+          <span className={styles.pageInfo}>
             Page {pagination.page} of {pagination.totalPages}
           </span>
           <button
             onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
             disabled={page >= pagination.totalPages}
-            style={{
-              padding: '6px 14px',
-              border: '1px solid #e3dbd8',
-              borderRadius: '6px',
-              background: '#fff',
-              color: page >= pagination.totalPages ? '#d1d5db' : '#8b3223',
-              fontSize: '0.85rem',
-              fontWeight: '600',
-              cursor: page >= pagination.totalPages ? 'default' : 'pointer',
-            }}
+            className={styles.pageBtn}
           >
-            Next →
+            Next
+            <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
           </button>
         </div>
       )}
