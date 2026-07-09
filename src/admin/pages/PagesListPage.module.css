@@ -1,0 +1,201 @@
+.page {
+  max-width: 860px;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.title {
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #191110;
+  margin: 0;
+}
+
+.subtitle {
+  color: #8e5f57;
+  margin: 6px 0 0;
+  font-size: 0.9rem;
+}
+
+/* ── Toolbar ─────────────────────────────────────────────── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #e3dbd8;
+  border-radius: 8px;
+  padding: 7px 12px;
+  width: min(320px, 100%);
+  transition: border-color 0.15s;
+}
+
+.searchBox:focus-within {
+  border-color: #8b3223;
+}
+
+.searchBox :global(.material-symbols-outlined) {
+  font-size: 18px;
+  color: #9c8a86;
+}
+
+.searchBox input {
+  border: none;
+  outline: none;
+  background: none;
+  font-size: 0.875rem;
+  color: #191110;
+  width: 100%;
+  font-family: inherit;
+}
+
+.searchBox input::placeholder {
+  color: #b3a29e;
+}
+
+.count {
+  font-size: 0.8rem;
+  color: #9c8a86;
+  white-space: nowrap;
+}
+
+/* ── Table ───────────────────────────────────────────────── */
+.tableCard {
+  margin-top: 14px;
+  background: #ffffff;
+  border: 1px solid #e3dbd8;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  padding: 11px 18px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8e5f57;
+  background: #faf6f4;
+  border-bottom: 1px solid #eee6e2;
+}
+
+.table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #f0e9e5;
+  font-size: 0.875rem;
+  color: #191110;
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.table tbody tr {
+  transition: background 0.1s;
+}
+
+.table tbody tr:hover {
+  background: #faf6f4;
+}
+
+.pageTitle {
+  font-weight: 600;
+  color: #191110;
+  text-decoration: none;
+}
+
+.pageTitle:hover {
+  color: #8b3223;
+}
+
+.slugChip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 5px;
+  font-size: 0.75rem;
+  background: #f1eae7;
+  color: #6b5752;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.muted {
+  color: #9c8a86;
+}
+
+.actionCell {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.editLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: #8b3223;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.editLink :global(.material-symbols-outlined) {
+  font-size: 17px;
+}
+
+.editLink:hover {
+  text-decoration: underline;
+}
+
+/* ── States ──────────────────────────────────────────────── */
+.stateMsg {
+  color: #8e5f57;
+  margin-top: 32px;
+  font-style: italic;
+}
+
+.errorMsg {
+  color: #8b3223;
+  margin-top: 32px;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  margin-top: 28px;
+  padding: 44px 20px;
+  background: #ffffff;
+  border: 1px dashed #ddd2cd;
+  border-radius: 12px;
+  color: #9c8a86;
+}
+
+.empty :global(.material-symbols-outlined) {
+  font-size: 30px;
+  color: #c4aca6;
+}
+
+.empty p {
+  margin: 0;
+  font-size: 0.875rem;
+}

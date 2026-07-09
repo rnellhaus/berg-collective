@@ -1,57 +1,41 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useApi } from '../hooks/useApi';
+import styles from './DashboardPage.module.css';
 
-const cardStyle = {
-  background: '#ffffff',
-  border: '1px solid #e3dbd8',
-  borderRadius: '8px',
-  padding: '20px 24px',
-  minWidth: '140px',
-};
+const STAT_CARDS = [
+  { key: 'pages', label: 'Pages', icon: 'web', to: '/admin/pages', action: 'Manage pages' },
+  { key: 'events', label: 'Events', icon: 'event', to: '/admin/events', action: 'Manage events' },
+  { key: 'media', label: 'Media items', icon: 'photo_library', to: '/admin/media', action: 'Open library' },
+];
 
-const statsGridStyle = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))',
-  gap: '16px',
-  marginTop: '20px',
-};
-
-const statNumberStyle = {
-  fontSize: '2rem',
-  fontWeight: '700',
-  color: '#8b3223',
-  lineHeight: 1,
-};
-
-const statLabelStyle = {
-  fontSize: '0.8rem',
-  color: '#6b5752',
-  marginTop: '6px',
-  textTransform: 'uppercase',
-  letterSpacing: '0.06em',
-  fontWeight: '600',
-};
-
-const sectionTitleStyle = {
-  fontSize: '0.7rem',
-  fontWeight: '700',
-  letterSpacing: '0.1em',
-  textTransform: 'uppercase',
-  color: '#9c8a86',
-  marginBottom: '10px',
-  marginTop: '32px',
-};
-
-const activityCardStyle = {
-  background: '#ffffff',
-  border: '1px solid #e3dbd8',
-  borderRadius: '8px',
-  padding: '20px 24px',
-  color: '#9c8a86',
-  fontSize: '0.875rem',
-  fontStyle: 'italic',
-};
+const QUICK_ACTIONS = [
+  {
+    to: '/admin/events/new',
+    icon: 'add_circle',
+    title: 'Create an event',
+    sub: 'Draft a new event with RSVP and photos',
+  },
+  {
+    to: '/admin/pages',
+    icon: 'edit_note',
+    title: 'Edit site pages',
+    sub: 'Update content sections across the site',
+  },
+  {
+    to: '/admin/media',
+    icon: 'upload',
+    title: 'Upload media',
+    sub: 'Add images to the media library',
+  },
+  {
+    to: '/admin/forms',
+    icon: 'inbox',
+    title: 'Review submissions',
+    sub: 'See the latest form responses',
+  },
+];
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -95,34 +79,59 @@ export default function DashboardPage() {
   }, [apiFetch]);
 
   const fmt = (n) => (n === null ? '—' : n);
+  const today = new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  });
 
   return (
-    <div>
-      <h1 style={{ fontSize: '1.5rem', fontWeight: '700', color: '#191110', margin: 0 }}>
-        Welcome back, {firstName}
-      </h1>
-      <p style={{ color: '#6b5752', marginTop: '6px', fontSize: '0.9rem' }}>
-        Here's a quick overview of your content.
-      </p>
+    <div className={styles.page}>
+      <header className={styles.header}>
+        <div>
+          <h1 className={styles.title}>Welcome back, {firstName}</h1>
+          <p className={styles.subtitle}>{today}</p>
+        </div>
+        <Link to="/admin/events/new" className={styles.primaryBtn}>
+          <span className="material-symbols-outlined" aria-hidden="true">add</span>
+          New Event
+        </Link>
+      </header>
 
-      <div style={statsGridStyle}>
-        <div style={cardStyle}>
-          <div style={statNumberStyle}>{fmt(stats.pages)}</div>
-          <div style={statLabelStyle}>Pages</div>
-        </div>
-        <div style={cardStyle}>
-          <div style={statNumberStyle}>{fmt(stats.events)}</div>
-          <div style={statLabelStyle}>Events</div>
-        </div>
-        <div style={cardStyle}>
-          <div style={statNumberStyle}>{fmt(stats.media)}</div>
-          <div style={statLabelStyle}>Media Items</div>
-        </div>
+      <div className={styles.statsGrid}>
+        {STAT_CARDS.map(({ key, label, icon, to, action }) => (
+          <Link key={key} to={to} className={styles.statCard}>
+            <div className={styles.statTop}>
+              <span className={styles.statLabel}>{label}</span>
+              <span className={`material-symbols-outlined ${styles.statIcon}`} aria-hidden="true">
+                {icon}
+              </span>
+            </div>
+            <div className={styles.statNumber}>{fmt(stats[key])}</div>
+            <div className={styles.statAction}>
+              {action}
+              <span className="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+            </div>
+          </Link>
+        ))}
       </div>
 
-      <div style={sectionTitleStyle}>Recent Activity</div>
-      <div style={activityCardStyle}>
-        Activity feed coming soon.
+      <div className={styles.sectionTitle}>Quick actions</div>
+      <div className={styles.actionsGrid}>
+        {QUICK_ACTIONS.map(({ to, icon, title, sub }) => (
+          <Link key={title} to={to} className={styles.actionCard}>
+            <div className={styles.actionIcon}>
+              <span className="material-symbols-outlined" aria-hidden="true">{icon}</span>
+            </div>
+            <div className={styles.actionText}>
+              <div className={styles.actionTitle}>{title}</div>
+              <div className={styles.actionSub}>{sub}</div>
+            </div>
+            <span className={`material-symbols-outlined ${styles.actionArrow}`} aria-hidden="true">
+              north_east
+            </span>
+          </Link>
+        ))}
       </div>
     </div>
   );

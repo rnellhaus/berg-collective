@@ -1,0 +1,193 @@
+.page {
+  max-width: 960px;
+}
+
+/* ── Header ──────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #191110;
+  margin: 0;
+}
+
+.subtitle {
+  color: #8e5f57;
+  margin: 6px 0 0;
+  font-size: 0.9rem;
+}
+
+.primaryBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  background: #8b3223;
+  color: #ffffff;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.primaryBtn:hover {
+  background: #6f2719;
+}
+
+.primaryBtn :global(.material-symbols-outlined) {
+  font-size: 18px;
+}
+
+/* ── Stat cards ──────────────────────────────────────────── */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.statCard {
+  display: block;
+  background: #ffffff;
+  border: 1px solid #e3dbd8;
+  border-radius: 12px;
+  padding: 18px 20px;
+  text-decoration: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.statCard:hover {
+  border-color: #d3a79e;
+  box-shadow: 0 2px 10px rgba(25, 17, 16, 0.06);
+}
+
+.statTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.statLabel {
+  font-size: 0.72rem;
+  color: #8e5f57;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+.statIcon {
+  font-size: 19px;
+  color: #c4aca6;
+}
+
+.statNumber {
+  font-size: 2.1rem;
+  font-weight: 700;
+  color: #191110;
+  line-height: 1.1;
+  margin-top: 10px;
+}
+
+.statAction {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #8b3223;
+}
+
+.statAction :global(.material-symbols-outlined) {
+  font-size: 15px;
+  transition: transform 0.15s;
+}
+
+.statCard:hover .statAction :global(.material-symbols-outlined) {
+  transform: translateX(3px);
+}
+
+/* ── Quick actions ───────────────────────────────────────── */
+.sectionTitle {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #9c8a86;
+  margin: 36px 0 12px;
+}
+
+.actionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 14px;
+}
+
+.actionCard {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #ffffff;
+  border: 1px solid #e3dbd8;
+  border-radius: 12px;
+  padding: 16px 18px;
+  text-decoration: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.actionCard:hover {
+  border-color: #d3a79e;
+  box-shadow: 0 2px 10px rgba(25, 17, 16, 0.06);
+}
+
+.actionIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #f6e7e3;
+  color: #8b3223;
+  flex-shrink: 0;
+}
+
+.actionIcon :global(.material-symbols-outlined) {
+  font-size: 21px;
+}
+
+.actionText {
+  flex: 1;
+  min-width: 0;
+}
+
+.actionTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #191110;
+}
+
+.actionSub {
+  font-size: 0.78rem;
+  color: #8e5f57;
+  margin-top: 2px;
+}
+
+.actionArrow {
+  font-size: 17px;
+  color: #c4aca6;
+  transition: color 0.15s, transform 0.15s;
+}
+
+.actionCard:hover .actionArrow {
+  color: #8b3223;
+  transform: translate(2px, -2px);
+}

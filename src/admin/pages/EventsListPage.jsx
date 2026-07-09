@@ -1,101 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useApi } from '../hooks/useApi';
+import styles from './EventsListPage.module.css';
 
 const RSVP_LABELS = {
   luma: 'Lu.ma',
   eventbrite: 'Eventbrite',
   google_form: 'Google Form',
   custom: 'Custom URL',
-};
-
-const containerStyle = {
-  maxWidth: '860px',
-};
-
-const topBarStyle = {
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  marginBottom: '20px',
-};
-
-const headingStyle = {
-  fontSize: '1.5rem',
-  fontWeight: '700',
-  color: '#191110',
-  margin: 0,
-};
-
-const newBtnStyle = {
-  padding: '9px 18px',
-  background: '#8b3223',
-  color: '#ffffff',
-  border: 'none',
-  borderRadius: '7px',
-  fontSize: '0.875rem',
-  fontWeight: '600',
-  cursor: 'pointer',
-  textDecoration: 'none',
-  display: 'inline-block',
-};
-
-const tabBarStyle = {
-  display: 'flex',
-  gap: '4px',
-  borderBottom: '2px solid #e8e1da',
-  marginBottom: '20px',
-};
-
-const rowStyle = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: '14px',
-  padding: '14px 16px',
-  borderBottom: '1px solid #e8e1da',
-  background: '#ffffff',
-};
-
-const dateBadgeStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '46px',
-  minWidth: '46px',
-  background: '#8b3223',
-  color: '#ffffff',
-  borderRadius: '7px',
-  padding: '6px 0',
-};
-
-const pillStyle = {
-  display: 'inline-block',
-  padding: '2px 8px',
-  borderRadius: '4px',
-  fontSize: '0.72rem',
-  fontWeight: '600',
-  background: '#F5EFDB',
-  color: '#6b4c10',
-};
-
-const photoPillStyle = {
-  display: 'inline-block',
-  padding: '2px 8px',
-  borderRadius: '4px',
-  fontSize: '0.72rem',
-  fontWeight: '600',
-  background: '#f5f1ee',
-  color: '#8e5f57',
-};
-
-const editLinkStyle = {
-  color: '#8b3223',
-  textDecoration: 'none',
-  fontWeight: '600',
-  fontSize: '0.875rem',
-  marginLeft: 'auto',
-  whiteSpace: 'nowrap',
 };
 
 function parseEventDate(dateStr) {
@@ -109,13 +21,19 @@ function parseEventDate(dateStr) {
 
 function DateBadge({ dateStr }) {
   const d = parseEventDate(dateStr);
-  if (!d) return <div style={{ ...dateBadgeStyle, background: '#e8e1da' }}><span style={{ fontSize: '0.7rem', color: '#8e5f57' }}>—</span></div>;
+  if (!d) {
+    return (
+      <div className={`${styles.dateBadge} ${styles.dateBadgeEmpty}`}>
+        <span className={styles.dateDay}>—</span>
+      </div>
+    );
+  }
   const day = d.getDate();
   const month = d.toLocaleString('en-US', { month: 'short' }).toUpperCase();
   return (
-    <div style={dateBadgeStyle}>
-      <span style={{ fontSize: '1.1rem', fontWeight: '700', lineHeight: 1 }}>{day}</span>
-      <span style={{ fontSize: '0.6rem', fontWeight: '600', letterSpacing: '0.05em', marginTop: '2px' }}>{month}</span>
+    <div className={styles.dateBadge}>
+      <span className={styles.dateMonth}>{month}</span>
+      <span className={styles.dateDay}>{day}</span>
     </div>
   );
 }
@@ -124,34 +42,10 @@ function TabButton({ label, count, active, onClick }) {
   return (
     <button
       onClick={onClick}
-      style={{
-        padding: '8px 16px',
-        border: 'none',
-        background: 'none',
-        cursor: 'pointer',
-        fontSize: '0.875rem',
-        fontWeight: active ? '700' : '500',
-        color: active ? '#8b3223' : '#8e5f57',
-        borderBottom: active ? '2px solid #8b3223' : '2px solid transparent',
-        marginBottom: '-2px',
-        transition: 'color 0.15s',
-      }}
+      className={`${styles.tab}${active ? ` ${styles.tabActive}` : ''}`}
     >
       {label}
-      <span
-        style={{
-          marginLeft: '7px',
-          background: active ? '#8b3223' : '#e8e1da',
-          color: active ? '#ffffff' : '#8e5f57',
-          borderRadius: '10px',
-          fontSize: '0.7rem',
-          fontWeight: '700',
-          padding: '1px 7px',
-          display: 'inline-block',
-        }}
-      >
-        {count}
-      </span>
+      <span className={styles.tabCount}>{count}</span>
     </button>
   );
 }
@@ -214,15 +108,19 @@ export default function EventsListPage() {
   const events = tab === 'draft' ? drafts : tab === 'upcoming' ? upcoming : past;
 
   return (
-    <div style={containerStyle}>
-      <div style={topBarStyle}>
-        <h1 style={headingStyle}>Events</h1>
-        <Link to="/admin/events/new" style={newBtnStyle}>
-          + New Event
+    <div className={styles.page}>
+      <header className={styles.header}>
+        <div>
+          <h1 className={styles.title}>Events</h1>
+          <p className={styles.subtitle}>Create and manage BERG events, RSVPs, and photos.</p>
+        </div>
+        <Link to="/admin/events/new" className={styles.primaryBtn}>
+          <span className="material-symbols-outlined" aria-hidden="true">add</span>
+          New Event
         </Link>
-      </div>
+      </header>
 
-      <div style={tabBarStyle}>
+      <div className={styles.tabBar} role="tablist">
         <TabButton
           label="Drafts"
           count={drafts.length}
@@ -243,86 +141,60 @@ export default function EventsListPage() {
         />
       </div>
 
-      {loading && (
-        <p style={{ color: '#8e5f57', fontStyle: 'italic', marginTop: '24px' }}>Loading events…</p>
-      )}
+      {loading && <p className={styles.stateMsg}>Loading events…</p>}
 
-      {error && (
-        <p style={{ color: '#8b3223', marginTop: '24px' }}>Failed to load events: {error}</p>
-      )}
+      {error && <p className={styles.errorMsg}>Failed to load events: {error}</p>}
 
       {!loading && !error && events.length === 0 && (
-        <p style={{ color: '#8e5f57', fontStyle: 'italic', marginTop: '24px' }}>
-          No {tab} events found.
-        </p>
+        <div className={styles.empty}>
+          <span className="material-symbols-outlined" aria-hidden="true">event_busy</span>
+          <p>No {tab} events found.</p>
+        </div>
       )}
 
       {!loading && !error && events.length > 0 && (
-        <div
-          style={{
-            border: '1px solid #e8e1da',
-            borderRadius: '8px',
-            overflow: 'hidden',
-          }}
-        >
-          {events.map((event, i) => (
-            <div
-              key={event.id}
-              style={{
-                ...rowStyle,
-                borderBottom: i === events.length - 1 ? 'none' : '1px solid #e8e1da',
-              }}
-            >
+        <div className={styles.listCard}>
+          {events.map((event) => (
+            <div key={event.id} className={styles.row}>
               <DateBadge dateStr={event.date} />
 
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div
-                  style={{
-                    fontSize: '0.9rem',
-                    fontWeight: '700',
-                    color: '#191110',
-                    marginBottom: '3px',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
+              <div className={styles.rowMain}>
+                <Link to={`/admin/events/${event.id}`} className={styles.rowTitle}>
                   {event.title || 'Untitled Event'}
-                </div>
-                <div style={{ fontSize: '0.8rem', color: '#8e5f57' }}>
+                </Link>
+                <div className={styles.rowMeta}>
                   {[event.location, event.time].filter(Boolean).join(' · ')}
                 </div>
               </div>
 
-              <div style={{ display: 'flex', gap: '6px', alignItems: 'center', flexWrap: 'wrap' }}>
+              <div className={styles.pills}>
                 {event.rsvp_strategy && (
-                  <span style={pillStyle}>{RSVP_LABELS[event.rsvp_strategy] || event.rsvp_strategy}</span>
+                  <span className={styles.rsvpPill}>
+                    {RSVP_LABELS[event.rsvp_strategy] || event.rsvp_strategy}
+                  </span>
                 )}
                 {typeof event.photo_count === 'number' && (
-                  <span style={photoPillStyle}>{event.photo_count} photo{event.photo_count !== 1 ? 's' : ''}</span>
+                  <span className={styles.photoPill}>
+                    {event.photo_count} photo{event.photo_count !== 1 ? 's' : ''}
+                  </span>
                 )}
               </div>
 
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginLeft: 'auto', whiteSpace: 'nowrap' }}>
+              <div className={styles.rowActions}>
                 <button
                   onClick={() => handleDuplicate(event.id)}
                   disabled={duplicating === event.id}
-                  style={{
-                    padding: '4px 10px',
-                    border: '1px solid #e8e1da',
-                    borderRadius: '6px',
-                    background: '#fff',
-                    color: '#8e5f57',
-                    fontSize: '0.8rem',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                  }}
+                  className={styles.iconBtn}
                   title="Duplicate this event"
+                  aria-label="Duplicate this event"
                 >
-                  {duplicating === event.id ? '...' : 'Duplicate'}
+                  <span className="material-symbols-outlined" aria-hidden="true">
+                    {duplicating === event.id ? 'hourglass_top' : 'content_copy'}
+                  </span>
                 </button>
-                <Link to={`/admin/events/${event.id}`} style={editLinkStyle}>
-                  Edit →
+                <Link to={`/admin/events/${event.id}`} className={styles.editLink}>
+                  Edit
+                  <span className="material-symbols-outlined" aria-hidden="true">chevron_right</span>
                 </Link>
               </div>
             </div>
