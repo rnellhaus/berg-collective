@@ -42,6 +42,7 @@ const SPEAKERS = {
   'chinedu-enekwe': 'chinedu-headshot.jpeg',
   // Small portrait (194x259); anchor square at the top to keep the full head.
   'frank-holland': { file: 'frank-holland.jpeg', extract: { left: 0, top: 0, width: 194, height: 194 } },
+  'elena-ruyter': 'elèna rutyer.jpeg',
 };
 
 async function run() {

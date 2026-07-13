@@ -159,7 +159,7 @@ const SPEAKERS = [
   { img: 'bert-gervais', name: 'Bert Gervais', title: 'Co-Founder, Genius Potential' },
   { img: 'david-horne', name: 'David Horne', title: 'Co-Founder, Genius Potential' },
   { img: 'rich-nellhaus', name: 'Rich Nellhaus', title: 'Founder, Staffify & BERG Collective' },
-  { img: null, name: 'Elena Ruyter', title: 'Director of Communications, BERG Collective' },
+  { img: 'elena-ruyter', name: 'Elena Ruyter', title: 'Director of Communications, BERG Collective' },
 ];
 
 // img: slug of optimized webp in /images/aisummit/sponsors, or null for a text
