@@ -285,7 +285,12 @@ router.post('/games/:code/magic-link', magicLinkIpLimiter, magicLinkEmailLimiter
             <div style="background:#f4efe4;padding:32px 16px;font-family:Arial,sans-serif;color:#17261f">
               <div style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #d7cfbd">
                 <div style="background:#10271e;padding:24px 30px">
-                  <img src="${siteUrl}/images/logo.png" alt="BERG Collective" width="150" style="display:block;filter:brightness(0) invert(1)">
+                  <!--
+                    A real white asset, not a recolored black one: CSS filters
+                    (brightness/invert) are stripped by Gmail and most clients,
+                    which rendered the black logo invisible on this dark header.
+                  -->
+                  <img src="${siteUrl}/images/logo-white.png" alt="BERG Collective" width="150" height="69" style="display:block;border:0;outline:none;text-decoration:none">
                 </div>
                 <div style="padding:34px 30px">
                   <p style="margin:0 0 10px;color:#98752e;font-size:12px;font-weight:700;letter-spacing:1.6px;text-transform:uppercase">Networking Bingo</p>
