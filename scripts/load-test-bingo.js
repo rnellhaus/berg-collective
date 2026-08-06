@@ -62,6 +62,37 @@ let createdGameId;
 const testEmails = [];
 const samples = [];
 
+// A load run is exactly when a connection is most likely to drop. If that
+// escapes as an unhandled error the process dies and the finally block never
+// runs, stranding synthetic rows in the database. These handlers guarantee
+// cleanup happens before exit no matter how the run fails.
+let cleanupDone = false;
+async function emergencyCleanup(reason) {
+  if (cleanupDone) return;
+  cleanupDone = true;
+  console.error(`\n!! Aborting: ${reason}`);
+  console.error('!! Running emergency cleanup…');
+  try {
+    if (createdGameId) {
+      await pool.query('DELETE FROM bingo_games WHERE id = $1', [createdGameId]);
+    }
+    if (testEmails.length) {
+      await pool.query(
+        'DELETE FROM bingo_participants WHERE email = ANY($1::text[])',
+        [testEmails]
+      );
+    }
+    console.error('!! Emergency cleanup complete.');
+  } catch (error) {
+    console.error(`!! CLEANUP FAILED (${error.message}). Test data may remain — inspect manually.`);
+  }
+  process.exit(1);
+}
+
+process.on('uncaughtException', (error) => emergencyCleanup(`uncaught: ${error.message}`));
+process.on('unhandledRejection', (error) => emergencyCleanup(`rejection: ${error?.message}`));
+process.on('SIGINT', () => emergencyCleanup('interrupted'));
+
 function record(label, startedAt, status, ok) {
   samples.push({ label, ms: Number(process.hrtime.bigint() - startedAt) / 1e6, status, ok });
 }
@@ -310,6 +341,7 @@ try {
   if (!passed) process.exitCode = 1;
 } finally {
   console.log('\n=== Cleanup ===');
+  cleanupDone = true;
   if (createdGameId) {
     await pool.query('DELETE FROM bingo_games WHERE id = $1', [createdGameId]);
   }
