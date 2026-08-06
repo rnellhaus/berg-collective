@@ -38,6 +38,12 @@ export default function BingoGameEditorPage() {
   const { user } = useAuth();
   const [game, setGame] = useState(null);
   const [prompts, setPrompts] = useState([]);
+  const [aiEnabled, setAiEnabled] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [generateCount, setGenerateCount] = useState(12);
+  const [generateContext, setGenerateContext] = useState('');
+  const [candidates, setCandidates] = useState([]);
+  const [selectedCandidates, setSelectedCandidates] = useState(new Set());
   const [form, setForm] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -58,6 +64,7 @@ export default function BingoGameEditorPage() {
       if (!response.ok) throw new Error(data.error || 'Could not load game');
       setGame(data.game);
       setPrompts(data.prompts || []);
+      setAiEnabled(!!data.ai_prompts_enabled);
       setForm({
         title: data.game.title || '',
         join_code: data.game.join_code || '',
@@ -169,6 +176,69 @@ export default function BingoGameEditorPage() {
     } finally {
       setPromptBusy(null);
     }
+  }
+
+  // Candidates are held in local state until the admin picks them — nothing
+  // reaches the database (or players) without an explicit choice.
+  async function generatePrompts() {
+    setGenerating(true);
+    setError('');
+    setNotice('');
+    try {
+      const response = await apiFetch(`/api/bingo/admin/games/${id}/prompts/generate`, {
+        method: 'POST',
+        body: JSON.stringify({ count: generateCount, context: generateContext }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || 'Could not generate prompts');
+      setCandidates(data.prompts.map((prompt, index) => ({ ...prompt, key: `${Date.now()}-${index}` })));
+      setSelectedCandidates(new Set(data.prompts.map((unused, index) => `${Date.now()}-${index}`)));
+      setNotice(`${data.prompts.length} suggestions ready. Review and keep the ones you want.`);
+    } catch (generateError) {
+      setError(generateError.message);
+    } finally {
+      setGenerating(false);
+    }
+  }
+
+  async function keepSelectedCandidates() {
+    const chosen = candidates.filter((candidate) => selectedCandidates.has(candidate.key));
+    if (!chosen.length) return;
+    setPromptBusy('candidates');
+    setError('');
+    try {
+      // Sequential so sort_order stays in the order the admin sees.
+      const added = [];
+      for (const candidate of chosen) {
+        const response = await apiFetch(`/api/bingo/admin/games/${id}/prompts`, {
+          method: 'POST',
+          body: JSON.stringify({
+            prompt_text: candidate.prompt_text,
+            category: candidate.category,
+          }),
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || 'Could not add prompt');
+        added.push(data.prompt);
+      }
+      setPrompts((current) => [...current, ...added]);
+      setCandidates([]);
+      setSelectedCandidates(new Set());
+      setNotice(`Added ${added.length} prompt${added.length === 1 ? '' : 's'}.`);
+    } catch (keepError) {
+      setError(keepError.message);
+    } finally {
+      setPromptBusy(null);
+    }
+  }
+
+  function toggleCandidate(key) {
+    setSelectedCandidates((current) => {
+      const next = new Set(current);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
   }
 
   async function addPrompt(event) {
@@ -526,6 +596,102 @@ export default function BingoGameEditorPage() {
                 </div>
               ))}
             </div>
+
+            {!promptLocked && aiEnabled && (
+              <section className={styles.aiPanel}>
+                <div className={styles.aiPanelHead}>
+                  <span className="material-symbols-outlined" aria-hidden="true">auto_awesome</span>
+                  <div>
+                    <strong>Draft prompts with Claude</strong>
+                    <small>
+                      Written in BERG&rsquo;s voice from past event prompts. Nothing is added
+                      until you choose it.
+                    </small>
+                  </div>
+                </div>
+
+                <label className={styles.aiField}>
+                  <span>What should these prompts know about the event? <em>optional</em></span>
+                  <textarea
+                    value={generateContext}
+                    onChange={(event) => setGenerateContext(event.target.value)}
+                    placeholder="e.g. Summer rooftop mixer, mostly founders and creatives, first BERG event for a lot of the room."
+                    maxLength="1200"
+                    rows="3"
+                  />
+                </label>
+
+                <div className={styles.aiActions}>
+                  <label>
+                    <span>How many</span>
+                    <input
+                      type="number"
+                      min="1"
+                      max="25"
+                      value={generateCount}
+                      onChange={(event) => setGenerateCount(Number(event.target.value))}
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    className={styles.secondaryButton}
+                    onClick={generatePrompts}
+                    disabled={generating}
+                  >
+                    {generating ? 'Writing…' : candidates.length ? 'Generate more' : 'Generate suggestions'}
+                  </button>
+                </div>
+
+                {candidates.length > 0 && (
+                  <div className={styles.candidateList}>
+                    <div className={styles.candidateHead}>
+                      <span>{selectedCandidates.size} of {candidates.length} selected</span>
+                      <div>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedCandidates(new Set(candidates.map((c) => c.key)))}
+                        >
+                          Select all
+                        </button>
+                        <button type="button" onClick={() => setSelectedCandidates(new Set())}>
+                          Clear
+                        </button>
+                      </div>
+                    </div>
+
+                    {candidates.map((candidate) => (
+                      <label key={candidate.key} className={styles.candidate}>
+                        <input
+                          type="checkbox"
+                          checked={selectedCandidates.has(candidate.key)}
+                          onChange={() => toggleCandidate(candidate.key)}
+                        />
+                        <span>
+                          {candidate.prompt_text}
+                          <i>{candidate.category}</i>
+                        </span>
+                      </label>
+                    ))}
+
+                    <div className={styles.candidateFooter}>
+                      <button
+                        type="button"
+                        className={styles.primaryButton}
+                        onClick={keepSelectedCandidates}
+                        disabled={promptBusy === 'candidates' || selectedCandidates.size === 0}
+                      >
+                        {promptBusy === 'candidates'
+                          ? 'Adding…'
+                          : `Add ${selectedCandidates.size} prompt${selectedCandidates.size === 1 ? '' : 's'}`}
+                      </button>
+                      <button type="button" className={styles.ghostButton} onClick={() => setCandidates([])}>
+                        Discard
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </section>
+            )}
 
             {!promptLocked && (
               <form className={styles.addPrompt} onSubmit={addPrompt}>

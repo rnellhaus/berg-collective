@@ -17,6 +17,7 @@
     "start": "node server/index.js"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.115.0",
     "@fontsource/epilogue": "^5.2.8",
     "@fontsource/fraunces": "^5.2.9",
     "@fontsource/inter": "^5.2.8",

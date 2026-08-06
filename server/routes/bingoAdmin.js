@@ -8,6 +8,7 @@ import {
   getPublicSiteUrl,
   normalizeJoinCode,
 } from '../services/bingo.js';
+import { AI_PROMPTS_ENABLED, generateBingoPrompts } from '../services/bingoPromptAi.js';
 
 const router = Router();
 router.use(verifyToken);
@@ -243,6 +244,9 @@ router.get('/games/:id', async (req, res) => {
         public_url: `${getPublicSiteUrl()}/bingo/${game.join_code}`,
       },
       prompts,
+      // Lets the editor hide the AI controls when no key is configured, rather
+      // than offering a button that always fails.
+      ai_prompts_enabled: AI_PROMPTS_ENABLED,
     });
   } catch (error) {
     console.error('Load bingo game error:', error);
@@ -390,6 +394,47 @@ router.delete('/games/:id', requireRole('admin'), async (req, res) => {
   } catch (error) {
     console.error('Delete bingo game error:', error);
     return res.status(500).json({ error: 'Failed to delete bingo game' });
+  }
+});
+
+// POST /api/bingo/admin/games/:id/prompts/generate — draft AI prompt candidates.
+// Returns candidates only; nothing is written until the admin picks them, so a
+// weak generation can never reach participants.
+router.post('/games/:id/prompts/generate', async (req, res) => {
+  try {
+    const gameId = parseId(req.params.id);
+    if (!gameId) return res.status(400).json({ error: 'Invalid game ID' });
+    const pool = getPool();
+    // Same freeze rule as manual prompt editing: draft games only.
+    await assertPromptEditable(pool, gameId);
+
+    const game = await loadGame(pool, gameId);
+    if (!game) return res.status(404).json({ error: 'Game not found' });
+
+    const { rows: existing } = await pool.query(
+      'SELECT prompt_text FROM bingo_prompts WHERE game_id = $1 ORDER BY sort_order, id',
+      [gameId]
+    );
+
+    // Whatever the admin typed, plus what we already know about the event, so
+    // prompts can reference the actual occasion.
+    const eventContext = [
+      game.event_title ? `Event: ${game.event_title}` : '',
+      game.title ? `Game: ${game.title}` : '',
+      cleanText(req.body.context, 1200),
+    ].filter(Boolean).join('\n');
+
+    const { prompts } = await generateBingoPrompts({
+      count: req.body.count,
+      eventContext,
+      existingPrompts: existing.map((row) => row.prompt_text),
+    });
+
+    return res.json({ prompts });
+  } catch (error) {
+    return res.status(error.status || 500).json({
+      error: error.status ? error.message : 'Failed to generate prompts',
+    });
   }
 });
 
