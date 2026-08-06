@@ -605,7 +605,8 @@ export default function BingoGameEditorPage() {
                     <strong>Draft prompts with Claude</strong>
                     <small>
                       Written in BERG&rsquo;s voice from past event prompts. Nothing is added
-                      until you choose it.
+                      until you choose it. Usually about 10 seconds — the first run
+                      each day takes a couple of minutes while the format compiles.
                     </small>
                   </div>
                 </div>

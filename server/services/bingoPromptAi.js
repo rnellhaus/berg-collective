@@ -5,14 +5,31 @@
  * to the database here — the admin reviews candidates and chooses which to keep,
  * so a bad generation can never reach participants.
  */
+import { existsSync } from 'node:fs';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
 import process from 'node:process';
 import Anthropic from '@anthropic-ai/sdk';
 
-const client = process.env.ANTHROPIC_API_KEY
-  ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-  : null;
+// The SDK resolves credentials itself, in order: ANTHROPIC_API_KEY, then
+// ANTHROPIC_AUTH_TOKEN, then an `ant auth login` profile on disk. This mirrors
+// that check so the admin UI only offers the feature when a call can actually
+// succeed — a deployed function has an env var, a local dev machine may just
+// have the CLI profile.
+function hasCredentials() {
+  if (process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN) return true;
+  // Serverless has no profile on disk; don't stat the filesystem there.
+  if (process.env.VERCEL) return false;
+  const configDir = process.env.ANTHROPIC_CONFIG_DIR || join(homedir(), '.config', 'anthropic');
+  const profile = process.env.ANTHROPIC_PROFILE || 'default';
+  return existsSync(join(configDir, 'credentials', `${profile}.json`));
+}
 
-export const AI_PROMPTS_ENABLED = !!client;
+export const AI_PROMPTS_ENABLED = hasCredentials();
+
+// Zero-arg construction so the SDK performs the resolution above rather than
+// pinning to one source.
+const client = AI_PROMPTS_ENABLED ? new Anthropic() : null;
 
 // Real prompts used at past BERG events. These carry the voice far better than
 // any description of it, so they are the core of the request: second person,
@@ -122,8 +139,10 @@ export async function generateBingoPrompts({ count = 12, eventContext = '', exis
       model: 'claude-opus-5',
       max_tokens: 16000,
       thinking: { type: 'adaptive' },
-      // Creative writing against a clear style reference — medium effort keeps
-      // the admin's wait short without costing quality.
+      // Measured ~9s at medium and ~8s at low, so effort is not the latency
+      // lever here; medium is kept for the small quality edge. The first call
+      // after a schema change (or after the 24h schema cache expires) costs
+      // ~2min of one-time JSON-schema compilation — the admin UI says so.
       output_config: {
         effort: 'medium',
         format: { type: 'json_schema', schema: PROMPT_SCHEMA },
