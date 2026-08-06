@@ -119,9 +119,10 @@ async function invalidateMagicLink(pool, id) {
   }
 }
 
-function requestError(status, message) {
+function requestError(status, message, code) {
   const error = new Error(message);
   error.status = status;
+  if (code) error.publicCode = code;
   return error;
 }
 
@@ -667,7 +668,14 @@ router.post('/games/:code/connect', requireBingoParticipant, async (req, res) =>
       [scanner.id, target.id]
     );
     if (duplicateRows[0]) {
-      throw requestError(409, 'You already completed a prompt with this person. Meet someone new!');
+      // The pair is unique, so this is either a genuine repeat scan or a retry
+      // of a request that committed before its response was lost. The code lets
+      // the client reconcile instead of reporting a bare failure.
+      throw requestError(
+        409,
+        'You already completed a prompt with this person. Meet someone new!',
+        'duplicate_connection'
+      );
     }
 
     const { rows: promptRows } = await client.query(
@@ -770,7 +778,13 @@ router.post('/games/:code/connect', requireBingoParticipant, async (req, res) =>
   } catch (error) {
     await client.query('ROLLBACK');
     if (error.code === '23505') {
-      return res.status(409).json({ error: 'That connection was already recorded' });
+      return res.status(409).json({
+        error: 'That connection was already recorded',
+        code: 'duplicate_connection',
+      });
+    }
+    if (error.publicCode) {
+      return res.status(error.status).json({ error: error.message, code: error.publicCode });
     }
     if (!error.status) {
       console.error('Complete bingo connection error:', error);

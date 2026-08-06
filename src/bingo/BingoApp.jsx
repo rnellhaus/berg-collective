@@ -924,7 +924,15 @@ function ScannerModal({ gameCode, onToken, onClose }) {
   );
 }
 
-function ConnectionConfirmModal({ prompt, personToken, connectionCode, onConfirm, onClose, busy }) {
+function ConnectionConfirmModal({
+  prompt,
+  personToken,
+  connectionCode,
+  onConfirm,
+  onClose,
+  busy,
+  reconciling,
+}) {
   return (
     <div className={styles.modalBackdrop} role="presentation" onMouseDown={onClose}>
       <section className={styles.confirmModal} role="dialog" aria-modal="true" aria-labelledby="confirm-title" onMouseDown={(event) => event.stopPropagation()}>
@@ -940,7 +948,9 @@ function ConnectionConfirmModal({ prompt, personToken, connectionCode, onConfirm
             disabled={busy}
             onClick={() => onConfirm({ person_token: personToken, connection_code: connectionCode })}
           >
-            {busy ? 'Recording…' : 'Yes, record connection'}
+            {reconciling
+              ? 'Checking whether your connection was saved…'
+              : (busy ? 'Recording…' : 'Yes, record connection')}
           </button>
         </div>
       </section>
@@ -1168,6 +1178,7 @@ function GamePlayPage() {
   const [pendingToken, setPendingToken] = useState('');
   const [pendingCode, setPendingCode] = useState('');
   const [connectBusy, setConnectBusy] = useState(false);
+  const [reconciling, setReconciling] = useState(false);
   const [success, setSuccess] = useState(null);
   const [walkthroughOpen, setWalkthroughOpen] = useState(false);
 
@@ -1238,29 +1249,92 @@ function GamePlayPage() {
     setPendingCode('');
   }, []);
 
+  // Re-reads authoritative server state to find out whether a connection
+  // actually committed. Used when a response is lost on a weak network, where
+  // the database may have recorded progress the client never heard about.
+  const fetchPlayerProgress = useCallback(async () => {
+    try {
+      const response = await bingoFetch(`/api/bingo/games/${encodeURIComponent(code)}/player`);
+      if (!response.ok) return null;
+      const result = await response.json();
+      return result?.player ? result : null;
+    } catch {
+      return null;
+    }
+  }, [code]);
+
+  function clearPendingTarget() {
+    setPendingToken('');
+    setPendingCode('');
+    setManualCode('');
+    setManualOpen(false);
+  }
+
+  function celebrate(connection, nextState) {
+    if (nextState) setState(nextState);
+    if (connection) {
+      setSuccess(connection);
+      window.setTimeout(() => setSuccess(null), 5000);
+    }
+    clearPendingTarget();
+  }
+
   async function completeConnection(payload) {
     setConnectBusy(true);
     setError('');
+    setReconciling(false);
+
+    // Progress before the write, so a lost response can be detected by
+    // comparing against server state afterwards.
+    const countBefore = state?.player?.completed_count ?? 0;
+
     try {
       const response = await bingoFetch(`/api/bingo/games/${encodeURIComponent(code)}/connect`, {
         method: 'POST',
         body: JSON.stringify(payload),
       });
       const result = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(result.error || 'Could not record connection');
-      setState(result);
-      setSuccess(result.completed_connection);
-      setPendingToken('');
-      setPendingCode('');
-      setManualCode('');
-      setManualOpen(false);
-      await loadLeaderboard();
-      window.setTimeout(() => setSuccess(null), 5000);
+
+      if (response.ok) {
+        celebrate(result.completed_connection, result);
+        await loadLeaderboard();
+        return;
+      }
+
+      if (result.code === 'duplicate_connection') {
+        // Either a genuine repeat scan or a retry of a write that already
+        // landed. Server state decides which, and neither double-counts.
+        setReconciling(true);
+        const reconciled = await fetchPlayerProgress();
+        if (reconciled && (reconciled.player?.completed_count ?? 0) > countBefore) {
+          celebrate(null, reconciled);
+          setError('');
+          await loadLeaderboard();
+          return;
+        }
+        if (reconciled) setState(reconciled);
+        setError(result.error || 'You already connected with this person.');
+        clearPendingTarget();
+        return;
+      }
+
+      throw new Error(result.error || 'Could not record connection');
     } catch (connectionError) {
-      setError(connectionError.message);
-      setPendingToken('');
-      setPendingCode('');
+      // A thrown fetch means the response never arrived; the write may still
+      // have succeeded. Reconcile before reporting failure, and keep the
+      // pending target so a genuine failure can simply be retried.
+      setReconciling(true);
+      const reconciled = await fetchPlayerProgress();
+      if (reconciled && (reconciled.player?.completed_count ?? 0) > countBefore) {
+        celebrate(null, reconciled);
+        setError('');
+        await loadLeaderboard();
+        return;
+      }
+      if (reconciled) setState(reconciled);
+      setError(`${connectionError.message} — your progress was not changed. Please try again.`);
     } finally {
+      setReconciling(false);
       setConnectBusy(false);
     }
   }
@@ -1505,6 +1579,7 @@ function GamePlayPage() {
           personToken={pendingToken}
           connectionCode={pendingCode}
           busy={connectBusy}
+          reconciling={reconciling}
           onConfirm={completeConnection}
           onClose={() => {
             setPendingToken('');
