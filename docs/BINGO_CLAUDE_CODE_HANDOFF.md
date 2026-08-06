@@ -713,3 +713,31 @@ Initial entry:
   - P2 shorter manual code and the full accessibility audit (scanner/walkthrough
     focus trap) not done
 ```
+
+```text
+2026-08-06 09:45 ET — production deploy
+- Branch: bingo/launch-hardening @ 0db725d (deployed from working tree, which
+  also carries the unrelated admin-redesign and AI Summit work)
+- Deployment: production READY,
+  berg-collective-hi57js78x-rich-s-projects-304402a2.vercel.app
+  serving https://bergcollective.org
+- Smoke (production, live):
+  - /api/health 200 ok
+  - /api/bingo/games/SUMMER26 200; game 5 live, prompt_count 12, theme berghaus
+  - /bingo/SUMMER26 200
+  - magic-link invalid email -> 400, RateLimit-Limit 600 (IP backstop; per-email
+    limiter correctly skipped)
+  - magic-link unknown game -> generic non-enumerating 200, RateLimit-Limit 5
+    (per-email limiter engaged)
+- Data: game 5 SUMMER26 intact — 1 player, 12 active prompts. Migrations
+  001/002/003 applied. instagram_url, share_instagram, share_linkedin,
+  share_email all live on bingo_players.
+- Still open before doors:
+  - Resend plan/domain/quota headroom for ~250 sends NOT verified
+  - No real end-to-end magic-link email has been sent on production
+  - PUBLIC_SITE_URL, BINGO_QR_SECRET, BINGO_FROM_EMAIL still unset (fallbacks);
+    do not rotate BINGO_QR_SECRET during a live game
+  - P1 assignment_mode undecided: with 12 active prompts and prompt_count 12
+    every player currently gets all 12, so this only matters if prompt_count
+    is lowered before registration reopens
+```
