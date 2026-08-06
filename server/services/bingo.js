@@ -97,7 +97,15 @@ export function verifyPersonalQrToken(token) {
 }
 
 export function getPublicSiteUrl() {
-  const value = process.env.PUBLIC_SITE_URL
+  // On a preview deployment the link must stay on that deployment. FRONTEND_URL
+  // is set for Preview too, so without this a magic link requested on a preview
+  // would send the participant to production and appear broken during smoke
+  // tests. Production and local behavior are unchanged.
+  const isPreview = process.env.VERCEL_ENV === 'preview';
+  const value = (isPreview && process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : null)
+    || process.env.PUBLIC_SITE_URL
     || process.env.FRONTEND_URL
     || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null)
     || 'http://localhost:5173';
