@@ -609,6 +609,10 @@ function GameGatewayPage() {
       });
       const result = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(result.error || 'Could not send your link');
+      // Never show "check your inbox" unless delivery actually succeeded.
+      if (result.emailSent === false && !result.dev_magic_link) {
+        throw new Error('We could not send your sign-in email just now. Please try again.');
+      }
       setLinkSent(true);
       setDevLink(result.dev_magic_link || '');
     } catch (sendError) {

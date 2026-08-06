@@ -8,7 +8,7 @@
     "build": "vite build",
     "postbuild": "node scripts/prerender.js",
     "lint": "eslint .",
-    "test:bingo": "node --test server/services/bingo.test.js",
+    "test:bingo": "node --test server/services/bingo.test.js server/routes/bingoPublic.test.js",
     "test:bingo:integration": "node --env-file=.env.local --env-file=.env.admin.local scripts/verify-bingo-integration.js",
     "preview": "vite preview",
     "server": "node --env-file=.env.local --env-file=.env.admin.local --watch server/index.js",

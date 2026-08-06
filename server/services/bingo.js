@@ -186,28 +186,36 @@ export async function getPlayerState(queryable, participantId, gameCode) {
     [player.id]
   );
 
+  // Connections are stored directionally so that A scanning B advances A and
+  // B scanning A advances B. Both rows are kept for progress and analytics,
+  // but the participant-facing list collapses to one card per human via
+  // DISTINCT ON, otherwise a reciprocal scan shows the same person twice.
   const { rows: connections } = await queryable.query(
-    `SELECT c.id, c.created_at, p.prompt_text,
-       other.id AS player_id,
-       other.display_name,
-       other.company,
-       other.job_title,
-       CASE WHEN bg.contact_sharing_enabled AND other.share_linkedin
-         THEN other.linkedin_url ELSE '' END AS linkedin_url,
-       CASE WHEN bg.contact_sharing_enabled AND other.share_email
-         THEN other_account.email ELSE '' END AS email
-     FROM bingo_connections c
-     JOIN bingo_games bg ON bg.id = c.game_id
-     JOIN bingo_prompts p ON p.id = c.prompt_id
-     JOIN bingo_players other
-       ON other.id = CASE
-         WHEN c.scanner_player_id = $1 THEN c.target_player_id
-         ELSE c.scanner_player_id
-       END
-     JOIN bingo_participants other_account ON other_account.id = other.participant_id
-     WHERE (c.scanner_player_id = $1 OR c.target_player_id = $1)
-       AND other.status = 'active'
-     ORDER BY c.created_at DESC`,
+    `SELECT * FROM (
+       SELECT DISTINCT ON (other.id)
+         c.id, c.created_at, p.prompt_text,
+         other.id AS player_id,
+         other.display_name,
+         other.company,
+         other.job_title,
+         CASE WHEN bg.contact_sharing_enabled AND other.share_linkedin
+           THEN other.linkedin_url ELSE '' END AS linkedin_url,
+         CASE WHEN bg.contact_sharing_enabled AND other.share_email
+           THEN other_account.email ELSE '' END AS email
+       FROM bingo_connections c
+       JOIN bingo_games bg ON bg.id = c.game_id
+       JOIN bingo_prompts p ON p.id = c.prompt_id
+       JOIN bingo_players other
+         ON other.id = CASE
+           WHEN c.scanner_player_id = $1 THEN c.target_player_id
+           ELSE c.scanner_player_id
+         END
+       JOIN bingo_participants other_account ON other_account.id = other.participant_id
+       WHERE (c.scanner_player_id = $1 OR c.target_player_id = $1)
+         AND other.status = 'active'
+       ORDER BY other.id, c.created_at DESC
+     ) unique_pairings
+     ORDER BY created_at DESC`,
     [player.id]
   );
 

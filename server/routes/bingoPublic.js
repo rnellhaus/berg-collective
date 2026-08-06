@@ -32,13 +32,92 @@ import {
 const router = Router();
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
-const magicLinkLimiter = rateLimit({
+// Hundreds of attendees share one NAT address on venue Wi-Fi, so a per-IP
+// ceiling has to clear a full room plus retries. This is only an abuse
+// backstop; real per-person throttling is the email limiter below plus the
+// database-backed per-game/email check inside the handler.
+export const magicLinkIpLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 10,
+  max: 600,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { error: 'Too many sign-in requests. Please wait a few minutes and try again.' },
+  message: { error: 'Too many sign-in requests from this network. Please wait a few minutes.' },
 });
+
+// Throttles one person regardless of which network they are on. Requests
+// without a usable email skip this limiter so a venue full of typos cannot
+// collapse onto a single shared key; the handler rejects them with a 400 and
+// the IP backstop above still bounds the flood.
+export const magicLinkEmailLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => `bingo-magic-link:${normalizeEmail(req.body?.email)}`,
+  skip: (req) => !isValidEmail(normalizeEmail(req.body?.email)),
+  message: {
+    error: 'A link was already sent recently. Please check your inbox or wait a few minutes.',
+  },
+});
+
+const EMAIL_MAX_ATTEMPTS = 3;
+const EMAIL_RETRY_DELAYS_MS = [250, 1000];
+
+export function isRetryableEmailError(error) {
+  if (!error) return false;
+  const status = Number(error.statusCode || error.status || 0);
+  if (status === 429 || (status >= 500 && status <= 599)) return true;
+  return ['rate_limit_exceeded', 'internal_server_error', 'application_error'].includes(
+    String(error.name || '')
+  );
+}
+
+// Log-safe failure label: never includes the recipient address or the token.
+export function describeEmailFailure(error) {
+  if (!error) return 'unknown_error';
+  const status = Number(error.statusCode || error.status || 0);
+  return `${error.name || 'error'}${status ? ` (${status})` : ''}`;
+}
+
+// Resend's SDK reports API errors on the resolved `error` field rather than by
+// throwing, so both paths have to be inspected before calling a send a success.
+async function deliverMagicLink(payload) {
+  let lastFailure = null;
+
+  for (let attempt = 0; attempt < EMAIL_MAX_ATTEMPTS; attempt += 1) {
+    try {
+      const { error } = await resend.emails.send(payload);
+      if (!error) return { sent: true };
+      lastFailure = error;
+    } catch (thrown) {
+      lastFailure = thrown;
+    }
+
+    if (!isRetryableEmailError(lastFailure)) break;
+    const delay = EMAIL_RETRY_DELAYS_MS[attempt];
+    if (delay) {
+      await new Promise((resolve) => {
+        setTimeout(resolve, delay);
+      });
+    }
+  }
+
+  return { sent: false, failure: lastFailure };
+}
+
+// An undelivered link must not stay redeemable.
+async function invalidateMagicLink(pool, id) {
+  try {
+    await pool.query(
+      `UPDATE bingo_magic_links
+       SET consumed_at = NOW(), expires_at = NOW()
+       WHERE id = $1`,
+      [id]
+    );
+  } catch (error) {
+    console.error('[Bingo] Failed to invalidate undelivered magic link:', error.message);
+  }
+}
 
 function requestError(status, message) {
   const error = new Error(message);
@@ -126,7 +205,7 @@ router.get('/games/:code', optionalBingoParticipant, async (req, res) => {
 });
 
 // POST /api/bingo/games/:code/magic-link — request participant sign-in.
-router.post('/games/:code/magic-link', magicLinkLimiter, async (req, res) => {
+router.post('/games/:code/magic-link', magicLinkIpLimiter, magicLinkEmailLimiter, async (req, res) => {
   const generic = {
     message: 'If that email can join this game, a sign-in link is on its way.',
   };
@@ -192,15 +271,25 @@ router.post('/games/:code/magic-link', magicLinkLimiter, async (req, res) => {
       ...(safePersonToken ? { person: safePersonToken } : {}),
     });
     const link = `${siteUrl}/bingo/auth?${linkParams.toString()}`;
-    let emailSent = false;
+    const devFallbackAvailable = !process.env.VERCEL && process.env.NODE_ENV !== 'production';
 
-    if (resend) {
-      try {
-        await resend.emails.send({
-          from: process.env.BINGO_FROM_EMAIL || 'BERG Collective <info@bergcollective.org>',
-          to: email,
-          subject: `Join ${game.title}`,
-          html: `
+    if (!resend) {
+      // Local development still surfaces the link in the response below. In a
+      // deployed environment a missing provider is a hard failure, not a
+      // silent one.
+      if (!devFallbackAvailable) {
+        await invalidateMagicLink(pool, id);
+        console.error('[Bingo] Magic link requested but no email provider is configured');
+        return res.status(503).json({
+          error: 'Sign-in email is temporarily unavailable. Please find an event organizer.',
+        });
+      }
+    } else {
+      const delivery = await deliverMagicLink({
+        from: process.env.BINGO_FROM_EMAIL || 'BERG Collective <info@bergcollective.org>',
+        to: email,
+        subject: `Join ${game.title}`,
+        html: `
             <div style="background:#f4efe4;padding:32px 16px;font-family:Arial,sans-serif;color:#17261f">
               <div style="max-width:560px;margin:0 auto;background:#fff;border:1px solid #d7cfbd">
                 <div style="background:#10271e;padding:24px 30px">
@@ -223,21 +312,29 @@ router.post('/games/:code/magic-link', magicLinkLimiter, async (req, res) => {
                 </div>
               </div>
             </div>
-          `,
-          text: `Join ${game.title}\n\nOpen this secure link to continue: ${link}\n\nThe link expires in ${MAGIC_LINK_MINUTES} minutes.`,
-          tags: [
-            { name: 'category', value: 'bingo_magic_link' },
-            { name: 'game_id', value: String(game.id) },
-          ],
+        `,
+        text: `Join ${game.title}\n\nOpen this secure link to continue: ${link}\n\nThe link expires in ${MAGIC_LINK_MINUTES} minutes.`,
+        tags: [
+          { name: 'category', value: 'bingo_magic_link' },
+          { name: 'game_id', value: String(game.id) },
+        ],
+      });
+
+      if (!delivery.sent) {
+        // The participant never received a usable link, so the token must not
+        // remain redeemable and the UI must not claim success.
+        await invalidateMagicLink(pool, id);
+        console.error('[Bingo] Magic link delivery failed:', describeEmailFailure(delivery.failure));
+        return res.status(502).json({
+          error: 'We could not send your sign-in email just now. Please try again in a moment.',
         });
-        emailSent = true;
-      } catch (emailError) {
-        console.error('[Bingo] Failed to send magic link:', emailError);
       }
     }
 
-    const response = { ...generic, emailSent };
-    if (!process.env.VERCEL && process.env.NODE_ENV !== 'production') {
+    // Reaching here means the provider accepted the message, or that this is a
+    // local run surfacing the link directly.
+    const response = { ...generic, emailSent: !!resend };
+    if (devFallbackAvailable) {
       response.dev_magic_link = link;
     }
     return res.json(response);
