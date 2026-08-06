@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { useApi } from '../hooks/useApi';
 import { useAuth } from '../hooks/useAuth';
@@ -21,8 +21,15 @@ export default function BingoLivePage() {
   const [busy, setBusy] = useState('');
   const [error, setError] = useState('');
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [playerQuery, setPlayerQuery] = useState('');
+  const [playerPage, setPlayerPage] = useState(0);
+  const pollInFlight = useRef(false);
 
   const load = useCallback(async ({ quiet = false } = {}) => {
+    // A 250-row dashboard payload can outlast the poll interval; skip rather
+    // than queue so the control room never falls behind itself.
+    if (quiet && pollInFlight.current) return;
+    if (quiet) pollInFlight.current = true;
     if (!quiet) setLoading(true);
     try {
       const response = await apiFetch(`/api/bingo/admin/games/${id}/dashboard`);
@@ -34,6 +41,7 @@ export default function BingoLivePage() {
     } catch (loadError) {
       setError(loadError.message);
     } finally {
+      pollInFlight.current = false;
       if (!quiet) setLoading(false);
     }
   }, [apiFetch, id]);
@@ -117,6 +125,25 @@ export default function BingoLivePage() {
       .sort((a, b) => b.completed_count - a.completed_count || new Date(a.joined_at) - new Date(b.joined_at))
       .slice(0, 10),
     [data]
+  );
+
+  // Paging keeps the DOM small at 250 players; search is what makes a specific
+  // attendee findable when someone comes to the desk for help.
+  const PLAYERS_PER_PAGE = 25;
+  const filteredPlayers = useMemo(() => {
+    const needle = playerQuery.trim().toLowerCase();
+    const all = data?.players || [];
+    if (!needle) return all;
+    return all.filter((player) => [player.display_name, player.email, player.company]
+      .filter(Boolean)
+      .some((field) => field.toLowerCase().includes(needle)));
+  }, [data, playerQuery]);
+
+  const pageCount = Math.max(1, Math.ceil(filteredPlayers.length / PLAYERS_PER_PAGE));
+  const safePage = Math.min(playerPage, pageCount - 1);
+  const visiblePlayers = filteredPlayers.slice(
+    safePage * PLAYERS_PER_PAGE,
+    safePage * PLAYERS_PER_PAGE + PLAYERS_PER_PAGE
   );
 
   if (loading) return <div className={styles.loadingCard}>Opening the control room…</div>;
@@ -293,13 +320,31 @@ export default function BingoLivePage() {
           <div><span>03</span><h2>Players</h2></div>
           <small>{lastUpdated ? `Updated ${formatTime(lastUpdated)}` : ''}</small>
         </div>
+        <div className={styles.tableTools}>
+          <input
+            type="search"
+            value={playerQuery}
+            onChange={(event) => {
+              setPlayerQuery(event.target.value);
+              setPlayerPage(0);
+            }}
+            placeholder="Search name, email, or company"
+            aria-label="Search players"
+            spellCheck={false}
+          />
+          <span>
+            {filteredPlayers.length === players.length
+              ? `${players.length} players`
+              : `${filteredPlayers.length} of ${players.length} players`}
+          </span>
+        </div>
         <div className={styles.tableWrap}>
           <table>
             <thead>
               <tr><th>Player</th><th>Progress</th><th>Place</th><th>Status</th><th /></tr>
             </thead>
             <tbody>
-              {players.map((player) => (
+              {visiblePlayers.map((player) => (
                 <tr key={player.id}>
                   <td><strong>{player.display_name}</strong><small>{player.email}<br />{player.company}</small></td>
                   <td>
@@ -325,6 +370,25 @@ export default function BingoLivePage() {
             </tbody>
           </table>
         </div>
+        {pageCount > 1 && (
+          <div className={styles.tablePager}>
+            <button
+              type="button"
+              onClick={() => setPlayerPage(Math.max(0, safePage - 1))}
+              disabled={safePage === 0}
+            >
+              Previous
+            </button>
+            <span>Page {safePage + 1} of {pageCount}</span>
+            <button
+              type="button"
+              onClick={() => setPlayerPage(Math.min(pageCount - 1, safePage + 1))}
+              disabled={safePage >= pageCount - 1}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </section>
 
       <section className={styles.liveTableCard}>

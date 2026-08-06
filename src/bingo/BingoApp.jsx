@@ -1317,6 +1317,7 @@ function GamePlayPage() {
   const [profileError, setProfileError] = useState('');
   const [success, setSuccess] = useState(null);
   const [walkthroughOpen, setWalkthroughOpen] = useState(false);
+  const pollInFlight = useRef(false);
 
   const loadLeaderboard = useCallback(async () => {
     try {
@@ -1328,6 +1329,10 @@ function GamePlayPage() {
   }, [code]);
 
   const load = useCallback(async ({ quiet = false } = {}) => {
+    // At 250 concurrent players a slow response must not stack up behind the
+    // next tick, so a poll already in flight simply skips this round.
+    if (quiet && pollInFlight.current) return;
+    if (quiet) pollInFlight.current = true;
     if (!quiet) setLoading(true);
     try {
       const response = await bingoFetch(`/api/bingo/games/${encodeURIComponent(code)}/player`);
@@ -1346,6 +1351,7 @@ function GamePlayPage() {
     } catch (loadError) {
       setError(loadError.message);
     } finally {
+      pollInFlight.current = false;
       if (!quiet) setLoading(false);
     }
   }, [code, navigate, searchParams]);
@@ -1355,14 +1361,43 @@ function GamePlayPage() {
     loadLeaderboard();
   }, [load, loadLeaderboard]);
 
+  const gameStatus = state?.game?.status;
+  const playerFinished = !!state?.player?.completed_at;
+
+  // Poll rate follows how much the player still has to learn. A finished
+  // player or a paused room has almost no incoming change, and a hidden tab
+  // has nobody watching, so those back off hard instead of each holding a
+  // 12-second slot against the API.
+  const pollIntervalMs = (() => {
+    if (!gameStatus || !['registration', 'live', 'paused'].includes(gameStatus)) return 0;
+    if (playerFinished) return 60000;
+    if (gameStatus === 'paused') return 30000;
+    return 12000;
+  })();
+
   useEffect(() => {
-    if (!state || !['registration', 'live', 'paused'].includes(state.game.status)) return undefined;
-    const interval = window.setInterval(() => {
+    if (!pollIntervalMs) return undefined;
+
+    const tick = () => {
+      if (document.visibilityState === 'hidden') return;
       load({ quiet: true });
+      // The leaderboard is a second query set; only fetch it when it is on screen.
       if (tab === 'leaders') loadLeaderboard();
-    }, 12000);
-    return () => window.clearInterval(interval);
-  }, [load, loadLeaderboard, state, tab]);
+    };
+
+    const interval = window.setInterval(tick, pollIntervalMs);
+    // A backgrounded phone returning to the game should refresh at once
+    // rather than waiting out the remainder of its interval.
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') tick();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
+  }, [load, loadLeaderboard, pollIntervalMs, tab]);
 
   useEffect(() => {
     const incoming = searchParams.get('person');

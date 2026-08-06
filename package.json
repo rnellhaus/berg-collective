@@ -10,6 +10,7 @@
     "lint": "eslint .",
     "test:bingo": "node --test server/services/bingo.test.js server/routes/bingoPublic.test.js",
     "test:bingo:integration": "node --env-file=.env.local --env-file=.env.admin.local scripts/verify-bingo-integration.js",
+    "test:bingo:load": "node --env-file=.env.local --env-file=.env.admin.local scripts/load-test-bingo.js",
     "preview": "vite preview",
     "server": "node --env-file=.env.local --env-file=.env.admin.local --watch server/index.js",
     "dev:full": "concurrently \"npm run dev\" \"npm run server\"",
