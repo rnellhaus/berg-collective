@@ -1,4 +1,5 @@
 import express from 'express';
+import process from 'node:process';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import { initDatabase } from './db/init.js';
@@ -10,8 +11,16 @@ import usersRoutes from './routes/users.js';
 import formsRoutes from './routes/forms.js';
 import documentsRoutes from './routes/documents.js';
 import proposalsRoutes from './routes/proposals.js';
+import bingoPublicRoutes from './routes/bingoPublic.js';
+import bingoAdminRoutes from './routes/bingoAdmin.js';
 
 const app = express();
+
+// Vercel places one trusted proxy in front of the app. This keeps participant
+// rate limiting tied to the real client address instead of the shared proxy.
+if (process.env.VERCEL) {
+  app.set('trust proxy', 1);
+}
 
 // Initialize database (lazy — retries on each request until success)
 let dbInitialized = false;
@@ -64,6 +73,8 @@ app.use('/api/events', eventsRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/forms', formsRoutes);
 app.use('/api/documents', documentsRoutes);
+app.use('/api/bingo/admin', bingoAdminRoutes);
+app.use('/api/bingo', bingoPublicRoutes);
 app.use('/proposals', proposalsRoutes);
 
 app.get('/api/health', (req, res) => {

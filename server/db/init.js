@@ -1,11 +1,16 @@
 import bcrypt from 'bcryptjs';
+import process from 'node:process';
 import { getPool } from './connection.js';
+import { runMigrations } from './migrate.js';
 
 export async function initDatabase() {
   const pool = getPool();
 
   // Verify connection
   await pool.query('SELECT 1');
+
+  // Apply additive, versioned schema updates before serving requests.
+  await runMigrations(pool);
 
   // Create default admin if none exists
   const { rows } = await pool.query(

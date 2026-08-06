@@ -8,17 +8,22 @@
     "build": "vite build",
     "postbuild": "node scripts/prerender.js",
     "lint": "eslint .",
+    "test:bingo": "node --test server/services/bingo.test.js",
+    "test:bingo:integration": "node --env-file=.env.local --env-file=.env.admin.local scripts/verify-bingo-integration.js",
     "preview": "vite preview",
-    "server": "nodemon server/index.js",
+    "server": "node --env-file=.env.local --env-file=.env.admin.local --watch server/index.js",
     "dev:full": "concurrently \"npm run dev\" \"npm run server\"",
     "start": "node server/index.js"
   },
   "dependencies": {
     "@fontsource/epilogue": "^5.2.8",
+    "@fontsource/fraunces": "^5.2.9",
+    "@fontsource/inter": "^5.2.8",
     "@fontsource/nunito": "^5.2.7",
     "@fontsource/varela-round": "^5.2.8",
     "@neondatabase/serverless": "^1.0.2",
     "@vercel/blob": "^2.3.2",
+    "@zxing/browser": "^0.2.1",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
@@ -27,11 +32,12 @@
     "google-auth-library": "^10.9.0",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.1.1",
+    "qrcode": "^1.5.4",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
-    "react-router-dom": "^7.13.2",
+    "react-router-dom": "^7.18.2",
     "resend": "^6.9.4",
-    "sharp": "^0.34.5"
+    "sharp": "^0.35.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

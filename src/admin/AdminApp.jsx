@@ -18,10 +18,13 @@ import FormSubmissionsPage from './pages/FormSubmissionsPage';
 import FormSubmissionDetailPage from './pages/FormSubmissionDetailPage';
 import DocumentsPage from './pages/DocumentsPage';
 import SurveyResultsPage from './pages/SurveyResultsPage';
+import BingoGamesPage from './pages/BingoGamesPage';
+import BingoGameEditorPage from './pages/BingoGameEditorPage';
+import BingoLivePage from './pages/BingoLivePage';
 
 function ComingSoon({ label }) {
   return (
-    <div style={{ color: '#6b5752', fontStyle: 'italic', padding: '12px 0' }}>
+    <div style={{ color: 'var(--color-gray-600)', fontStyle: 'italic', padding: '12px 0' }}>
       {label} — coming soon.
     </div>
   );
@@ -63,8 +66,8 @@ function AdminRoutes() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: '#fbfaf9',
-          color: '#8b3223',
+          background: 'var(--color-bone)',
+          color: 'var(--color-forest)',
           fontSize: '0.95rem',
         }}
       >
@@ -91,6 +94,9 @@ function AdminRoutes() {
         <Route path="events" element={<EventsListPage />} />
         <Route path="events/new" element={<EventEditorPage />} />
         <Route path="events/:id" element={<EventEditorPage />} />
+        <Route path="bingo" element={<BingoGamesPage />} />
+        <Route path="bingo/:id" element={<BingoGameEditorPage />} />
+        <Route path="bingo/:id/live" element={<BingoLivePage />} />
         <Route path="forms" element={<FormSubmissionsPage />} />
         <Route path="forms/:id" element={<FormSubmissionDetailPage />} />
         <Route path="surveys/aisummit" element={<SurveyResultsPage />} />

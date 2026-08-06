@@ -28,6 +28,7 @@ const AiSummitPage = lazy(() => import('./pages/AiSummitPage/AiSummitPage'));
 const AiSummitOpenAIPage = lazy(() => import('./pages/AiSummitOpenAIPage/AiSummitOpenAIPage'));
 const AiSummitSurveyPage = lazy(() => import('./pages/AiSummitSurveyPage/AiSummitSurveyPage'));
 const AdminApp = lazy(() => import('./admin/AdminApp'));
+const BingoApp = lazy(() => import('./bingo/BingoApp'));
 
 function Loading() {
   return <div style={{ padding: '100px 24px', textAlign: 'center', color: '#8e5f57' }}>Loading...</div>;
@@ -72,6 +73,7 @@ export default function App() {
           <Route path="/aisummit/openai" element={<AiSummitOpenAIPage />} />
           <Route path="/aisummit/survey" element={<AiSummitSurveyPage />} />
           <Route path="/admin/*" element={<AdminApp />} />
+          <Route path="/bingo/*" element={<BingoApp />} />
           <Route path="/*" element={<PublicLayout />} />
         </Routes>
       </Suspense>

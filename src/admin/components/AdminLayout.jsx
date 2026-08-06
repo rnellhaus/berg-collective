@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { Link, NavLink, Outlet } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import styles from './AdminLayout.module.css';
 
@@ -7,6 +7,7 @@ const CONTENT_NAV = [
   { to: '/admin', label: 'Dashboard', icon: 'space_dashboard', end: true },
   { to: '/admin/pages', label: 'Pages', icon: 'web' },
   { to: '/admin/events', label: 'Events', icon: 'event' },
+  { to: '/admin/bingo', label: 'Networking Bingo', icon: 'qr_code_2' },
   { to: '/admin/forms', label: 'Forms', icon: 'inbox' },
   { to: '/admin/media', label: 'Media Library', icon: 'photo_library' },
   { to: '/admin/documents', label: 'Documents', icon: 'folder_open' },
@@ -68,7 +69,7 @@ export default function AdminLayout() {
             {menuOpen ? 'close' : 'menu'}
           </span>
         </button>
-        <span className={styles.brandName}>BERG</span>
+        <img className={styles.mobileLogo} src="/images/logo.png" alt="BERG Collective" />
         <span className={styles.cmsBadge}>CMS</span>
       </header>
 
@@ -77,10 +78,10 @@ export default function AdminLayout() {
         className={`${styles.sidebar} ${menuOpen ? styles.sidebarOpen : ''}`}
         aria-label="Admin navigation"
       >
-        <div className={styles.brand}>
-          <span className={styles.brandName}>BERG</span>
+        <Link to="/admin" className={styles.brand} onClick={closeMenu}>
+          <img className={styles.brandLogo} src="/images/logo.png" alt="BERG Collective" />
           <span className={styles.cmsBadge}>CMS</span>
-        </div>
+        </Link>
 
         <div className={styles.navScroll}>
           <div className={styles.sidebarSection}>
