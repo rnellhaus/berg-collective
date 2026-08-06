@@ -4,6 +4,7 @@ import { getPool } from '../db/connection.js';
 import { verifyToken } from '../middleware/auth.js';
 import { requireRole } from '../middleware/roles.js';
 import {
+  BINGO_THEMES,
   getPublicSiteUrl,
   normalizeJoinCode,
 } from '../services/bingo.js';
@@ -285,9 +286,10 @@ router.put('/games/:id', async (req, res) => {
          contact_sharing_enabled = $6,
          starts_at = $7,
          ends_at = $8,
-         updated_by = $9,
+         settings = COALESCE(settings, '{}'::jsonb) || $9::jsonb,
+         updated_by = $10,
          updated_at = NOW()
-       WHERE id = $10`,
+       WHERE id = $11`,
       [
         title,
         joinCode,
@@ -303,6 +305,13 @@ router.put('/games/:id', async (req, res) => {
           : req.body.contact_sharing_enabled === true,
         req.body.starts_at === undefined ? game.starts_at : nullableDate(req.body.starts_at),
         req.body.ends_at === undefined ? game.ends_at : nullableDate(req.body.ends_at),
+        // Merged into existing settings so an unrelated key is never dropped.
+        // An unrecognized theme falls back rather than being stored.
+        JSON.stringify(
+          req.body.theme === undefined
+            ? {}
+            : { theme: BINGO_THEMES.includes(req.body.theme) ? req.body.theme : 'berghaus' }
+        ),
         req.user.id,
         id,
       ]

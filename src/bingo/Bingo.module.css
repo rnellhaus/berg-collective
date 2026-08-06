@@ -12,6 +12,29 @@
   color: var(--bingo-ink);
 }
 
+/*
+ * Optional per-event theme (Summer Mixer "Midnight Rooftop"). Applied by
+ * overriding the same tokens the default look uses, so every surface —
+ * entry, play, leaderboard, winner — follows without markup changes.
+ * QR modules and their quiet zones are deliberately excluded below: they
+ * must stay pure high-contrast black on white to remain scannable.
+ */
+.themeMidnightRooftop {
+  --bingo-ink: #FFF9F2;
+  --bingo-forest: #08DDF2;
+  --bingo-deep: #04112B;
+  --bingo-gold: #FFAD3D;
+  --bingo-bone: #04112B;
+  --bingo-paper: #0A1C3D;
+  --bingo-clay: #FF2C98;
+  --bingo-line: #1E3563;
+}
+
+/* Keep scannable codes immune to theming. */
+.themeMidnightRooftop :is(canvas, svg[data-qr], [data-qr-surface]) {
+  background: #fff;
+}
+
 .shell *,
 .gameShell * {
   box-sizing: border-box;

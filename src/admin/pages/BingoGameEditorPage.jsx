@@ -65,6 +65,7 @@ export default function BingoGameEditorPage() {
         prompt_count: data.game.prompt_count || 12,
         leaderboard_public: !!data.game.leaderboard_public,
         contact_sharing_enabled: !!data.game.contact_sharing_enabled,
+        theme: data.game.settings?.theme || 'berghaus',
         starts_at: toLocalDateTime(data.game.starts_at),
         ends_at: toLocalDateTime(data.game.ends_at),
       });
@@ -391,8 +392,43 @@ export default function BingoGameEditorPage() {
                   checked={form.contact_sharing_enabled}
                   onChange={(event) => updateForm('contact_sharing_enabled', event.target.checked)}
                 />
-                <span><strong>Opt-in contact sharing</strong><small>Players choose whether to share email or LinkedIn.</small></span>
+                <span><strong>Opt-in contact sharing</strong><small>Players choose whether to share email, LinkedIn, or Instagram.</small></span>
               </label>
+            </div>
+            <div className={styles.themePicker}>
+              <span className={styles.themePickerLabel}>Event theme</span>
+              <p className={styles.themePickerHelp}>
+                Applies to the player experience only. The admin area and all QR
+                codes are unaffected.
+              </p>
+              {[
+                {
+                  value: 'berghaus',
+                  label: 'BERGHAUS (default)',
+                  swatches: ['#173d2d', '#d8aa3c', '#f3eee3', '#ad5538'],
+                },
+                {
+                  value: 'midnight-rooftop',
+                  label: 'Midnight Rooftop',
+                  swatches: ['#04112B', '#08DDF2', '#FF2C98', '#FFAD3D'],
+                },
+              ].map((option) => (
+                <label key={option.value} className={styles.themeOption}>
+                  <input
+                    type="radio"
+                    name="theme"
+                    value={option.value}
+                    checked={(form.theme || 'berghaus') === option.value}
+                    onChange={() => updateForm('theme', option.value)}
+                  />
+                  <span>{option.label}</span>
+                  <span className={styles.themeSwatches} aria-hidden="true">
+                    {option.swatches.map((color) => (
+                      <i key={color} style={{ background: color }} />
+                    ))}
+                  </span>
+                </label>
+              ))}
             </div>
             <div className={styles.cardFooter}>
               <button type="submit" className={styles.primaryButton} disabled={saving}>

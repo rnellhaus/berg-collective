@@ -308,6 +308,17 @@ export async function getPlayerState(queryable, participantId, gameCode) {
   };
 }
 
+// Optional per-event themes live in bingo_games.settings so BERGHAUS stays the
+// default and a theme is never a global rebrand. Unknown values fall back to
+// the house look rather than rendering an unstyled room.
+export const BINGO_THEMES = ['berghaus', 'midnight-rooftop'];
+
+export function readGameTheme(game) {
+  const settings = game?.settings || {};
+  const theme = typeof settings.theme === 'string' ? settings.theme : '';
+  return BINGO_THEMES.includes(theme) ? theme : 'berghaus';
+}
+
 export function serializePublicGame(game) {
   return {
     id: game.id,
@@ -318,6 +329,7 @@ export function serializePublicGame(game) {
     prompt_count: game.prompt_count,
     leaderboard_public: game.leaderboard_public,
     contact_sharing_enabled: game.contact_sharing_enabled,
+    theme: readGameTheme(game),
     starts_at: game.starts_at,
     ends_at: game.ends_at,
     event: {

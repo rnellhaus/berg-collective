@@ -187,9 +187,15 @@ function useBingoMeta(title) {
   }, [title]);
 }
 
-function BingoShell({ children, gameCode, minimal = false }) {
+// Maps a server-supplied theme name to its stylesheet class. Unknown values
+// yield no class, leaving the default BERGHAUS look in place.
+function themeClass(theme) {
+  return theme === 'midnight-rooftop' ? styles.themeMidnightRooftop : '';
+}
+
+function BingoShell({ children, gameCode, minimal = false, theme }) {
   return (
-    <div className={styles.shell}>
+    <div className={`${styles.shell} ${themeClass(theme)}`.trim()}>
       <div className={styles.ambient} aria-hidden="true">
         <i /><i /><i /><i /><i />
       </div>
@@ -687,7 +693,7 @@ function GameGatewayPage() {
   const canRegister = ['registration', 'live', 'paused'].includes(game.status);
 
   return (
-    <BingoShell gameCode={game.join_code}>
+    <BingoShell gameCode={game.join_code} theme={game.theme}>
       <section className={styles.gateway}>
         <div className={styles.roomIdentity}>
           <div className={styles.roomContext}>
@@ -1566,7 +1572,7 @@ function GamePlayPage() {
   const showConfirm = !!(pendingToken || pendingCode);
 
   return (
-    <div className={styles.gameShell}>
+    <div className={`${styles.gameShell} ${themeClass(game.theme)}`.trim()}>
       <header className={styles.gameHeader}>
         <Link to="/bingo" className={styles.gameBrand}>
           <img src="/images/logo-black.png" alt="BERG Collective" />
