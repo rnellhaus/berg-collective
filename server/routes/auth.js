@@ -95,11 +95,39 @@ router.post('/google', loginLimiter, async (req, res) => {
 // POST /api/auth/login
 router.post('/login', loginLimiter, async (req, res) => {
   try {
-    if (!passwordLoginEnabled) return res.status(403).json({ error: PASSWORD_DISABLED_MSG });
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'Email and password required' });
 
     const pool = getPool();
+
+    // Development-only access using an existing user identity. This preserves
+    // valid database foreign keys without changing the shared password hash.
+    const localEmail = process.env.LOCAL_ADMIN_EMAIL?.toLowerCase();
+    const localPassword = process.env.LOCAL_ADMIN_PASSWORD;
+    const localLoginEnabled = !process.env.VERCEL
+      && process.env.NODE_ENV !== 'production'
+      && localEmail
+      && localPassword;
+
+    if (localLoginEnabled && email.toLowerCase() === localEmail) {
+      const supplied = Buffer.from(password);
+      const expected = Buffer.from(localPassword);
+      const matches = supplied.length === expected.length
+        && crypto.timingSafeEqual(supplied, expected);
+
+      if (matches) {
+        const { rows } = await pool.query('SELECT * FROM users WHERE LOWER(email) = LOWER($1)', [email]);
+        const user = rows[0];
+        if (!user) return res.status(403).json({ error: 'Local admin identity was not found' });
+
+        const { accessToken, refreshToken } = generateTokens(user);
+        res.cookie('access_token', accessToken, { ...COOKIE_OPTS, maxAge: 15 * 60 * 1000 });
+        res.cookie('refresh_token', refreshToken, { ...COOKIE_OPTS, maxAge: 7 * 24 * 60 * 60 * 1000 });
+        return res.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role } });
+      }
+    }
+
+    if (!passwordLoginEnabled) return res.status(403).json({ error: PASSWORD_DISABLED_MSG });
     const { rows } = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
     const user = rows[0];
     if (!user || !(await bcrypt.compare(password, user.password_hash))) {
@@ -188,7 +216,7 @@ router.post('/forgot-password', forgotLimiter, async (req, res) => {
       [user.id, token, expiresAt.toISOString()]
     );
 
-    const frontendUrl = process.env.FRONTEND_URL || 'https://berg-collective-web.vercel.app';
+    const frontendUrl = process.env.FRONTEND_URL || 'https://bergcollective.org';
     const link = `${frontendUrl}/admin/reset-password?token=${token}`;
 
     if (resend) {

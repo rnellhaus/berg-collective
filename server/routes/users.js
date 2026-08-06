@@ -92,7 +92,7 @@ router.post('/invite', adminAuth, async (req, res) => {
     );
 
     const invite = rows[0];
-    const frontendUrl = process.env.FRONTEND_URL || 'https://berg-collective-web.vercel.app';
+    const frontendUrl = process.env.FRONTEND_URL || 'https://bergcollective.org';
     const link = `${frontendUrl}/admin/accept-invite?token=${token}`;
 
     // Send invite email
