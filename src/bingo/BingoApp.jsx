@@ -277,17 +277,16 @@ function BingoLandingPage() {
             <span>BERG / 01</span>
             <b>Make the first move.</b>
           </div>
-          <div className={styles.posterPrompt}>
-            <span>Your prompt</span>
-            <p>Find someone building something that did not exist a year ago.</p>
-          </div>
-          <div className={styles.posterNetwork}>
-            <i /><i /><i /><i /><i /><i />
-            <svg viewBox="0 0 360 180" role="presentation">
-              <path d="M38 124 L112 50 L187 110 L260 42 L324 126" />
-              <path d="M38 124 L187 110 L324 126" />
-              <path d="M112 50 L260 42" />
-            </svg>
+          {/* The real play screen rather than an illustration of one — the
+              product is more convincing than a mockup of it. */}
+          <div className={styles.posterShot}>
+            <img
+              src="/images/bingo/onboarding/01-prompt.webp"
+              alt=""
+              width="390"
+              height="844"
+              loading="lazy"
+            />
           </div>
           <div className={styles.posterFoot}>
             <strong>1 conversation</strong>
