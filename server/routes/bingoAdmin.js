@@ -648,7 +648,8 @@ router.get('/games/:id/export.csv', async (req, res) => {
     const { rows } = await pool.query(
       `SELECT bp.display_name, bpa.email, bp.company, bp.job_title, bp.status,
          bp.completed_count, bp.finish_place, bp.joined_at, bp.completed_at,
-         bp.share_email, bp.share_linkedin
+         bp.linkedin_url, bp.instagram_url,
+         bp.share_email, bp.share_linkedin, bp.share_instagram
        FROM bingo_players bp
        JOIN bingo_participants bpa ON bpa.id = bp.participant_id
        WHERE bp.game_id = $1
@@ -657,7 +658,8 @@ router.get('/games/:id/export.csv', async (req, res) => {
     );
     const headers = [
       'Name', 'Email', 'Company', 'Job title', 'Status', 'Prompts completed',
-      'Finish place', 'Joined at', 'Completed at', 'Share email', 'Share LinkedIn',
+      'Finish place', 'Joined at', 'Completed at', 'LinkedIn URL', 'Instagram URL',
+      'Share email', 'Share LinkedIn', 'Share Instagram',
     ];
     const lines = [
       headers.map(csvCell).join(','),
@@ -671,8 +673,11 @@ router.get('/games/:id/export.csv', async (req, res) => {
         row.finish_place,
         row.joined_at,
         row.completed_at,
+        row.linkedin_url,
+        row.instagram_url,
         row.share_email,
         row.share_linkedin,
+        row.share_instagram,
       ].map(csvCell).join(',')),
     ];
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');

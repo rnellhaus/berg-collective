@@ -140,6 +140,14 @@ function BingoIcon({ name }) {
       </svg>
     );
   }
+  if (name === 'profile') {
+    return (
+      <svg {...commonProps}>
+        <path d="M12 3l7 3v5.5c0 4.2-2.9 7.6-7 8.5-4.1-.9-7-4.3-7-8.5V6l7-3Z" />
+        <path d="M9.5 12l1.8 1.8 3.4-3.6" />
+      </svg>
+    );
+  }
   return (
     <svg {...commonProps}>
       <path d="M20 15a4 4 0 0 1-4 4H8l-5 3 1.7-5A8 8 0 1 1 20 15Z" />
@@ -569,8 +577,11 @@ function GameGatewayPage() {
     company: '',
     job_title: '',
     linkedin_url: '',
+    instagram_url: '',
+    // Every sharing option defaults to off.
     share_email: false,
     share_linkedin: false,
+    share_instagram: false,
   });
 
   const load = useCallback(async () => {
@@ -802,36 +813,7 @@ function GameGatewayPage() {
                   </label>
                 </div>
                 {game.contact_sharing_enabled && (
-                  <>
-                    <label>
-                      <span>LinkedIn <em>optional</em></span>
-                      <input
-                        value={profile.linkedin_url}
-                        onChange={(event) => setProfile((current) => ({ ...current, linkedin_url: event.target.value }))}
-                        placeholder="linkedin.com/in/you"
-                        maxLength="300"
-                      />
-                    </label>
-                    <div className={styles.shareChoices}>
-                      <span>Share after connecting</span>
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={profile.share_linkedin}
-                          onChange={(event) => setProfile((current) => ({ ...current, share_linkedin: event.target.checked }))}
-                        />
-                        LinkedIn
-                      </label>
-                      <label>
-                        <input
-                          type="checkbox"
-                          checked={profile.share_email}
-                          onChange={(event) => setProfile((current) => ({ ...current, share_email: event.target.checked }))}
-                        />
-                        Email
-                      </label>
-                    </div>
-                  </>
+                  <ContactSharingFields profile={profile} onChange={setProfile} />
                 )}
                 <button type="submit" className={styles.mainButton} disabled={joining}>
                   {joining ? 'Creating your card…' : 'Enter the room'}
@@ -921,6 +903,155 @@ function ScannerModal({ gameCode, onToken, onClose }) {
         <p className={styles.scannerHelp}>Only scan after you have had the conversation shown on your prompt.</p>
       </section>
     </div>
+  );
+}
+
+// Shared by the join form and the Profile & privacy panel so both always offer
+// the same fields and the same consent semantics. Every sharing option is
+// independent and defaults to off; consent is never inferred from a filled URL.
+function ContactSharingFields({ profile, onChange }) {
+  const set = (patch) => onChange((current) => ({ ...current, ...patch }));
+
+  return (
+    <>
+      <label>
+        <span>LinkedIn <em>optional</em></span>
+        <input
+          type="url"
+          name="linkedin_url"
+          autoComplete="url"
+          spellCheck={false}
+          value={profile.linkedin_url}
+          onChange={(event) => set({ linkedin_url: event.target.value })}
+          placeholder="linkedin.com/in/you"
+          maxLength="300"
+        />
+      </label>
+      <label>
+        <span>Instagram <em>optional</em></span>
+        <input
+          type="text"
+          name="instagram_url"
+          autoComplete="off"
+          spellCheck={false}
+          value={profile.instagram_url}
+          onChange={(event) => set({ instagram_url: event.target.value })}
+          placeholder="@yourhandle"
+          maxLength="300"
+        />
+      </label>
+      <div className={styles.shareChoices}>
+        <span>Share after connecting</span>
+        <label>
+          <input
+            type="checkbox"
+            checked={profile.share_linkedin}
+            onChange={(event) => set({ share_linkedin: event.target.checked })}
+          />
+          LinkedIn
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={profile.share_instagram}
+            onChange={(event) => set({ share_instagram: event.target.checked })}
+          />
+          Instagram
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={profile.share_email}
+            onChange={(event) => set({ share_email: event.target.checked })}
+          />
+          Email
+        </label>
+      </div>
+      <p className={styles.privacyNote}>
+        Only people you actually connect with can see the methods you tick, and
+        only while the host keeps sharing on. You can change or revoke any of
+        this at any time. Your details are kept until the host deletes the game.
+      </p>
+    </>
+  );
+}
+
+// Post-join screen so consent is editable and revocable, not a one-time
+// decision made at registration.
+function ProfilePrivacyPanel({ state, onSave, saving, savedAt, error }) {
+  const { player, game } = state;
+  const [draft, setDraft] = useState({
+    display_name: player.display_name || '',
+    company: player.company || '',
+    job_title: player.job_title || '',
+    linkedin_url: player.linkedin_url || '',
+    instagram_url: player.instagram_url || '',
+    share_email: !!player.share_email,
+    share_linkedin: !!player.share_linkedin,
+    share_instagram: !!player.share_instagram,
+  });
+
+  return (
+    <section className={styles.privacyPanel}>
+      <h2>Profile &amp; privacy</h2>
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          onSave(draft);
+        }}
+      >
+        <label>
+          <span>Display name</span>
+          <input
+            name="display_name"
+            autoComplete="name"
+            value={draft.display_name}
+            onChange={(event) => setDraft((c) => ({ ...c, display_name: event.target.value }))}
+            maxLength="80"
+            required
+          />
+        </label>
+        <div className={styles.fieldRow}>
+          <label>
+            <span>Company</span>
+            <input
+              name="organization"
+              autoComplete="organization"
+              value={draft.company}
+              onChange={(event) => setDraft((c) => ({ ...c, company: event.target.value }))}
+              maxLength="120"
+            />
+          </label>
+          <label>
+            <span>Role</span>
+            <input
+              name="job_title"
+              autoComplete="organization-title"
+              value={draft.job_title}
+              onChange={(event) => setDraft((c) => ({ ...c, job_title: event.target.value }))}
+              maxLength="120"
+            />
+          </label>
+        </div>
+
+        {game.contact_sharing_enabled
+          ? <ContactSharingFields profile={draft} onChange={setDraft} />
+          : (
+              <p className={styles.privacyNote}>
+                The host has turned contact sharing off for this game, so no
+                contact details are shared with anyone.
+              </p>
+            )}
+
+        {error && <div className={styles.inlineError} role="alert">{error}</div>}
+        <div aria-live="polite" className={styles.saveStatus}>
+          {savedAt ? 'Saved. Your choices apply to future connections immediately.' : ''}
+        </div>
+        <button type="submit" className={styles.mainButton} disabled={saving}>
+          {saving ? 'Saving…' : 'Save changes'}
+        </button>
+      </form>
+    </section>
   );
 }
 
@@ -1152,8 +1283,10 @@ function ConnectionsPanel({ connections }) {
               </div>
               <div className={styles.contactLinks}>
                 {connection.linkedin_url && <a href={connection.linkedin_url} target="_blank" rel="noreferrer">LinkedIn ↗</a>}
+                {connection.instagram_url && <a href={connection.instagram_url} target="_blank" rel="noreferrer">Instagram ↗</a>}
                 {connection.email && <a href={`mailto:${connection.email}`}>Email ↗</a>}
-                {!connection.linkedin_url && !connection.email && <span>Details kept private</span>}
+                {!connection.linkedin_url && !connection.instagram_url && !connection.email
+                  && <span>Details kept private</span>}
               </div>
             </article>
           ))}
@@ -1179,6 +1312,9 @@ function GamePlayPage() {
   const [pendingCode, setPendingCode] = useState('');
   const [connectBusy, setConnectBusy] = useState(false);
   const [reconciling, setReconciling] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [profileSavedAt, setProfileSavedAt] = useState(null);
+  const [profileError, setProfileError] = useState('');
   const [success, setSuccess] = useState(null);
   const [walkthroughOpen, setWalkthroughOpen] = useState(false);
 
@@ -1336,6 +1472,28 @@ function GamePlayPage() {
     } finally {
       setReconciling(false);
       setConnectBusy(false);
+    }
+  }
+
+  // Reuses the join endpoint, which upserts the player row, so edits and
+  // revocations take effect on the next connected-player read.
+  async function saveProfile(draft) {
+    setSavingProfile(true);
+    setProfileError('');
+    setProfileSavedAt(null);
+    try {
+      const response = await bingoFetch(`/api/bingo/games/${encodeURIComponent(code)}/join`, {
+        method: 'POST',
+        body: JSON.stringify(draft),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'Could not save your changes');
+      setState(result);
+      setProfileSavedAt(Date.now());
+    } catch (saveError) {
+      setProfileError(saveError.message);
+    } finally {
+      setSavingProfile(false);
     }
   }
 
@@ -1510,6 +1668,15 @@ function GamePlayPage() {
         {tab === 'qr' && <PersonalQrPanel state={state} />}
         {tab === 'leaders' && <LeaderboardPanel leaderboard={leaderboard} playerId={player.id} />}
         {tab === 'connections' && <ConnectionsPanel connections={connections} />}
+        {tab === 'profile' && (
+          <ProfilePrivacyPanel
+            state={state}
+            onSave={saveProfile}
+            saving={savingProfile}
+            savedAt={profileSavedAt}
+            error={profileError}
+          />
+        )}
       </main>
 
       <nav className={styles.gameNav} aria-label="Game navigation">
@@ -1518,6 +1685,7 @@ function GamePlayPage() {
           ['qr', 'qr', 'My pass'],
           ...(game.leaderboard_public ? [['leaders', 'leaders', 'Leaders']] : []),
           ['connections', 'connections', 'Connections'],
+          ['profile', 'profile', 'Privacy'],
         ].map(([value, icon, label]) => (
           <button
             type="button"

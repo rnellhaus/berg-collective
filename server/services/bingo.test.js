@@ -8,6 +8,8 @@ import {
   hashToken,
   isValidEmail,
   normalizeEmail,
+  normalizeInstagramUrl,
+  normalizeLinkedInUrl,
   normalizeJoinCode,
   shuffle,
   verifyPersonalQrToken,
@@ -59,4 +61,43 @@ test('token hashing, HTML escaping, and shuffling preserve safety invariants', (
   const randomized = shuffle(original);
   assert.deepEqual(original, [1, 2, 3, 4, 5]);
   assert.deepEqual([...randomized].sort(), original);
+});
+
+test('LinkedIn URLs are restricted to LinkedIn hosts', () => {
+  assert.equal(
+    normalizeLinkedInUrl('linkedin.com/in/someone'),
+    'https://linkedin.com/in/someone'
+  );
+  assert.equal(
+    normalizeLinkedInUrl('https://www.linkedin.com/in/someone'),
+    'https://www.linkedin.com/in/someone'
+  );
+  assert.equal(
+    normalizeLinkedInUrl('uk.linkedin.com/in/someone'),
+    'https://uk.linkedin.com/in/someone'
+  );
+
+  // An arbitrary link must never be shareable through the LinkedIn field.
+  assert.equal(normalizeLinkedInUrl('https://evil.example.com/phish'), '');
+  assert.equal(normalizeLinkedInUrl('https://linkedin.com.evil.example.com/x'), '');
+  assert.equal(normalizeLinkedInUrl('javascript:alert(1)'), '');
+  assert.equal(normalizeLinkedInUrl(''), '');
+});
+
+test('Instagram accepts handles or profile URLs and rejects other domains', () => {
+  assert.equal(normalizeInstagramUrl('@berg.collective'), 'https://instagram.com/berg.collective');
+  assert.equal(normalizeInstagramUrl('bergcollective'), 'https://instagram.com/bergcollective');
+  assert.equal(
+    normalizeInstagramUrl('https://www.instagram.com/bergcollective/'),
+    'https://instagram.com/bergcollective'
+  );
+  assert.equal(
+    normalizeInstagramUrl('instagram.com/bergcollective?igsh=tracking'),
+    'https://instagram.com/bergcollective'
+  );
+
+  assert.equal(normalizeInstagramUrl('https://evil.example.com/bergcollective'), '');
+  assert.equal(normalizeInstagramUrl('instagram.com'), '');
+  assert.equal(normalizeInstagramUrl('has spaces'), '');
+  assert.equal(normalizeInstagramUrl(''), '');
 });

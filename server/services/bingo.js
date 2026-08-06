@@ -119,6 +119,64 @@ export function hashRequestIp(req) {
     .digest('hex');
 }
 
+const LINKEDIN_HOST = 'linkedin.com';
+const INSTAGRAM_HOST = 'instagram.com';
+// Instagram allows letters, numbers, periods and underscores, up to 30 chars.
+const INSTAGRAM_HANDLE = /^[A-Za-z0-9._]{1,30}$/;
+
+function hostMatches(hostname, domain) {
+  const host = hostname.toLowerCase().replace(/^www\./, '');
+  return host === domain || host.endsWith(`.${domain}`);
+}
+
+function parseProfileUrl(value) {
+  const cleaned = String(value || '').trim().slice(0, 300);
+  if (!cleaned) return null;
+  try {
+    const url = new URL(cleaned.startsWith('http') ? cleaned : `https://${cleaned}`);
+    if (!['http:', 'https:'].includes(url.protocol)) return null;
+    return url;
+  } catch {
+    return null;
+  }
+}
+
+// Only accepts LinkedIn's own hosts. The previous helper accepted any HTTP(S)
+// URL, which let an arbitrary link be shared to connected players.
+export function normalizeLinkedInUrl(value) {
+  const url = parseProfileUrl(value);
+  if (!url || !hostMatches(url.hostname, LINKEDIN_HOST)) return '';
+  url.protocol = 'https:';
+  url.hash = '';
+  url.search = '';
+  return url.toString();
+}
+
+// Accepts a bare handle, an @handle, or an instagram.com URL, and always
+// normalizes to a safe HTTPS profile URL. Any other domain is rejected.
+export function normalizeInstagramUrl(value) {
+  const cleaned = String(value || '').trim().slice(0, 300);
+  if (!cleaned) return '';
+
+  // A bare handle has no path or scheme; anything else is treated as a URL so
+  // that "instagram.com/foo" is not mistaken for a handle.
+  const looksLikeHandle = !cleaned.includes('/') && !cleaned.includes(':');
+  if (looksLikeHandle) {
+    const bare = cleaned.replace(/^@/, '');
+    // Handles may contain periods, so a bare "instagram.com" would otherwise
+    // read as a handle rather than as the site itself.
+    if (hostMatches(bare, INSTAGRAM_HOST)) return '';
+    return INSTAGRAM_HANDLE.test(bare) ? `https://${INSTAGRAM_HOST}/${bare}` : '';
+  }
+
+  const url = parseProfileUrl(cleaned);
+  if (!url || !hostMatches(url.hostname, INSTAGRAM_HOST)) return '';
+
+  const handle = url.pathname.split('/').filter(Boolean)[0] || '';
+  if (!INSTAGRAM_HANDLE.test(handle)) return '';
+  return `https://${INSTAGRAM_HOST}/${handle}`;
+}
+
 export function escapeHtml(value) {
   return String(value || '')
     .replaceAll('&', '&amp;')
@@ -200,6 +258,8 @@ export async function getPlayerState(queryable, participantId, gameCode) {
          other.job_title,
          CASE WHEN bg.contact_sharing_enabled AND other.share_linkedin
            THEN other.linkedin_url ELSE '' END AS linkedin_url,
+         CASE WHEN bg.contact_sharing_enabled AND other.share_instagram
+           THEN other.instagram_url ELSE '' END AS instagram_url,
          CASE WHEN bg.contact_sharing_enabled AND other.share_email
            THEN other_account.email ELSE '' END AS email
        FROM bingo_connections c
@@ -229,8 +289,10 @@ export async function getPlayerState(queryable, participantId, gameCode) {
       company: player.company,
       job_title: player.job_title,
       linkedin_url: player.linkedin_url,
+      instagram_url: player.instagram_url,
       share_email: player.share_email,
       share_linkedin: player.share_linkedin,
+      share_instagram: player.share_instagram,
       connection_code: player.connection_code,
       status: player.status,
       completed_count: player.completed_count,

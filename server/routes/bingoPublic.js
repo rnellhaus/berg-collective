@@ -23,7 +23,9 @@ import {
   hashToken,
   isValidEmail,
   normalizeEmail,
+  normalizeInstagramUrl,
   normalizeJoinCode,
+  normalizeLinkedInUrl,
   serializePublicGame,
   shuffle,
   verifyPersonalQrToken,
@@ -130,18 +132,6 @@ function cleanText(value, maxLength) {
   return String(value || '').trim().slice(0, maxLength);
 }
 
-function cleanLinkedInUrl(value) {
-  const cleaned = cleanText(value, 300);
-  if (!cleaned) return '';
-  try {
-    const url = new URL(cleaned.startsWith('http') ? cleaned : `https://${cleaned}`);
-    if (!['http:', 'https:'].includes(url.protocol)) return '';
-    return url.toString();
-  } catch {
-    return '';
-  }
-}
-
 function publicRegistrationStatus(game) {
   return ['registration', 'live', 'paused'].includes(game.status);
 }
@@ -196,6 +186,7 @@ router.get('/games/:code', optionalBingoParticipant, async (req, res) => {
             company: req.bingoParticipant.company,
             job_title: req.bingoParticipant.job_title,
             linkedin_url: req.bingoParticipant.linkedin_url,
+            instagram_url: req.bingoParticipant.instagram_url,
           }
         : null,
     });
@@ -470,9 +461,16 @@ router.post('/games/:code/join', requireBingoParticipant, async (req, res) => {
     const displayName = cleanText(req.body.display_name, 80);
     const company = cleanText(req.body.company, 120);
     const jobTitle = cleanText(req.body.job_title, 120);
-    const linkedinUrl = cleanLinkedInUrl(req.body.linkedin_url);
+    const linkedinUrl = normalizeLinkedInUrl(req.body.linkedin_url);
+    const instagramUrl = normalizeInstagramUrl(req.body.instagram_url);
     if (displayName.length < 2) {
       throw requestError(400, 'Enter the name you want other players to see');
+    }
+    if (req.body.linkedin_url && !linkedinUrl) {
+      throw requestError(400, 'Enter a LinkedIn profile URL, or leave the field empty');
+    }
+    if (req.body.instagram_url && !instagramUrl) {
+      throw requestError(400, 'Enter an Instagram handle or profile URL, or leave the field empty');
     }
 
     await client.query('BEGIN');
@@ -482,10 +480,15 @@ router.post('/games/:code/join', requireBingoParticipant, async (req, res) => {
       throw requestError(409, 'Registration is not open for this game');
     }
 
+    // Consent is never inferred from a populated URL: each method requires its
+    // own explicit opt-in and the game-level sharing setting.
     const shareEmail = game.contact_sharing_enabled && req.body.share_email === true;
     const shareLinkedin = game.contact_sharing_enabled
       && req.body.share_linkedin === true
       && !!linkedinUrl;
+    const shareInstagram = game.contact_sharing_enabled
+      && req.body.share_instagram === true
+      && !!instagramUrl;
 
     await client.query(
       `UPDATE bingo_participants SET
@@ -493,9 +496,10 @@ router.post('/games/:code/join', requireBingoParticipant, async (req, res) => {
          company = $2,
          job_title = $3,
          linkedin_url = $4,
+         instagram_url = $5,
          updated_at = NOW()
-       WHERE id = $5`,
-      [displayName, company, jobTitle, linkedinUrl, req.bingoParticipant.id]
+       WHERE id = $6`,
+      [displayName, company, jobTitle, linkedinUrl, instagramUrl, req.bingoParticipant.id]
     );
 
     const { rows: existingRows } = await client.query(
@@ -512,17 +516,21 @@ router.post('/games/:code/join', requireBingoParticipant, async (req, res) => {
            company = $2,
            job_title = $3,
            linkedin_url = $4,
-           share_email = $5,
-           share_linkedin = $6,
+           instagram_url = $5,
+           share_email = $6,
+           share_linkedin = $7,
+           share_instagram = $8,
            last_seen_at = NOW()
-         WHERE id = $7`,
+         WHERE id = $9`,
         [
           displayName,
           company,
           jobTitle,
           linkedinUrl,
+          instagramUrl,
           shareEmail,
           shareLinkedin,
+          shareInstagram,
           existingRows[0].id,
         ]
       );
@@ -542,8 +550,9 @@ router.post('/games/:code/join', requireBingoParticipant, async (req, res) => {
       await client.query(
         `INSERT INTO bingo_players (
            id, game_id, participant_id, display_name, company, job_title,
-           linkedin_url, share_email, share_linkedin, connection_code
-         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+           linkedin_url, instagram_url, share_email, share_linkedin,
+           share_instagram, connection_code
+         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
         [
           playerId,
           game.id,
@@ -552,8 +561,10 @@ router.post('/games/:code/join', requireBingoParticipant, async (req, res) => {
           company,
           jobTitle,
           linkedinUrl,
+          instagramUrl,
           shareEmail,
           shareLinkedin,
+          shareInstagram,
           connectionCode,
         ]
       );
