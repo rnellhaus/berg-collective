@@ -477,11 +477,10 @@ export default function BingoGameEditorPage() {
                   label: 'BERGHAUS (default)',
                   swatches: ['#173d2d', '#d8aa3c', '#f3eee3', '#ad5538'],
                 },
-                {
-                  value: 'midnight-rooftop',
-                  label: 'Midnight Rooftop',
-                  swatches: ['#04112B', '#08DDF2', '#FF2C98', '#FFAD3D'],
-                },
+                // Midnight Rooftop is withheld until the dark surfaces are done.
+                // It currently only flips text to near-white while ~27 surfaces
+                // keep hardcoded light backgrounds, which renders the player
+                // screens unreadable. Re-add once those use the theme tokens.
               ].map((option) => (
                 <label key={option.value} className={styles.themeOption}>
                   <input
