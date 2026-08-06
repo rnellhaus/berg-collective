@@ -671,3 +671,45 @@ Initial entry:
 - Deployment: bingo changes are local and not known to be in production
 - Next step: establish safe branch/baseline, then begin Phase 1 release blockers
 ```
+
+```text
+2026-08-06 09:30 ET — P0.1-P0.6 + P2 theme complete; preview deployed
+- Branch: bingo/launch-hardening (8 commits, baseline 8ec558d)
+- Changed:
+  - P0.1 shared-IP limiter split into 600/15min IP backstop + per-email limiter
+  - P0.2 honest email failure; also fixed that Resend reports API errors on the
+    resolved `error` field rather than throwing, so emailSent was true on
+    rejected sends; unsent tokens are now invalidated
+  - P0.3 reciprocal-scan dedup via DISTINCT ON; both directed rows retained
+  - P0.4 client reconciliation against completed_count; UNIQUE(scanner,target)
+    already prevented double-counting, so no idempotency column was needed
+  - P0.5 migration 003 (instagram_url, share_instagram); LinkedIn/Instagram
+    host allowlists replacing a helper that accepted any HTTP(S) URL;
+    Profile & privacy tab for editing/revoking consent
+  - P0.6 polling backoff + in-flight guards; admin search/paging;
+    scripts/load-test-bingo.js (npm run test:bingo:load)
+  - P2 per-game Midnight Rooftop theme in settings JSONB; QR excluded
+  - Fixed: unhandled Neon pool 'error' terminated the API process
+  - Fixed: preview magic links pointed at production (FRONTEND_URL precedence)
+- Tests: ESLint clean; 12 unit tests; build green; Neon integration passed
+  (migration 003 applied to production Neon cleanly)
+- Load: 250 players / concurrency 8 / 2 rounds = 1627 requests, 0.00% errors,
+  p95 reads 338ms (SLO <1500ms), 0 duplicate finish places, cleanup verified.
+  Concurrency 25 crashed the first run via the pool bug above; rerun after the
+  fix was clean. Measured local-to-Neon, so in-region latency should be lower.
+- Data: load-test game 10 + 25 synthetic participants were stranded by that
+  crash and were deleted and verified. Game 5 (SUMMER26) untouched throughout,
+  still live with its 1 real player.
+- Deployment: preview only —
+  berg-collective-73yejf98e-rich-s-projects-304402a2.vercel.app
+  Preview is behind Vercel SSO, so it cannot be smoke-tested anonymously and
+  cannot be used by real attendees. Production deploy is NOT done.
+- Open risks / next step:
+  - Preview smoke matrix in section 10 has NOT been run (SSO-gated)
+  - PUBLIC_SITE_URL, BINGO_QR_SECRET, BINGO_FROM_EMAIL still unset -> fallbacks
+  - Resend plan/domain/quota headroom for ~250 sends NOT verified
+  - P1 assignment_mode (random subset vs identical prompts) still undecided;
+    current behavior is a random subset per player
+  - P2 shorter manual code and the full accessibility audit (scanner/walkthrough
+    focus trap) not done
+```
