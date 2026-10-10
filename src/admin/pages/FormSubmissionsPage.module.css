@@ -257,6 +257,15 @@
 }
 
 /* ── Cells ───────────────────────────────────────────────── */
+.submitterLink {
+  display: block;
+  text-decoration: none;
+}
+
+.submitterLink:hover .submitterName {
+  text-decoration: underline;
+}
+
 .submitterCell {
   max-width: 240px;
 }
@@ -462,5 +471,45 @@
   .table td {
     padding-left: 12px;
     padding-right: 12px;
+  }
+
+  /* .tableCard clips overflow, so the actions column (incl. View) was cut off
+     on phones. Stack each row: dot · type · submitter, then actions below. */
+  .table thead {
+    display: none;
+  }
+
+  .table tbody tr {
+    display: grid;
+    grid-template-columns: auto auto minmax(0, 1fr);
+    align-items: center;
+    border-bottom: 1px solid #e5e5e5;
+  }
+
+  .table tbody tr:last-child {
+    border-bottom: none;
+  }
+
+  .table td {
+    border-bottom: none;
+  }
+
+  .submitterCell {
+    max-width: none;
+    min-width: 0;
+  }
+
+  .table .actionCell {
+    grid-column: 1 / -1;
+    padding-top: 0;
+  }
+
+  .actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .actions .viewLink {
+    margin-left: auto;
   }
 }

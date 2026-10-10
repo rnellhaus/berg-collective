@@ -261,8 +261,10 @@ export default function FormSubmissionsPage() {
                       </span>
                     </td>
                     <td className={styles.submitterCell}>
-                      <div className={styles.submitterName}>{name}</div>
-                      <div className={styles.submitterEmail}>{email}</div>
+                      <Link to={`/admin/forms/${sub.id}`} className={styles.submitterLink}>
+                        <div className={styles.submitterName}>{name}</div>
+                        <div className={styles.submitterEmail}>{email}</div>
+                      </Link>
                     </td>
                     <td className={styles.dateCell}>{formatDate(sub.created_at)}</td>
                     <td className={styles.actionCell}>
