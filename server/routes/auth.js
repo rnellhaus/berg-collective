@@ -223,6 +223,7 @@ router.post('/forgot-password', forgotLimiter, async (req, res) => {
       try {
         await resend.emails.send({
           from: 'BERG Collective <info@bergcollective.org>',
+          replyTo: 'info@blackergcollective.com',
           to: user.email,
           subject: 'Reset your BERG Collective password',
           html: `

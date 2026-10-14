@@ -57,7 +57,7 @@ function formatDate(dateStr) {
 
 function getSubmitterInfo(submission) {
   const data = submission.data || {};
-  const name = data.name || [data.first_name, data.last_name].filter(Boolean).join(' ') || '—';
+  const name = data.name || [data.first_name || data.firstName, data.last_name || data.lastName].filter(Boolean).join(' ') || '—';
   const email = data.email || '—';
   return { name, email };
 }

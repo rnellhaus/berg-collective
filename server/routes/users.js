@@ -101,6 +101,7 @@ router.post('/invite', adminAuth, async (req, res) => {
       try {
         await resend.emails.send({
           from: 'BERG Collective <info@bergcollective.org>',
+          replyTo: 'info@blackergcollective.com',
           to: email,
           subject: "You're invited to BERG Collective",
           html: `

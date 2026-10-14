@@ -113,6 +113,15 @@
   margin: 0;
 }
 
+.optionValue a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.optionValue a:hover {
+  text-decoration: underline;
+}
+
 .optionNote {
   font-family: var(--font-body);
   font-size: 13px;

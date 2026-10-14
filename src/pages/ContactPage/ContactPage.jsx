@@ -122,7 +122,7 @@ export default function ContactPage() {
                 </svg>
               </div>
               <h3 className={styles.optionTitle}>Email Us</h3>
-              <p className={styles.optionValue}>info@bergcollective.org</p>
+              <p className={styles.optionValue}><a href="mailto:info@blackergcollective.com">info@blackergcollective.com</a></p>
               <p className={styles.optionNote}>We respond within 24–48 hours</p>
             </div>
             <div className={styles.optionCard}>

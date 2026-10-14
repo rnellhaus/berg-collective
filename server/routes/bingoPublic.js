@@ -279,6 +279,7 @@ router.post('/games/:code/magic-link', magicLinkIpLimiter, magicLinkEmailLimiter
     } else {
       const delivery = await deliverMagicLink({
         from: process.env.BINGO_FROM_EMAIL || 'BERG Collective <info@bergcollective.org>',
+        replyTo: 'info@blackergcollective.com',
         to: email,
         subject: `Join ${game.title}`,
         html: `

@@ -110,20 +110,21 @@ router.post('/membership', appUpload.single('application_file'), rejectBot, veri
     const insertedId = rows[0].id;
 
     const emailFields = [
-      ['First Name', data.first_name],
-      ['Last Name', data.last_name],
+      // Field names must match the JoinPage form (firstName, lastName, q1–q7)
+      ['First Name', data.firstName],
+      ['Last Name', data.lastName],
       ['Title', data.title],
       ['Company', data.company],
       ['ERG', data.erg],
       ['Phone', data.phone],
       ['Email', data.email],
-      ['In existence 2+ years?', data.existence_2_years],
-      ['How does your company embody the Collective ERG Mission?', data.mission_statement],
-      ['How does your ERG engage the pillars?', data.pillars_engagement],
-      ['Diversity strides in next few years?', data.diversity_strides],
-      ['What would it mean to be part of the Collective?', data.part_of_collective],
-      ['Next quarterly ERG event idea?', data.event_idea],
-      ['Resources to contribute?', data.resources],
+      ['In existence 2+ years?', data.q1],
+      ['How does your company embody the Collective ERG Mission?', data.q2],
+      ['How does your ERG engage the pillars?', data.q3],
+      ['Where is your company making strides in diversity?', data.q4],
+      ['What would it mean to be part of the Collective?', data.q5],
+      ['Next quarterly ERG event idea?', data.q6],
+      ['Resources to contribute?', data.q7],
       ['Additional Message', data.message],
       ['Application File', req.file ? req.file.originalname : 'None'],
     ];
