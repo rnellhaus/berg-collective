@@ -26,7 +26,7 @@ const chapters = [
     name: 'Rich Nellhaus',
     role: 'Los Angeles Chapter Lead',
     photo: '/images/photos/rich-headshot-new.jpg',
-    linkedin: 'https://www.linkedin.com/in/richnellhaus',
+    linkedin: 'https://www.linkedin.com/company/berg-collective2',
   },
   {
     name: 'Evol Greaves',
